@@ -319,87 +319,176 @@
   <div class="floating-orb" style="bottom: 10%; right: 4%; width: 240px; height: 240px; background: rgba(255, 141, 181, 0.26); animation-duration: 22s;"></div>
   <div class="floating-orb" style="top: 40%; right: 20%; width: 170px; height: 170px; background: rgba(124, 240, 194, 0.2); animation-duration: 20s;"></div>
 
+  <div id="drawerOverlay" class="drawer-overlay"></div>
   <aside id="appDrawer" class="app-drawer sidebar-scroll overflow-y-auto">
-  ... [all the cards for Theme, Accent, etc. are in here] ...
-</aside> ```
-
-**Replace that entire chunk with this "Card-Free" Modern Version:**
-
-```html
-<aside id="appDrawer" class="app-drawer sidebar-scroll overflow-y-auto">
-  <div class="glass h-full rounded-[32px] p-8 space-y-10 relative">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="display-font text-[10px] font-bold uppercase tracking-[0.3em] text-blue-400/80">Portal X System</p>
-        <h2 class="text-2xl font-extrabold tracking-tight text-white">Settings</h2>
+    <div class="glass h-full rounded-[32px] p-5">
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <p class="display-font text-sm font-bold uppercase tracking-[0.25em] text-blue-200/90">Portal X</p>
+          <h2 class="mt-1 text-2xl font-extrabold gradient-text">Menu</h2>
+        </div>
+        <button id="closeDrawerBtn" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover:bg-white/15">Close</button>
       </div>
-      <button id="closeDrawerBtn" class="p-2.5 hover:bg-white/10 rounded-xl transition-all active:scale-90">
-        <svg class="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-    </div>
 
-    <section>
-      <p class="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold mb-6">Appearance</p>
-      <div class="space-y-8">
-        <div class="flex items-center justify-between p-1">
-          <span class="text-sm font-medium text-white/70">Base Theme</span>
-          <div class="flex gap-3">
-            <button class="theme-chip w-7 h-7 rounded-full border-2 border-white/10 hover:border-white/60 transition-all bg-[#08111f]" data-theme="dark"></button>
-            <button class="theme-chip w-7 h-7 rounded-full border-2 border-white/10 hover:border-white/60 transition-all bg-slate-800" data-theme="slate"></button>
-            <button class="theme-chip w-7 h-7 rounded-full border-2 border-white/10 hover:border-white/60 transition-all bg-white" data-theme="light"></button>
+      <div class="glass rounded-[28px] p-6">
+        <p class="display-font text-sm font-bold uppercase tracking-[0.25em] text-blue-200/90">Portal X</p>
+        <h1 class="mt-2 text-4xl font-extrabold gradient-text">Exam Bank</h1>
+        <p class="mt-3 soft-text">Refined study hub with working quizzes, saved progress, quick practice, and cleaner navigation.</p>
+      </div>
+
+      <div class="mt-6 space-y-6">
+        <div class="glass rounded-[28px] p-5">
+          <div class="flex flex-wrap gap-3">
+            <button id="drawerHomeBtn" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover:bg-white/15">Home</button>
+            <button id="openSettingsBtn" class="rounded-2xl bg-blue-500 px-4 py-3 font-bold transition hover:bg-blue-400">Settings</button>
+            <button id="openLeaderboardBtn" class="rounded-2xl bg-emerald-500 px-4 py-3 font-bold transition hover:bg-emerald-400">Leaderboard</button>
+          </div>
+
+          <div class="mt-4 rounded-[24px] border border-white/10 bg-white/5 p-4">
+            <h3 class="text-xl font-black">Account</h3>
+            <p class="mt-1 text-sm soft-text">Create an account, sign in, and keep your profile and points synced.</p>
+            <div class="mt-4 flex flex-col gap-3">
+              <input id="authNameInput" class="quiz-field" type="text" placeholder="Display name">
+              <input id="authEmailInput" class="quiz-field" type="email" placeholder="Email address">
+              <input id="authPasswordInput" class="quiz-field" type="password" placeholder="Password">
+              <input id="profilePicInput" class="quiz-field" type="file" accept="image/*">
+              <div class="flex flex-wrap items-center gap-3">
+                <button id="signUpBtn" class="rounded-2xl bg-emerald-500 px-4 py-3 font-bold transition hover:bg-emerald-400">Sign Up</button>
+                <button id="signInBtn" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover:bg-white/15">Sign In</button>
+                <button id="signOutBtn" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover:bg-white/15">Sign Out</button>
+              </div>
+              <div class="flex items-center gap-3">
+                <img id="profilePreview" src="" alt="Profile preview" class="hidden h-14 w-14 rounded-full object-cover border border-white/10">
+                <span id="currentPlayerLabel" class="text-sm font-bold text-emerald-200">Current player: Guest</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="settingsPanel" class="settings-panel">
+            <div class="mt-4 rounded-[24px] border border-white/10 bg-white/5 p-4">
+              <h3 class="text-xl font-black">Theme</h3>
+              <p class="mt-1 text-sm soft-text">Switch the look instantly, then fine-tune the accent and surface style.</p>
+              <div class="mt-4 grid grid-cols-2 gap-3">
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="aurora">
+                  <span class="block text-sm font-bold">Aurora</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-blue-400 via-cyan-300 to-pink-300"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="sunset">
+                  <span class="block text-sm font-bold">Sunset</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-orange-400 via-rose-400 to-amber-300"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="forest">
+                  <span class="block text-sm font-bold">Forest</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-emerald-400 via-lime-300 to-teal-300"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="midnight">
+                  <span class="block text-sm font-bold">Midnight</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-slate-400 via-indigo-400 to-blue-500"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="neon">
+                  <span class="block text-sm font-bold">Neon</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-fuchsia-400 via-cyan-300 to-lime-300"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="ocean">
+                  <span class="block text-sm font-bold">Ocean</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-sky-400 via-blue-300 to-teal-300"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="ember">
+                  <span class="block text-sm font-bold">Ember</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-red-400 via-orange-400 to-yellow-300"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="lavender">
+                  <span class="block text-sm font-bold">Lavender</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-violet-400 via-fuchsia-300 to-rose-300"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="paper">
+                  <span class="block text-sm font-bold">Paper</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-stone-300 via-amber-200 to-orange-200"></span>
+                </button>
+                <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-theme="matrix">
+                  <span class="block text-sm font-bold">Matrix</span>
+                  <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-lime-400 via-emerald-300 to-green-300"></span>
+                </button>
+              </div>
+
+              <div class="mt-5 rounded-[20px] border border-white/10 bg-black/10 p-4">
+                <h4 class="text-sm font-black uppercase tracking-[0.2em] text-slate-300">Accent Mood</h4>
+                <div class="mt-3 grid grid-cols-2 gap-3">
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-accent="ice">
+                    <span class="block text-sm font-bold">Ice</span>
+                    <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-cyan-300 to-blue-400"></span>
+                  </button>
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-accent="rose">
+                    <span class="block text-sm font-bold">Rose</span>
+                    <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-pink-300 to-rose-500"></span>
+                  </button>
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-accent="gold">
+                    <span class="block text-sm font-bold">Gold</span>
+                    <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400"></span>
+                  </button>
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-accent="mint">
+                    <span class="block text-sm font-bold">Mint</span>
+                    <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-emerald-300 to-teal-400"></span>
+                  </button>
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-accent="violet">
+                    <span class="block text-sm font-bold">Violet</span>
+                    <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-violet-400 to-fuchsia-400"></span>
+                  </button>
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-left" data-accent="lava">
+                    <span class="block text-sm font-bold">Lava</span>
+                    <span class="mt-2 block h-3 rounded-full bg-gradient-to-r from-red-400 to-amber-400"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-5 rounded-[20px] border border-white/10 bg-black/10 p-4">
+                <h4 class="text-sm font-black uppercase tracking-[0.2em] text-slate-300">Surface Style</h4>
+                <div class="mt-3 grid grid-cols-3 gap-3">
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-center text-sm font-bold" data-surface="soft">Soft</button>
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-center text-sm font-bold" data-surface="crisp">Crisp</button>
+                  <button class="theme-chip rounded-2xl border border-white/10 p-3 text-center text-sm font-bold" data-surface="glow">Glow</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 rounded-[24px] border border-white/10 bg-white/5 p-4">
+              <h3 class="text-xl font-black">Reorder Sections</h3>
+              <p class="mt-1 text-sm soft-text">Move the homepage blocks around.</p>
+              <div id="sectionOrderList" class="mt-4 space-y-3"></div>
+            </div>
           </div>
         </div>
 
-        <div class="flex items-center justify-between p-1">
-          <span class="text-sm font-medium text-white/70">Accent Mood</span>
-          <div class="flex gap-3">
-            <button class="theme-chip w-7 h-7 rounded-full hover:scale-125 transition-all bg-blue-500 shadow-lg shadow-blue-500/20" data-accent="blue"></button>
-            <button class="theme-chip w-7 h-7 rounded-full hover:scale-125 transition-all bg-purple-500 shadow-lg shadow-purple-500/20" data-accent="purple"></button>
-            <button class="theme-chip w-7 h-7 rounded-full hover:scale-125 transition-all bg-emerald-500 shadow-lg shadow-emerald-500/20" data-accent="emerald"></button>
+        <div class="glass rounded-[28px] p-5">
+          <p class="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-slate-300">Jump To Units</p>
+          <div id="sidebarUnits" class="space-y-6"></div>
+        </div>
+
+        <div class="glass rounded-[28px] p-5">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <h2 class="display-font text-xl font-black">Daily Spark</h2>
+            <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-slate-200">Fresh</span>
           </div>
+          <p id="dailyChallengeText" class="soft-text text-sm leading-6"></p>
+          <button id="dailyChallengeBtn" class="mt-4 w-full rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover:bg-white/15">Open Challenge</button>
         </div>
       </div>
-    </section>
-
-    <section>
-      <p class="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold mb-4">Management</p>
-      <div class="divide-y divide-white/5 bg-white/5 rounded-2xl overflow-hidden border border-white/10">
-        <button id="openSettingsBtn" class="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-all group text-left">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-white/5 rounded-lg text-white/40 group-hover:text-blue-400 group-hover:bg-blue-500/10 transition-all">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            </div>
-            <span class="text-sm font-medium">Global Settings</span>
-          </div>
-          <svg class="w-4 h-4 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </button>
-
-        <button onclick="resetData()" class="w-full flex items-center justify-between p-4 hover:bg-red-500/10 transition-all group text-left">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-white/5 rounded-lg text-white/40 group-hover:text-red-400 group-hover:bg-red-500/10 transition-all">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </div>
-            <span class="text-sm font-medium">Reset Progress</span>
-          </div>
-        </button>
-      </div>
-    </section>
-
-    <section class="space-y-3">
-      <button onclick="location.reload()" class="w-full rounded-2xl bg-white/5 border border-white/10 p-4 text-white/70 font-bold hover:bg-white/10 transition-all text-sm flex items-center justify-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-        Home
-      </button>
-    </section>
-
-    <div class="absolute bottom-8 left-8 right-8">
-      <div class="p-4 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-md flex items-center justify-between">
-        <span class="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em]">Build Core</span>
-        <span class="text-[9px] font-bold text-blue-400/60 uppercase tracking-widest">v2.4.0-X</span>
-      </div>
     </div>
-  </div>
-</aside>
+  </aside>
+
+  <div class="relative z-10 min-h-screen">
+    <main class="p-5 lg:p-8">
+      <header class="mb-6 flex items-center justify-between gap-4">
+        <button id="openDrawerBtn" class="glass rounded-2xl px-5 py-4 font-black transition hover:bg-white/10">☰ Menu</button>
+        <div class="flex items-center gap-3">
+          <button id="headerLeaderboardBtn" class="glass rounded-2xl px-5 py-4 font-bold transition hover:bg-white/10">Leaderboard</button>
+          <div class="glass rounded-2xl px-5 py-4 text-right">
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Points</p>
+            <p id="headerPointsCount" class="text-2xl font-black text-emerald-300">0</p>
+          </div>
+          <button id="headerSettingsBtn" class="glass rounded-2xl px-5 py-4 font-bold transition hover:bg-white/10">Customize</button>
+        </div>
+      </header>
 
       <div id="homeSections" class="space-y-6">
       <section id="section-hero" data-section-id="hero" class="glass-strong rounded-[32px] p-6 lg:p-8">
