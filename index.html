@@ -569,335 +569,58 @@
 
   <script>
     // ============ SECURE PROFILE DATA ============
-    // Only store display name and avatar, never emails or passwords
     const userProfileKeys = {
       displayName: "examBank.userDisplayName",
       photoURL: "examBank.userPhotoURL"
     };
 
-    // ============ EXAM UNITS DATA ============
+    // ============ EXAM UNITS DATA - FULL QUESTIONS ============
     const rawUnits = {
-      math1: {
-        title: "Math Unit 1 - Numbers",
-        description: "September to October",
-        subject: "Math",
-        accent: "blue",
-        icon: "123",
-        notes: ["Integers and whole numbers", "Place value", "Order of operations", "Prime and composite numbers"],
-        questions: [
-          { question: "What is 7 squared?", options: ["14", "49", "21", "56"], answer: "49", explanation: "Seven squared means 7 x 7 = 49." },
-          { question: "Solve 15 + 8 x 2.", options: ["46", "31", "23", "16"], answer: "31", explanation: "Multiply first: 8 x 2 = 16, then add: 15 + 16 = 31." },
-          { question: "Which number is prime?", options: ["21", "29", "35", "39"], answer: "29", explanation: "A prime number has exactly two factors: 1 and itself. 29 is only divisible by 1 and 29." },
-          { question: "Round 4,783 to the nearest hundred.", options: ["4,700", "4,800", "5,000", "4,750"], answer: "4,800", explanation: "The tens digit is 8 (5 or more), so round the hundreds digit up from 7 to 8." },
-          { question: "Which shows the correct place value of 6 in 4,682?", options: ["6 ones", "6 tens", "6 hundreds", "6 thousands"], answer: "6 hundreds", explanation: "In 4,682, the 6 is in the hundreds place, representing 600." },
-          { question: "What is the GCF of 24 and 36?", options: ["4", "6", "8", "12"], answer: "12", explanation: "The greatest common factor (GCF) of 24 and 36 is 12 because 12 × 2 = 24 and 12 × 3 = 36." },
-          { question: "Which is composite?", options: ["2", "3", "5", "9"], answer: "9", explanation: "A composite number has more than two factors. 9 has factors: 1, 3, 9." },
-          { question: "What does PEMDAS stand for?", options: ["Please Excuse My Dear Aunt Sally", "Priority Equals Math Division Addition Subtraction", "Place Every Math Digit At Start", "Parentheses Exponents Multiplication Division Addition Subtraction"], answer: "Parentheses Exponents Multiplication Division Addition Subtraction", explanation: "PEMDAS helps remember the order of operations." },
-          { question: "What is the LCM of 4 and 6?", options: ["12", "24", "10", "8"], answer: "12", explanation: "The least common multiple (LCM) is the smallest number divisible by both 4 and 6." },
-          { question: "Is 0 positive or negative?", options: ["Positive", "Negative", "Neither", "Both"], answer: "Neither", explanation: "Zero is neither positive nor negative; it is neutral." }
-        ]
-      },
-      math2: {
-        title: "Math Unit 2 - Fraction Operations",
-        description: "October to November",
-        subject: "Math",
-        accent: "blue",
-        icon: "1/2",
-        notes: ["Adding fractions", "Subtracting fractions", "Multiplying fractions", "Dividing fractions"],
-        questions: [
-          { question: "Add 2/3 + 1/6.", options: ["5/6", "1/2", "2/9", "1"], answer: "5/6", explanation: "Convert 2/3 to 4/6, then add: 4/6 + 1/6 = 5/6." },
-          { question: "Multiply 3/4 x 2/5.", options: ["6/20", "3/10", "5/8", "1/2"], answer: "3/10", explanation: "Multiply: (3 × 2)/(4 × 5) = 6/20, simplify to 3/10." },
-          { question: "Which denominator can 1/2 and 1/3 both convert to?", options: ["4", "5", "6", "8"], answer: "6", explanation: "Six is the least common denominator (LCD) of 2 and 3." },
-          { question: "What is 5/8 - 1/4?", options: ["1/4", "3/8", "4/8", "1/2"], answer: "3/8", explanation: "Convert 1/4 to 2/8, then subtract: 5/8 - 2/8 = 3/8." },
-          { question: "To divide by a fraction, you should:", options: ["Add the denominators", "Flip the second fraction and multiply", "Multiply by zero", "Subtract both numerators"], answer: "Flip the second fraction and multiply", explanation: "Division of fractions requires the reciprocal: a/b ÷ c/d = a/b × d/c." },
-          { question: "Simplify 12/18.", options: ["2/3", "6/9", "4/6", "1/2"], answer: "2/3", explanation: "Both 12 and 18 divide by 6: 12÷6 = 2, 18÷6 = 3." },
-          { question: "What is 1/2 + 1/2?", options: ["1", "1/4", "2/2", "2"], answer: "1", explanation: "1/2 + 1/2 = 2/2 = 1." },
-          { question: "Multiply 2/3 x 3/4.", options: ["6/12", "1/2", "5/7", "2/4"], answer: "1/2", explanation: "(2 × 3)/(3 × 4) = 6/12 = 1/2." },
-          { question: "What is 3/4 as a decimal?", options: ["0.25", "0.75", "0.5", "0.34"], answer: "0.75", explanation: "3 ÷ 4 = 0.75." },
-          { question: "Which fraction is greater: 2/5 or 3/7?", options: ["2/5", "3/7", "They are equal", "Cannot determine"], answer: "3/7", explanation: "Convert to decimals: 2/5 = 0.4 and 3/7 ≈ 0.43, so 3/7 is larger." }
-        ]
-      },
-      math3: {
-        title: "Math Unit 3 - Percent, Ratio, Rates",
-        description: "November to December",
-        subject: "Math",
-        accent: "blue",
-        icon: "%",
-        notes: ["Percentages", "Ratios", "Rates", "Comparisons"],
-        questions: [
-          { question: "What is 25% of 200?", options: ["25", "50", "75", "100"], answer: "50", explanation: "25% is 1/4, and 1/4 of 200 is 50." },
-          { question: "Simplify 12:18.", options: ["6:9", "2:3", "4:5", "12:6"], answer: "2:3", explanation: "Divide both parts by 6: 12÷6 = 2, 18÷6 = 3." },
-          { question: "Convert 0.45 to a percent.", options: ["4.5%", "45%", "450%", "0.45%"], answer: "45%", explanation: "Multiply the decimal by 100: 0.45 × 100 = 45%." },
-          { question: "Which is the better buy: 3 notebooks for $6 or 5 notebooks for $15?", options: ["3 for $6", "5 for $15", "They cost the same per notebook", "Not enough information"], answer: "3 for $6", explanation: "3 for $6 = $2 per notebook. 5 for $15 = $3 per notebook. $2 < $3." },
-          { question: "A ratio of 8 red to 12 blue simplifies to:", options: ["4:6", "2:3", "8:3", "3:2"], answer: "2:3", explanation: "Divide both parts by 4: 8÷4 = 2, 12÷4 = 3." },
-          { question: "What percent is 1/4?", options: ["25%", "40%", "50%", "75%"], answer: "25%", explanation: "1/4 = 0.25 = 25%." },
-          { question: "If a ratio is 3:5, and one part is 15, what is the other part?", options: ["9", "25", "20", "12"], answer: "25", explanation: "3:5 means if one part is 15, then 3 × 5 = 15, so 5 × 5 = 25." },
-          { question: "What is 20% of 85?", options: ["17", "15", "19", "21"], answer: "17", explanation: "20% = 1/5, and 85 ÷ 5 = 17." },
-          { question: "If 40% of a number is 32, what is the number?", options: ["80", "72", "64", "88"], answer: "80", explanation: "0.4 × x = 32, so x = 32 ÷ 0.4 = 80." },
-          { question: "What is the rate of 250 miles in 5 hours?", options: ["40 mph", "50 mph", "60 mph", "55 mph"], answer: "50 mph", explanation: "Rate = distance ÷ time = 250 ÷ 5 = 50 mph." }
-        ]
-      },
-      math4: {
-        title: "Math Unit 4 - Geometry Basics",
-        description: "January to March",
-        subject: "Math",
-        accent: "blue",
-        icon: "TRI",
-        notes: ["Area", "Perimeter", "Triangles", "Pythagorean theorem"],
-        questions: [
-          { question: "What is the area of a square with side 6 cm?", options: ["12 cm²", "24 cm²", "36 cm²", "18 cm²"], answer: "36 cm²", explanation: "Area of a square = side × side = 6 × 6 = 36 cm²." },
-          { question: "How many sides does a triangle have?", options: ["2", "3", "4", "5"], answer: "3", explanation: "All triangles have three sides." },
-          { question: "In a right triangle, a² + b² equals:", options: ["c²", "ab", "2c", "a + b"], answer: "c²", explanation: "This is the Pythagorean theorem: a² + b² = c²." },
-          { question: "What is the perimeter of a triangle with sides 4 cm, 5 cm, and 6 cm?", options: ["11 cm", "14 cm", "15 cm", "30 cm"], answer: "15 cm", explanation: "Perimeter = 4 + 5 + 6 = 15 cm." },
-          { question: "A triangle with all equal sides is called:", options: ["Scalene", "Isosceles", "Right", "Equilateral"], answer: "Equilateral", explanation: "Equilateral triangles have all three sides equal." },
-          { question: "What is the area of a rectangle with length 8 m and width 5 m?", options: ["13 m²", "26 m²", "40 m²", "46 m²"], answer: "40 m²", explanation: "Area = length × width = 8 × 5 = 40 m²." },
-          { question: "What is the circumference of a circle with radius 7 cm?", options: ["14π cm", "7π cm", "49π cm", "28 cm"], answer: "14π cm", explanation: "Circumference = 2πr = 2π(7) = 14π cm." },
-          { question: "Find the area of a triangle with base 10 cm and height 6 cm.", options: ["30 cm²", "60 cm²", "16 cm²", "20 cm²"], answer: "30 cm²", explanation: "Area = (base × height) ÷ 2 = (10 × 6) ÷ 2 = 30 cm²." },
-          { question: "What is the sum of angles in a triangle?", options: ["90°", "180°", "270°", "360°"], answer: "180°", explanation: "The sum of all angles in any triangle is always 180 degrees." },
-          { question: "A right triangle has angles of 90° and 45°. What is the third angle?", options: ["45°", "35°", "50°", "90°"], answer: "45°", explanation: "180° - 90° - 45° = 45°." }
-        ]
-      },
-      math5: {
-        title: "Math Unit 5 - Algebra and Equations",
-        description: "March",
-        subject: "Math",
-        accent: "blue",
-        icon: "x",
-        notes: ["Variables", "Equations", "Slope", "Graphing"],
-        questions: [
-          { question: "Solve x + 7 = 19.", options: ["10", "12", "14", "26"], answer: "12", explanation: "x = 19 - 7 = 12." },
-          { question: "Simplify 4x + 2x.", options: ["6", "8x", "6x", "2x"], answer: "6x", explanation: "Combine like terms: 4x + 2x = 6x." },
-          { question: "What is the slope in y = 3x + 1?", options: ["1", "3", "x", "4"], answer: "3", explanation: "In y = mx + b, m is the slope, so slope = 3." },
-          { question: "Solve 2x = 18.", options: ["7", "8", "9", "16"], answer: "9", explanation: "x = 18 ÷ 2 = 9." },
-          { question: "Which point is on the line y = x + 3?", options: ["(1, 2)", "(2, 5)", "(3, 1)", "(0, 1)"], answer: "(2, 5)", explanation: "If x = 2, then y = 2 + 3 = 5, so (2, 5) is on the line." },
-          { question: "Solve 3x - 5 = 10.", options: ["5", "10/3", "15/3", "5"], answer: "5", explanation: "3x = 15, so x = 5." },
-          { question: "What is the y-intercept of y = 2x - 3?", options: ["2", "-3", "3", "0"], answer: "-3", explanation: "The y-intercept is the b value in y = mx + b, which is -3." },
-          { question: "If 2x + 3 = 11, what is x?", options: ["4", "6", "8", "5"], answer: "4", explanation: "2x = 8, so x = 4." },
-          { question: "Solve for x: 5x = 25.", options: ["4", "5", "20", "125"], answer: "5", explanation: "x = 25 ÷ 5 = 5." },
-          { question: "What is 6x - 2x?", options: ["4x", "8x", "4x", "12x"], answer: "4x", explanation: "6x - 2x = 4x." }
-        ]
-      },
-      science1: {
-        title: "Science Unit 1 - Matter",
-        description: "September to October",
-        subject: "Science",
-        accent: "green",
-        icon: "H2O",
-        notes: ["Matter", "Mixtures", "Solutions", "States of matter"],
-        questions: [
-          { question: "What is viscosity?", options: ["A liquid's resistance to flow", "A kind of microscope", "A type of gas", "A solid mixture"], answer: "A liquid's resistance to flow", explanation: "Viscosity measures how thick a liquid is and how easily it flows." },
-          { question: "A homogeneous mixture is:", options: ["Evenly mixed", "Layered", "Frozen", "Magnetic"], answer: "Evenly mixed", explanation: "In a homogeneous mixture, all parts are uniformly distributed." },
-          { question: "What are the three states of matter?", options: ["Solid, Liquid, Gas", "Hot, Cold, Warm", "Heavy, Light, Medium", "Big, Small, Tiny"], answer: "Solid, Liquid, Gas", explanation: "Matter exists in three main states: solid, liquid, and gas." },
-          { question: "Which is an example of a solution?", options: ["Salt water", "Trail mix", "Sand and gravel", "Oil and water"], answer: "Salt water", explanation: "A solution is a homogeneous mixture where one substance dissolves in another." },
-          { question: "Matter is anything that has:", options: ["Mass and volume", "Only color", "No particles", "Only energy"], answer: "Mass and volume", explanation: "Matter takes up space (volume) and has mass." },
-          { question: "What happens when water freezes?", options: ["It becomes a gas", "It becomes a solid", "It becomes less dense", "It disappears"], answer: "It becomes a solid", explanation: "Freezing is the process where a liquid turns into a solid." },
-          { question: "A heterogeneous mixture is:", options: ["Visibly separated into different parts", "Evenly mixed throughout", "Only gases", "Always liquid"], answer: "Visibly separated into different parts", explanation: "In a heterogeneous mixture, you can see the different components." },
-          { question: "What is density?", options: ["How much space something takes up", "Mass divided by volume", "Weight of an object", "How hot something is"], answer: "Mass divided by volume", explanation: "Density = Mass ÷ Volume." },
-          { question: "Which state of matter has particles that are far apart?", options: ["Solid", "Liquid", "Gas", "Plasma"], answer: "Gas", explanation: "Gas particles are spread far apart and move freely." },
-          { question: "What is a physical change?", options: ["A change that creates a new substance", "A change in appearance without creating new substances", "A chemical reaction", "Burning"], answer: "A change in appearance without creating new substances", explanation: "Physical changes like melting or freezing don't create new substances." }
-        ]
-      },
-      science2: {
-        title: "Science Unit 2 - Cells",
-        description: "November to December",
-        subject: "Science",
-        accent: "green",
-        icon: "DNA",
-        notes: ["Cells", "Organ systems", "Microscopes", "Cell theory"],
-        questions: [
-          { question: "What is the function of the nucleus?", options: ["Controls cell activities", "Makes blood", "Protects skin", "Moves bones"], answer: "Controls cell activities", explanation: "The nucleus contains DNA and controls all cell functions." },
-          { question: "Cell theory says all living things are made of cells.", options: ["True", "False", "Only plants", "Only humans"], answer: "True", explanation: "Cell theory is a fundamental concept in biology." },
-          { question: "An organ system is:", options: ["Organs working together", "One single organ", "A kind of cell", "A microscope part"], answer: "Organs working together", explanation: "Organ systems are groups of organs that work together." },
-          { question: "Which structure controls what enters and leaves the cell?", options: ["Cell membrane", "Nucleus", "Cytoplasm", "Chloroplast"], answer: "Cell membrane", explanation: "The cell membrane is semipermeable and controls substance transport." },
-          { question: "Plant cells have which structure that animal cells do not?", options: ["Cell wall", "Nucleus", "Cell membrane", "Cytoplasm"], answer: "Cell wall", explanation: "Plant cells have a rigid cell wall outside the cell membrane." },
-          { question: "What does mitochondria do?", options: ["Makes food", "Produces energy", "Stores water", "Protects DNA"], answer: "Produces energy", explanation: "Mitochondria is called the powerhouse of the cell." },
-          { question: "What is photosynthesis?", options: ["Breaking down food", "Making food from sunlight", "Moving around", "Reproducing"], answer: "Making food from sunlight", explanation: "Photosynthesis is how plants convert sunlight into chemical energy." },
-          { question: "How do prokaryotic cells differ from eukaryotic cells?", options: ["Prokaryotes have no nucleus", "Prokaryotes are larger", "Prokaryotes have more organelles", "They are the same"], answer: "Prokaryotes have no nucleus", explanation: "Prokaryotes (bacteria) lack a nucleus; eukaryotes (animals, plants) have one." },
-          { question: "What is the ribosome's function?", options: ["Makes proteins", "Stores energy", "Breaks down waste", "Transports nutrients"], answer: "Makes proteins", explanation: "Ribosomes are the site of protein synthesis." },
-          { question: "What is the role of lysosomes?", options: ["Breaks down waste", "Makes ATP", "Stores water", "Produces heat"], answer: "Breaks down waste", explanation: "Lysosomes contain enzymes that break down cellular waste." }
-        ]
-      },
-      science3: {
-        title: "Science Unit 3 - Light and Waves",
-        description: "January to February",
-        subject: "Science",
-        accent: "green",
-        icon: "Lens",
-        notes: ["Reflection", "Refraction", "Waves", "Optics"],
-        questions: [
-          { question: "Refraction happens when light:", options: ["Bends", "Stops", "Explodes", "Freezes"], answer: "Bends", explanation: "Light bends when it passes between different materials." },
-          { question: "A convex lens usually:", options: ["Spreads light out forever", "Bends light inward", "Blocks all light", "Creates sound"], answer: "Bends light inward", explanation: "Convex lenses converge light rays toward a focal point." },
-          { question: "Reflection is when light:", options: ["Bounces off a surface", "Turns into heat only", "Disappears", "Enters water"], answer: "Bounces off a surface", explanation: "Mirrors show reflection because light bounces off them." },
-          { question: "Which device uses lenses to make small objects appear larger?", options: ["Microscope", "Thermometer", "Magnet", "Balance"], answer: "Microscope", explanation: "Microscopes use lenses to magnify small objects." },
-          { question: "What is the speed of light?", options: ["186,000 miles/second", "100,000 miles/second", "300,000 miles/second", "50,000 miles/second"], answer: "186,000 miles/second", explanation: "Light travels at approximately 186,000 miles per second in a vacuum." },
-          { question: "What is the wavelength?", options: ["Distance between wave peaks", "Height of a wave", "Speed of a wave", "Duration of a wave"], answer: "Distance between wave peaks", explanation: "Wavelength is measured from one peak to the next." },
-          { question: "Which color has the longest wavelength?", options: ["Violet", "Blue", "Red", "Green"], answer: "Red", explanation: "Red light has the longest wavelength in the visible spectrum." },
-          { question: "What is a concave lens?", options: ["Thicker in the middle", "Thinner in the middle", "Curved inward", "Flat surface"], answer: "Thinner in the middle", explanation: "Concave lenses are thinner in the middle and diverge light." },
-          { question: "What is transparent?", options: ["You can see through it", "It blocks light", "It absorbs light", "It reflects light"], answer: "You can see through it", explanation: "Transparent materials allow light to pass through clearly." },
-          { question: "What happens to light when it enters a denser material?", options: ["It speeds up", "It slows down", "It stops", "It disappears"], answer: "It slows down", explanation: "Light travels slower in denser materials like glass." }
-        ]
-      },
-      socialvocab: {
-        title: "Social Studies - History Terms",
-        description: "Medieval and Renaissance concepts",
-        subject: "Social Studies",
-        accent: "pink",
-        icon: "Globe",
-        notes: ["Feudalism", "Renaissance", "Exploration", "Enlightenment"],
-        questions: [
-          { question: "What was the Byzantine Empire?", options: ["The eastern part of the Roman Empire", "A guild", "A trade route only", "A pyramid kingdom"], answer: "The eastern part of the Roman Empire", explanation: "The Byzantine Empire was the continuation of the Eastern Roman Empire." },
-          { question: "What is a guild?", options: ["A group of skilled workers", "A castle wall", "A king's crown", "A farming tool"], answer: "A group of skilled workers", explanation: "Guilds were organizations of craftsmen in the Middle Ages." },
-          { question: "What does feudalism mean?", options: ["A system of land ownership and service", "A type of farming", "A medieval weapon", "A style of architecture"], answer: "A system of land ownership and service", explanation: "Feudalism was based on lords, vassals, and obligations." },
-          { question: "The feudal system was based on:", options: ["Land, loyalty, and service", "Factory jobs", "Democracy votes only", "Modern banking"], answer: "Land, loyalty, and service", explanation: "Feudal relationships were bound by these three elements." },
-          { question: "What was the Renaissance?", options: ["A period of cultural rebirth", "An ancient war", "A type of art", "A musical style"], answer: "A period of cultural rebirth", explanation: "The Renaissance was a period of renewed interest in learning and arts." },
-          { question: "An oligarchy is a government ruled by:", options: ["A few powerful people", "One emperor only", "All citizens directly", "Skilled workers"], answer: "A few powerful people", explanation: "An oligarchy places power in the hands of a few." },
-          { question: "Urbanization means:", options: ["Growth of towns and cities", "Moving to farms", "Trading spices", "Writing laws"], answer: "Growth of towns and cities", explanation: "Urbanization is the growth and development of cities." },
-          { question: "What does 'monarch' mean?", options: ["A single ruler", "Many rules", "A type of butterfly", "A government type"], answer: "A single ruler", explanation: "A monarch is a king or queen ruling a kingdom." },
-          { question: "What were the Crusades?", options: ["Religious wars", "Trade agreements", "Art movements", "Scientific discoveries"], answer: "Religious wars", explanation: "The Crusades were a series of wars fought in the Middle East." },
-          { question: "What is the Magna Carta?", options: ["A document limiting royal power", "A Roman road", "A type of currency", "A military weapon"], answer: "A document limiting royal power", explanation: "The Magna Carta established limits on the English king's power." }
-        ]
-      }
+      math1: { title: "Math Unit 1 - Numbers", description: "September to October", subject: "Math", accent: "blue", icon: "123", notes: ["Integers", "Place value", "Order of operations", "Primes"], questions: [{ question: "What is 7 squared?", options: ["14", "49", "21", "56"], answer: "49", explanation: "7 × 7 = 49" }, { question: "Solve 15 + 8 × 2.", options: ["46", "31", "23", "16"], answer: "31", explanation: "Multiply first: 8 × 2 = 16, then add: 15 + 16 = 31" }, { question: "Which number is prime?", options: ["21", "29", "35", "39"], answer: "29", explanation: "29 has only two factors: 1 and 29" }, { question: "Round 4,783 to nearest hundred.", options: ["4,700", "4,800", "5,000", "4,750"], answer: "4,800", explanation: "8 ≥ 5, so round up" }, { question: "Place value of 6 in 4,682?", options: ["6 ones", "6 tens", "6 hundreds", "6 thousands"], answer: "6 hundreds", explanation: "6 is in the hundreds place" }, { question: "GCF of 24 and 36?", options: ["4", "6", "8", "12"], answer: "12", explanation: "12 is the greatest factor both share" }, { question: "Which is composite?", options: ["2", "3", "5", "9"], answer: "9", explanation: "9 has factors: 1, 3, 9 (more than 2)" }, { question: "What does PEMDAS mean?", options: ["Please Excuse My Dear Aunt Sally", "Priority Equals Math", "Percentages Exponentials", "Parallel Equations"], answer: "Please Excuse My Dear Aunt Sally", explanation: "Order of operations acronym" }, { question: "LCM of 4 and 6?", options: ["12", "24", "10", "8"], answer: "12", explanation: "Smallest multiple both divide evenly" }, { question: "Is 0 positive or negative?", options: ["Positive", "Negative", "Neither", "Both"], answer: "Neither", explanation: "0 is neutral, neither positive nor negative" } ] },
+      math2: { title: "Math Unit 2 - Fractions", description: "October to November", subject: "Math", accent: "blue", icon: "1/2", notes: ["Adding", "Subtracting", "Multiplying", "Dividing"], questions: [{ question: "Add 2/3 + 1/6.", options: ["5/6", "1/2", "2/9", "1"], answer: "5/6", explanation: "LCD is 6: 4/6 + 1/6 = 5/6" }, { question: "Multiply 3/4 × 2/5.", options: ["6/20", "3/10", "5/8", "1/2"], answer: "3/10", explanation: "(3×2)/(4×5) = 6/20 = 3/10" }, { question: "LCD of 1/2 and 1/3?", options: ["4", "5", "6", "8"], answer: "6", explanation: "6 is divisible by both 2 and 3" }, { question: "5/8 - 1/4?", options: ["1/4", "3/8", "4/8", "1/2"], answer: "3/8", explanation: "Convert 1/4 to 2/8: 5/8 - 2/8 = 3/8" }, { question: "To divide fractions:", options: ["Add", "Flip & multiply", "Multiply by zero", "Subtract"], answer: "Flip & multiply", explanation: "Reciprocal method for division" }, { question: "Simplify 12/18.", options: ["2/3", "6/9", "4/6", "1/2"], answer: "2/3", explanation: "Divide by GCF of 6: 12÷6=2, 18÷6=3" }, { question: "1/2 + 1/2?", options: ["1", "1/4", "2/2", "2"], answer: "1", explanation: "2/2 = 1" }, { question: "Multiply 2/3 × 3/4.", options: ["6/12", "1/2", "5/7", "2/4"], answer: "1/2", explanation: "6/12 simplifies to 1/2" }, { question: "3/4 as decimal?", options: ["0.25", "0.75", "0.5", "0.34"], answer: "0.75", explanation: "3÷4 = 0.75" }, { question: "Greater: 2/5 or 3/7?", options: ["2/5", "3/7", "Equal", "Unknown"], answer: "3/7", explanation: "2/5=0.4, 3/7≈0.43" } ] },
+      math3: { title: "Math Unit 3 - Percent, Ratio, Rates", description: "November to December", subject: "Math", accent: "blue", icon: "%", notes: ["Percentages", "Ratios", "Rates"], questions: [{ question: "25% of 200?", options: ["25", "50", "75", "100"], answer: "50", explanation: "25% = 1/4, so 200÷4 = 50" }, { question: "Simplify 12:18.", options: ["6:9", "2:3", "4:5", "12:6"], answer: "2:3", explanation: "Divide by 6: 12÷6:18÷6 = 2:3" }, { question: "0.45 to percent?", options: ["4.5%", "45%", "450%", "0.45%"], answer: "45%", explanation: "Move decimal 2 places right" }, { question: "Better buy: 3 for $6 or 5 for $15?", options: ["3 for $6", "5 for $15", "Same", "Unknown"], answer: "3 for $6", explanation: "$2 per item vs $3 per item" }, { question: "8 red to 12 blue simplifies to:", options: ["4:6", "2:3", "8:3", "3:2"], answer: "2:3", explanation: "Divide by 4" }, { question: "1/4 as percent?", options: ["25%", "40%", "50%", "75%"], answer: "25%", explanation: "1÷4 = 0.25 = 25%" }, { question: "Ratio 3:5, one part 15. Other part?", options: ["9", "25", "20", "12"], answer: "25", explanation: "3×5=15, so 5×5=25" }, { question: "20% of 85?", options: ["17", "15", "19", "21"], answer: "17", explanation: "20% = 1/5, 85÷5 = 17" }, { question: "40% of a number is 32. Number?", options: ["80", "72", "64", "88"], answer: "80", explanation: "32÷0.4 = 80" }, { question: "250 miles in 5 hours = mph?", options: ["40", "50", "60", "55"], answer: "50", explanation: "250÷5 = 50 mph" } ] },
+      math4: { title: "Math Unit 4 - Geometry", description: "January to March", subject: "Math", accent: "blue", icon: "TRI", notes: ["Area", "Perimeter", "Triangles"], questions: [{ question: "Area of square, side 6 cm?", options: ["12", "24", "36", "18"], answer: "36", explanation: "6 × 6 = 36 cm²" }, { question: "Triangle sides?", options: ["2", "3", "4", "5"], answer: "3", explanation: "All triangles have 3 sides" }, { question: "Right triangle: a² + b² =", options: ["c²", "ab", "2c", "a+b"], answer: "c²", explanation: "Pythagorean theorem" }, { question: "Perimeter: sides 4, 5, 6 cm?", options: ["11", "14", "15", "30"], answer: "15", explanation: "4+5+6 = 15 cm" }, { question: "All equal sides =", options: ["Scalene", "Isosceles", "Right", "Equilateral"], answer: "Equilateral", explanation: "Equilateral = all sides equal" }, { question: "Rectangle 8m × 5m area?", options: ["13", "26", "40", "46"], answer: "40", explanation: "8 × 5 = 40 m²" }, { question: "Circle radius 7cm circumference?", options: ["14π", "7π", "49π", "28"], answer: "14π", explanation: "C = 2πr = 14π cm" }, { question: "Triangle area: base 10, height 6?", options: ["30", "60", "16", "20"], answer: "30", explanation: "A = (10×6)÷2 = 30 cm²" }, { question: "Sum of angles in triangle?", options: ["90°", "180°", "270°", "360°"], answer: "180°", explanation: "Always 180° in triangles" }, { question: "Right triangle 90° + 45° + ?", options: ["45°", "35°", "50°", "90°"], answer: "45°", explanation: "180° - 90° - 45° = 45°" } ] },
+      math5: { title: "Math Unit 5 - Algebra", description: "March", subject: "Math", accent: "blue", icon: "x", notes: ["Variables", "Equations", "Slope"], questions: [{ question: "x + 7 = 19, x =", options: ["10", "12", "14", "26"], answer: "12", explanation: "x = 19 - 7 = 12" }, { question: "4x + 2x =", options: ["6", "8x", "6x", "2x"], answer: "6x", explanation: "Combine like terms" }, { question: "Slope in y = 3x + 1?", options: ["1", "3", "x", "4"], answer: "3", explanation: "m in y=mx+b is slope" }, { question: "2x = 18, x =", options: ["7", "8", "9", "16"], answer: "9", explanation: "x = 18÷2 = 9" }, { question: "Point on y = x + 3?", options: ["(1,2)", "(2,5)", "(3,1)", "(0,1)"], answer: "(2,5)", explanation: "2+3 = 5" }, { question: "3x - 5 = 10, x =", options: ["5", "10/3", "15/3", "5"], answer: "5", explanation: "3x = 15, x = 5" }, { question: "y-intercept of y = 2x - 3?", options: ["2", "-3", "3", "0"], answer: "-3", explanation: "b value in y=mx+b" }, { question: "2x + 3 = 11, x =", options: ["4", "6", "8", "5"], answer: "4", explanation: "2x = 8, x = 4" }, { question: "5x = 25, x =", options: ["4", "5", "20", "125"], answer: "5", explanation: "x = 25÷5 = 5" }, { question: "6x - 2x =", options: ["4x", "8x", "4x", "12x"], answer: "4x", explanation: "Subtract coefficients" } ] },
+      science1: { title: "Science Unit 1 - Matter", description: "September to October", subject: "Science", accent: "green", icon: "H2O", notes: ["Matter", "Mixtures", "States"], questions: [{ question: "Viscosity is?", options: ["Resistance to flow", "Microscope", "Gas type", "Solid mix"], answer: "Resistance to flow", explanation: "How thick/sticky liquid is" }, { question: "Homogeneous mixture:", options: ["Even", "Layered", "Frozen", "Magnetic"], answer: "Even", explanation: "Uniform throughout" }, { question: "3 states of matter?", options: ["Solid, Liquid, Gas", "Hot, Cold, Warm", "Heavy, Light", "Big, Small"], answer: "Solid, Liquid, Gas", explanation: "Main physical states" }, { question: "Example solution?", options: ["Salt water", "Trail mix", "Sand/gravel", "Oil/water"], answer: "Salt water", explanation: "Homogeneous liquid mixture" }, { question: "Matter has:", options: ["Mass, volume", "Only color", "No particles", "Only energy"], answer: "Mass, volume", explanation: "Definition of matter" }, { question: "Water freezes becomes:", options: ["Gas", "Solid", "Less dense", "Disappears"], answer: "Solid", explanation: "Liquid to solid phase change" }, { question: "Heterogeneous mixture:", options: ["Separated", "Mixed", "Gaseous", "Liquid"], answer: "Separated", explanation: "Visibly distinct parts" }, { question: "Density is:", options: ["Space taken", "Mass÷volume", "Weight", "Temperature"], answer: "Mass÷volume", explanation: "Density formula" }, { question: "Gas particles:", options: ["Close", "Far apart", "Fixed", "Locked"], answer: "Far apart", explanation: "Gas particles have most space" }, { question: "Physical change:", options: ["New substance", "Appearance only", "Chemical", "Burning"], answer: "Appearance only", explanation: "No new substance formed" } ] },
+      science2: { title: "Science Unit 2 - Cells", description: "November to December", subject: "Science", accent: "green", icon: "DNA", notes: ["Cells", "Organelles", "Cell theory"], questions: [{ question: "Nucleus function?", options: ["Controls", "Blood", "Skin", "Bones"], answer: "Controls", explanation: "Controls all cell activities" }, { question: "Cell theory true?", options: ["True", "False", "Plants only", "Humans only"], answer: "True", explanation: "Fundamental biology principle" }, { question: "Organ system is:", options: ["Organs together", "Single organ", "Cell type", "Scope part"], answer: "Organs together", explanation: "Multiple organs working" }, { question: "Controls cell entry/exit?", options: ["Membrane", "Nucleus", "Cytoplasm", "Chloroplast"], answer: "Membrane", explanation: "Cell membrane is semipermeable" }, { question: "Plant-only structure?", options: ["Wall", "Nucleus", "Membrane", "Cytoplasm"], answer: "Wall", explanation: "Cell wall outside membrane" }, { question: "Mitochondria does:", options: ["Feeds", "Energy", "Water", "DNA"], answer: "Energy", explanation: "Powerhouse of cell" }, { question: "Photosynthesis is:", options: ["Breaks down", "Makes food", "Moves", "Reproduces"], answer: "Makes food", explanation: "Sunlight to chemical energy" }, { question: "Prokaryote difference:", options: ["No nucleus", "Larger", "More organelles", "Same"], answer: "No nucleus", explanation: "Bacteria vs eukaryotes" }, { question: "Ribosome function:", options: ["Makes proteins", "Stores", "Breaks down", "Transports"], answer: "Makes proteins", explanation: "Protein synthesis site" }, { question: "Lysosome role:", options: ["Breaks down", "Makes ATP", "Stores", "Produces heat"], answer: "Breaks down", explanation: "Cellular cleanup crew" } ] },
+      science3: { title: "Science Unit 3 - Light", description: "January to February", subject: "Science", accent: "green", icon: "Lens", notes: ["Reflection", "Refraction", "Optics"], questions: [{ question: "Refraction happens:", options: ["Bends", "Stops", "Explodes", "Freezes"], answer: "Bends", explanation: "Light changes direction in different materials" }, { question: "Convex lens:", options: ["Spreads", "Inward", "Blocks", "Sound"], answer: "Inward", explanation: "Converges light rays" }, { question: "Reflection is:", options: ["Bounces", "Heat only", "Disappears", "Water"], answer: "Bounces", explanation: "Light bounces off surface" }, { question: "Makes small big?", options: ["Microscope", "Thermometer", "Magnet", "Balance"], answer: "Microscope", explanation: "Uses lenses" }, { question: "Speed of light?", options: ["186k mi/s", "100k mi/s", "300k mi/s", "50k mi/s"], answer: "186k mi/s", explanation: "Approximate speed in vacuum" }, { question: "Wavelength is:", options: ["Peak distance", "Height", "Speed", "Duration"], answer: "Peak distance", explanation: "Distance between wave peaks" }, { question: "Longest wavelength?", options: ["Violet", "Blue", "Red", "Green"], answer: "Red", explanation: "Red has longest visible wavelength" }, { question: "Concave lens:", options: ["Thick center", "Thin center", "Curved", "Flat"], answer: "Thin center", explanation: "Diverges light rays" }, { question: "Transparent means:", options: ["See through", "Blocks", "Absorbs", "Reflects"], answer: "See through", explanation: "Light passes through clearly" }, { question: "Light in denser?", options: ["Speeds up", "Slows down", "Stops", "Disappears"], answer: "Slows down", explanation: "Light travels slower in denser materials" } ] },
+      socialvocab: { title: "Social Studies - History", description: "Medieval to Renaissance", subject: "Social Studies", accent: "pink", icon: "Globe", notes: ["Feudalism", "Renaissance", "Terms"], questions: [{ question: "Byzantine Empire?", options: ["Eastern Rome", "Guild", "Trade route", "Pyramid"], answer: "Eastern Rome", explanation: "Continuation of Eastern Roman Empire" }, { question: "Guild is:", options: ["Workers", "Wall", "Crown", "Tool"], answer: "Workers", explanation: "Craftsmen organization" }, { question: "Feudalism means:", options: ["Land system", "Farming", "Weapon", "Building"], answer: "Land system", explanation: "Based on land and service" }, { question: "Feudal system based on:", options: ["Land, loyalty", "Jobs", "Votes", "Banking"], answer: "Land, loyalty", explanation: "Three key feudal elements" }, { question: "Renaissance was:", options: ["Cultural rebirth", "War", "Art type", "Music"], answer: "Cultural rebirth", explanation: "Period of renewed learning" }, { question: "Oligarchy ruled by:", options: ["Few people", "One ruler", "All citizens", "Workers"], answer: "Few people", explanation: "Power in few hands" }, { question: "Urbanization means:", options: ["City growth", "Farm move", "Trade", "Laws"], answer: "City growth", explanation: "Growth of urban areas" }, { question: "Monarch means:", options: ["Single ruler", "Many rules", "Butterfly", "Government"], answer: "Single ruler", explanation: "King or Queen" }, { question: "Crusades were:", options: ["Religious wars", "Trade", "Art", "Science"], answer: "Religious wars", explanation: "Holy wars in Middle East" }, { question: "Magna Carta is:", options: ["Limits power", "Road", "Money", "Weapon"], answer: "Limits power", explanation: "Document limiting royal power" } ] }
     };
 
-    const storageKeys = {
-      streak: "examBank.studyStreak",
-      xp: "examBank.xpPoints",
-      history: "examBank.quizHistory",
-      best: "examBank.bestScores",
-      theme: "examBank.theme",
-      sectionOrder: "examBank.sectionOrder",
-      accent: "examBank.accent",
-      surface: "examBank.surface",
-      leaderboard: "examBank.leaderboard",
-      currentPlayer: "examBank.currentPlayer"
-    };
+    const storageKeys = { streak: "examBank.studyStreak", xp: "examBank.xpPoints", history: "examBank.quizHistory", best: "examBank.bestScores", theme: "examBank.theme", sectionOrder: "examBank.sectionOrder", accent: "examBank.accent", surface: "examBank.surface", leaderboard: "examBank.leaderboard", currentPlayer: "examBank.currentPlayer" };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCO_lCaHej5QUNyDpzV84Y2DfIG87zOl-s",
-      authDomain: "exam-bank-grade-8.firebaseapp.com",
-      projectId: "exam-bank-grade-8",
-      storageBucket: "exam-bank-grade-8.appspot.com",
-      messagingSenderId: "429310662726",
-      appId: "1:429310662726:web:33932a1b13bda4e5efd247",
-      measurementId: "G-0NM09ZRS5G"
-    };
+    const firebaseConfig = { apiKey: "AIzaSyCO_lCaHej5QUNyDpzV84Y2DfIG87zOl-s", authDomain: "exam-bank-grade-8.firebaseapp.com", projectId: "exam-bank-grade-8", storageBucket: "exam-bank-grade-8.appspot.com", messagingSenderId: "429310662726", appId: "1:429310662726:web:33932a1b13bda4e5efd247", measurementId: "G-0NM09ZRS5G" };
 
     const units = normalizeUnits(rawUnits);
     const unitKeys = Object.keys(units);
     const defaultSectionOrder = ["hero", "stats", "units", "focus"];
     
-    const themes = {
-      aurora: { bg1: "#08111f", bg2: "#11182b", bg3: "#1c2b4a", card: "rgba(255, 255, 255, 0.08)", cardStrong: "rgba(255, 255, 255, 0.12)", border: "rgba(255, 255, 255, 0.12)" },
-      sunset: { bg1: "#24110b", bg2: "#4a1d1f", bg3: "#6b3a1f", card: "rgba(255, 245, 238, 0.08)", cardStrong: "rgba(255, 239, 227, 0.12)", border: "rgba(255, 224, 205, 0.16)" },
-      forest: { bg1: "#08150f", bg2: "#0f2a20", bg3: "#174638", card: "rgba(239, 255, 248, 0.08)", cardStrong: "rgba(229, 255, 244, 0.12)", border: "rgba(196, 255, 223, 0.16)" },
-      midnight: { bg1: "#070b17", bg2: "#121936", bg3: "#1c2557", card: "rgba(239, 244, 255, 0.08)", cardStrong: "rgba(226, 235, 255, 0.12)", border: "rgba(200, 214, 255, 0.15)" },
-      neon: { bg1: "#12051d", bg2: "#1c0d32", bg3: "#0e3144", card: "rgba(255, 255, 255, 0.08)", cardStrong: "rgba(255, 255, 255, 0.13)", border: "rgba(182, 255, 248, 0.2)" },
-      ocean: { bg1: "#041420", bg2: "#0a2740", bg3: "#0d4866", card: "rgba(240, 250, 255, 0.08)", cardStrong: "rgba(233, 248, 255, 0.12)", border: "rgba(181, 232, 255, 0.18)" },
-      ember: { bg1: "#1a0c08", bg2: "#3b1710", bg3: "#5b2915", card: "rgba(255, 245, 238, 0.08)", cardStrong: "rgba(255, 239, 230, 0.12)", border: "rgba(255, 205, 171, 0.18)" },
-      lavender: { bg1: "#140c22", bg2: "#2a1b48", bg3: "#4a2f75", card: "rgba(249, 244, 255, 0.08)", cardStrong: "rgba(246, 239, 255, 0.12)", border: "rgba(222, 198, 255, 0.18)" },
-      paper: { bg1: "#f3e9d6", bg2: "#e4d2b7", bg3: "#d1b38c", card: "rgba(255, 255, 255, 0.45)", cardStrong: "rgba(255, 255, 255, 0.6)", border: "rgba(104, 72, 41, 0.12)" },
-      matrix: { bg1: "#040c06", bg2: "#0b1c11", bg3: "#10351d", card: "rgba(225, 255, 232, 0.08)", cardStrong: "rgba(214, 255, 223, 0.12)", border: "rgba(130, 255, 168, 0.18)" }
-    };
+    const themes = { aurora: { bg1: "#08111f", bg2: "#11182b", bg3: "#1c2b4a", card: "rgba(255, 255, 255, 0.08)", cardStrong: "rgba(255, 255, 255, 0.12)", border: "rgba(255, 255, 255, 0.12)" }, sunset: { bg1: "#24110b", bg2: "#4a1d1f", bg3: "#6b3a1f", card: "rgba(255, 245, 238, 0.08)", cardStrong: "rgba(255, 239, 227, 0.12)", border: "rgba(255, 224, 205, 0.16)" }, forest: { bg1: "#08150f", bg2: "#0f2a20", bg3: "#174638", card: "rgba(239, 255, 248, 0.08)", cardStrong: "rgba(229, 255, 244, 0.12)", border: "rgba(196, 255, 223, 0.16)" }, midnight: { bg1: "#070b17", bg2: "#121936", bg3: "#1c2557", card: "rgba(239, 244, 255, 0.08)", cardStrong: "rgba(226, 235, 255, 0.12)", border: "rgba(200, 214, 255, 0.15)" }, neon: { bg1: "#12051d", bg2: "#1c0d32", bg3: "#0e3144", card: "rgba(255, 255, 255, 0.08)", cardStrong: "rgba(255, 255, 255, 0.13)", border: "rgba(182, 255, 248, 0.2)" }, ocean: { bg1: "#041420", bg2: "#0a2740", bg3: "#0d4866", card: "rgba(240, 250, 255, 0.08)", cardStrong: "rgba(233, 248, 255, 0.12)", border: "rgba(181, 232, 255, 0.18)" }, ember: { bg1: "#1a0c08", bg2: "#3b1710", bg3: "#5b2915", card: "rgba(255, 245, 238, 0.08)", cardStrong: "rgba(255, 239, 230, 0.12)", border: "rgba(255, 205, 171, 0.18)" }, lavender: { bg1: "#140c22", bg2: "#2a1b48", bg3: "#4a2f75", card: "rgba(249, 244, 255, 0.08)", cardStrong: "rgba(246, 239, 255, 0.12)", border: "rgba(222, 198, 255, 0.18)" }, paper: { bg1: "#f3e9d6", bg2: "#e4d2b7", bg3: "#d1b38c", card: "rgba(255, 255, 255, 0.45)", cardStrong: "rgba(255, 255, 255, 0.6)", border: "rgba(104, 72, 41, 0.12)" }, matrix: { bg1: "#040c06", bg2: "#0b1c11", bg3: "#10351d", card: "rgba(225, 255, 232, 0.08)", cardStrong: "rgba(214, 255, 223, 0.12)", border: "rgba(130, 255, 168, 0.18)" } };
 
-    const accents = {
-      ice: { start: "#67e8f9", end: "#60a5fa" },
-      rose: { start: "#f9a8d4", end: "#f43f5e" },
-      gold: { start: "#fde68a", end: "#fb923c" },
-      mint: { start: "#86efac", end: "#14b8a6" },
-      violet: { start: "#a78bfa", end: "#d946ef" },
-      lava: { start: "#f87171", end: "#f59e0b" }
-    };
+    const accents = { ice: { start: "#67e8f9", end: "#60a5fa" }, rose: { start: "#f9a8d4", end: "#f43f5e" }, gold: { start: "#fde68a", end: "#fb923c" }, mint: { start: "#86efac", end: "#14b8a6" }, violet: { start: "#a78bfa", end: "#d946ef" }, lava: { start: "#f87171", end: "#f59e0b" } };
 
-    const surfaces = {
-      soft: { blur: "18px", shadow: "0 14px 50px rgba(0, 0, 0, 0.28)", shadowStrong: "0 18px 60px rgba(0, 0, 0, 0.32)" },
-      crisp: { blur: "8px", shadow: "0 10px 34px rgba(0, 0, 0, 0.2)", shadowStrong: "0 14px 40px rgba(0, 0, 0, 0.24)" },
-      glow: { blur: "24px", shadow: "0 16px 60px rgba(96, 165, 250, 0.18)", shadowStrong: "0 20px 72px rgba(124, 240, 194, 0.18)" }
-    };
+    const surfaces = { soft: { blur: "18px", shadow: "0 14px 50px rgba(0, 0, 0, 0.28)", shadowStrong: "0 18px 60px rgba(0, 0, 0, 0.32)" }, crisp: { blur: "8px", shadow: "0 10px 34px rgba(0, 0, 0, 0.2)", shadowStrong: "0 14px 40px rgba(0, 0, 0, 0.24)" }, glow: { blur: "24px", shadow: "0 16px 60px rgba(96, 165, 250, 0.18)", shadowStrong: "0 20px 72px rgba(124, 240, 194, 0.18)" } };
 
-    // ============ STATE VARIABLES ============
-    let currentUnitKey = null;
-    let currentQuizQuestions = [];
-    let currentQuizTitle = "";
-    let currentQuizUnitKey = null;
-    let lastQuizReview = [];
-    let currentPlayer = localStorage.getItem(storageKeys.currentPlayer) || "Guest";
-    let leaderboard = JSON.parse(localStorage.getItem(storageKeys.leaderboard) || "{}");
-    let leaderboardEntries = Object.entries(leaderboard)
-      .map(([name, data]) => ({ id: name, name, points: data.points || 0, quizzes: data.quizzes || 0, teamId: data.teamId || "", teamName: data.teamName || "", photoURL: data.photoURL || "" }))
-      .sort((a, b) => b.points - a.points);
+    let currentUnitKey = null, currentQuizQuestions = [], currentQuizTitle = "", currentQuizUnitKey = null, lastQuizReview = [], currentPlayer = localStorage.getItem(storageKeys.currentPlayer) || "Guest", leaderboard = JSON.parse(localStorage.getItem(storageKeys.leaderboard) || "{}"), streak = Number(localStorage.getItem(storageKeys.streak)) || 0, xp = Number(localStorage.getItem(storageKeys.xp)) || 0, history = JSON.parse(localStorage.getItem(storageKeys.history) || "[]"), bestScores = JSON.parse(localStorage.getItem(storageKeys.best) || "{}"), currentTheme = localStorage.getItem(storageKeys.theme) || "aurora", currentAccent = localStorage.getItem(storageKeys.accent) || "ice", currentSurface = localStorage.getItem(storageKeys.surface) || "soft", sectionOrder = JSON.parse(localStorage.getItem(storageKeys.sectionOrder) || JSON.stringify(defaultSectionOrder));
 
-    let streak = Number(localStorage.getItem(storageKeys.streak)) || 0;
-    let xp = Number(localStorage.getItem(storageKeys.xp)) || 0;
-    let history = JSON.parse(localStorage.getItem(storageKeys.history) || "[]");
-    let bestScores = JSON.parse(localStorage.getItem(storageKeys.best) || "{}");
-    let currentTheme = localStorage.getItem(storageKeys.theme) || "aurora";
-    let currentAccent = localStorage.getItem(storageKeys.accent) || "ice";
-    let currentSurface = localStorage.getItem(storageKeys.surface) || "soft";
-    let sectionOrder = JSON.parse(localStorage.getItem(storageKeys.sectionOrder) || JSON.stringify(defaultSectionOrder));
+    function normalizeUnits(data) { const result = {}; Object.entries(data).forEach(([key, unit]) => { result[key] = { ...unit, questions: unit.questions.map((item) => ({ ...item, explanation: item.explanation || "" })) }; }); return result; }
 
-    function normalizeUnits(data) {
-      const result = {};
-      Object.entries(data).forEach(([key, unit]) => {
-        result[key] = {
-          ...unit,
-          questions: unit.questions.map((item) => ({
-            ...item,
-            explanation: item.explanation || ""
-          }))
-        };
-      });
-      return result;
-    }
+    function updateProfileDisplay() { const displayName = localStorage.getItem(userProfileKeys.displayName) || "Guest"; const photoURL = localStorage.getItem(userProfileKeys.photoURL) || `https://ui-avatars.com/api/?name=${displayName}&background=111827&color=fff`; document.getElementById("drawerProfileName").textContent = displayName; document.getElementById("drawerProfileImage").src = photoURL; document.getElementById("drawerProfileStatus").textContent = displayName === "Guest" ? "Not signed in" : "Signed in"; }
 
-    // ============ SECURE PROFILE FUNCTIONS ============
-    function updateProfileDisplay() {
-      const displayName = localStorage.getItem(userProfileKeys.displayName) || "Guest";
-      const photoURL = localStorage.getItem(userProfileKeys.photoURL) || `https://ui-avatars.com/api/?name=${displayName}&background=111827&color=fff`;
-      
-      document.getElementById("drawerProfileName").textContent = displayName;
-      document.getElementById("drawerProfileImage").src = photoURL;
-      document.getElementById("drawerProfileStatus").textContent = displayName === "Guest" ? "Not signed in" : "Signed in";
-    }
+    function handleSignIn() { const name = prompt("Enter your display name:"); if (name && name.trim()) { localStorage.setItem(userProfileKeys.displayName, name.trim()); localStorage.setItem(userProfileKeys.photoURL, `https://ui-avatars.com/api/?name=${name.trim()}&background=111827&color=fff`); updateProfileDisplay(); showToast(`Welcome, ${name}!`); } }
 
-    function handleSignIn() {
-      const name = prompt("Enter your display name:");
-      if (name && name.trim()) {
-        localStorage.setItem(userProfileKeys.displayName, name.trim());
-        localStorage.setItem(userProfileKeys.photoURL, `https://ui-avatars.com/api/?name=${name.trim()}&background=111827&color=fff`);
-        updateProfileDisplay();
-        showToast(`Welcome, ${name}!`);
-      }
-    }
+    function handleSignOut() { localStorage.removeItem(userProfileKeys.displayName); localStorage.removeItem(userProfileKeys.photoURL); updateProfileDisplay(); showToast("Signed out successfully"); }
 
-    function handleSignOut() {
-      localStorage.removeItem(userProfileKeys.displayName);
-      localStorage.removeItem(userProfileKeys.photoURL);
-      updateProfileDisplay();
-      showToast("Signed out successfully");
-    }
+    function showToast(message) { const toast = document.getElementById("toast"); document.getElementById("toastText").textContent = message; toast.classList.add("show"); setTimeout(() => toast.classList.remove("show"), 3000); }
 
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      document.getElementById("toastText").textContent = message;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 3000);
-    }
+    document.getElementById("openDrawerBtn").addEventListener("click", () => { document.getElementById("drawerOverlay").classList.add("open"); document.getElementById("appDrawer").classList.add("open"); });
 
-    // ============ UI SETUP ============
-    document.getElementById("openDrawerBtn").addEventListener("click", () => {
-      document.getElementById("drawerOverlay").classList.add("open");
-      document.getElementById("appDrawer").classList.add("open");
-    });
-
-    document.getElementById("closeDrawerBtn").addEventListener("click", () => {
-      document.getElementById("drawerOverlay").classList.remove("open");
-      document.getElementById("appDrawer").classList.remove("open");
-    });
+    document.getElementById("closeDrawerBtn").addEventListener("click", () => { document.getElementById("drawerOverlay").classList.remove("open"); document.getElementById("appDrawer").classList.remove("open"); });
 
     document.getElementById("drawerSignInBtn").addEventListener("click", handleSignIn);
     document.getElementById("drawerSignOutBtn").addEventListener("click", handleSignOut);
+    document.getElementById("openSettingsBtn").addEventListener("click", () => { document.getElementById("settingsPanel").classList.toggle("open"); });
 
-    // Update profile on load
     updateProfileDisplay();
   </script>
 </body>
