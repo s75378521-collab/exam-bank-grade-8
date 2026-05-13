@@ -13,6 +13,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
   
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  
   <style>
     :root {
       --bg-1: #08111f;
@@ -163,7 +168,7 @@
       transition: width 0.35s ease;
     }
 
-    .drawer-overlay, 
+    .drawer-overlay,
     .quiz-overlay {
       position: fixed;
       inset: 0;
@@ -175,7 +180,7 @@
       transition: opacity 0.35s ease, visibility 0.35s ease;
     }
 
-    .drawer-overlay.open, 
+    .drawer-overlay.open,
     .quiz-overlay.open {
       opacity: 1;
       visibility: visible;
@@ -252,8 +257,8 @@
       opacity: 1;
     }
 
-    .quiz-field, 
-    .quiz-select, 
+    .quiz-field,
+    .quiz-select,
     .quiz-textarea {
       width: 100%;
       border-radius: 1rem;
@@ -265,8 +270,8 @@
       transition: border-color 0.2s ease, background 0.2s ease;
     }
 
-    .quiz-field:focus, 
-    .quiz-select:focus, 
+    .quiz-field:focus,
+    .quiz-select:focus,
     .quiz-textarea:focus {
       border-color: rgba(255, 255, 255, 0.35);
       background: rgba(0, 0, 0, 0.96);
@@ -613,6 +618,19 @@
               <p class="display-font text-sm font-bold uppercase tracking-[0.3em] text-slate-300">Study Command Center</p>
               <h2 class="mt-3 text-4xl font-black leading-tight lg:text-5xl">Build momentum, review smarter, and actually finish quizzes.</h2>
               <p class="mt-3 max-w-2xl text-lg soft-text">The broken start buttons are fixed, the quiz engine is rebuilt, and the whole experience is cleaner, faster, and more interactive.</p>
+              
+              <!-- Google Sign In Button on Main Page -->
+              <div class="mt-6">
+                <button id="googleSignInMainBtn" class="google-login-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="google-icon">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  Sign in with Google
+                </button>
+              </div>
             </div>
             <div class="w-full max-w-md">
               <label class="mb-2 block text-sm font-bold uppercase tracking-[0.22em] text-slate-300" for="searchBar">Search Units</label>
@@ -731,6 +749,11 @@
       appId: "1:429310662726:web:33932a1b13bda4e5efd247",
       measurementId: "G-0NM09ZRS5G"
     };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
     // Extended units with more questions
     const rawUnits = {
@@ -1035,6 +1058,113 @@
     let timerInterval = null;
     let seconds = 0;
 
+    // Google Sign-In
+    function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          currentUserProfile = {
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
+          };
+          currentPlayer = user.displayName;
+          updateStats();
+          document.getElementById("authModal").classList.add("hidden");
+          document.getElementById("authModal").classList.remove("flex");
+          showToast("Signed in with Google successfully!");
+        })
+        .catch((error) => {
+          console.error("Google sign-in error:", error);
+          showToast("Google sign-in failed: " + error.message);
+        });
+    }
+
+    // Sign Up with Email/Password
+    function signUpWithEmail() {
+      const email = document.getElementById("authEmailInput").value;
+      const password = document.getElementById("authPasswordInput").value;
+      const name = document.getElementById("authNameInput").value;
+      
+      if (!email || !password || !name) {
+        showToast("Please fill in all fields");
+        return;
+      }
+      
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          return user.updateProfile({
+            displayName: name
+          });
+        })
+        .then(() => {
+          currentUserProfile = {
+            uid: auth.currentUser.uid,
+            displayName: auth.currentUser.displayName,
+            email: auth.currentUser.email,
+            photoURL: auth.currentUser.photoURL
+          };
+          currentPlayer = auth.currentUser.displayName;
+          updateStats();
+          document.getElementById("authModal").classList.add("hidden");
+          document.getElementById("authModal").classList.remove("flex");
+          showToast("Account created successfully!");
+        })
+        .catch((error) => {
+          console.error("Sign-up error:", error);
+          showToast("Sign-up failed: " + error.message);
+        });
+    }
+
+    // Sign In with Email/Password
+    function signInWithEmail() {
+      const email = document.getElementById("authEmailInput").value;
+      const password = document.getElementById("authPasswordInput").value;
+      
+      if (!email || !password) {
+        showToast("Please enter email and password");
+        return;
+      }
+      
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          currentUserProfile = {
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
+          };
+          currentPlayer = user.displayName;
+          updateStats();
+          document.getElementById("authModal").classList.add("hidden");
+          document.getElementById("authModal").classList.remove("flex");
+          showToast("Signed in successfully!");
+        })
+        .catch((error) => {
+          console.error("Sign-in error:", error);
+          showToast("Sign-in failed: " + error.message);
+        });
+    }
+
+    // Sign Out
+    function signOutUser() {
+      auth.signOut()
+        .then(() => {
+          currentUserProfile = null;
+          currentPlayer = "Guest";
+          updateStats();
+          showToast("Signed out successfully!");
+        })
+        .catch((error) => {
+          console.error("Sign-out error:", error);
+          showToast("Sign-out failed: " + error.message);
+        });
+    }
+
     // Initialize the app
     function init() {
       // Render UI components
@@ -1051,6 +1181,24 @@
       // Show initial unit
       const initialUnit = unitKeys[0];
       showUnit(initialUnit);
+      
+      // Set up auth state listener
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          currentUserProfile = {
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
+          };
+          currentPlayer = user.displayName || "User";
+          updateStats();
+        } else {
+          currentUserProfile = null;
+          currentPlayer = "Guest";
+          updateStats();
+        }
+      });
     }
 
     // Render sidebar units
@@ -1218,6 +1366,13 @@
       const headerPoints = document.getElementById("headerPointsCount");
       if (headerPoints) headerPoints.textContent = xp;
       document.getElementById("currentPlayerLabel").textContent = `Current player: ${currentPlayer}`;
+      
+      // Update profile images
+      const profileImage = currentUserProfile?.photoURL || "https://ui-avatars.com/api/?name=Guest&background=111827&color=fff";
+      document.getElementById("headerProfileImage").src = profileImage;
+      document.getElementById("profileDropdownImage").src = profileImage;
+      document.getElementById("profileDropdownName").textContent = currentUserProfile?.displayName || "Guest";
+      document.getElementById("profileDropdownEmail").textContent = currentUserProfile?.email || "Not signed in";
     }
 
     // Best accuracy
@@ -1252,6 +1407,369 @@
       const dailyKey = unitKeys[0]; // Simplified for demo
       const unit = units[dailyKey];
       document.getElementById("dailyChallengeText").textContent = `${unit.title}: ${unit.notes[0]}. Jump in for a quick warmup and beat your best score.`;
+    }
+
+    // Start quiz
+    function startQuiz(unitKey) {
+      const unit = units[unitKey];
+      currentQuizUnitKey = unitKey;
+      currentQuizTitle = unit.title;
+      currentQuizQuestions = [...unit.questions].sort(() => Math.random() - 0.5);
+      
+      const quizShell = document.getElementById("quizShell");
+      quizShell.innerHTML = `
+        <section class="h-full overflow-y-auto p-3 lg:p-6">
+          <div class="glass-strong mx-auto max-w-6xl rounded-[36px] p-6 lg:p-8">
+            <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-blue-200">Full Screen Quiz</p>
+                <h3 class="mt-2 text-4xl font-black">${currentQuizTitle}</h3>
+                <p class="mt-2 soft-text">Focused mode is on. Use exit anytime or restart for a fresh shuffle.</p>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <div class="glass rounded-[24px] px-6 py-4 text-center">
+                  <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Timer</p>
+                  <p id="timer" class="display-font mt-2 text-4xl font-black">00:00</p>
+                </div>
+                <button id="restartQuizBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-300">Restart</button>
+                <button id="exitQuizBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover:bg-white/15">Exit</button>
+              </div>
+            </div>
+
+            <div class="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p class="text-sm font-bold uppercase tracking-[0.2em] text-slate-300">Goal</p>
+                <p class="soft-text">Answer each question and submit when you're ready.</p>
+              </div>
+              <div class="min-w-[220px]">
+                <div class="progress-bar">
+                  <div id="quizCompletionFill" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <p id="quizCompletionText" class="mt-2 text-sm soft-text">0 of ${currentQuizQuestions.length} answered</p>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              ${currentQuizQuestions.map((q, index) => `
+                <article class="glass rounded-[30px] border border-white/10 p-6" data-question-card="${index}">
+                  <div class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                      <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Question ${index + 1}</p>
+                      <p class="mt-2 text-xl font-bold">${q.question}</p>
+                    </div>
+                    <span class="rounded-full bg-white/8 px-4 py-2 text-sm font-bold text-blue-200">10 XP base</span>
+                  </div>
+                  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    ${q.options.map((option, optionIndex) => `
+                      <label class="question-option glass flex min-h-[88px] cursor-pointer items-center gap-4 rounded-[24px] border border-white/10 p-5 transition hover:border-blue-300 hover:bg-white/10">
+                        <input type="radio" name="question-${index}" value="${option}" data-question-index="${index}">
+                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${option}</span>
+                      </label>
+                    `).join("")}
+                  </div>
+                </article>
+              `).join("")}
+            </div>
+
+            <div class="mt-8">
+              <button id="submitQuizBtn" class="w-full rounded-[24px] bg-gradient-to-r from-blue-500 to-cyan-400 px-6 py-5 text-xl font-black text-slate-950 transition hover:scale-[1.01]">Submit Quiz</button>
+            </div>
+          </div>
+        </section>
+      `;
+      
+      document.getElementById("quizOverlay").classList.add("open");
+      document.body.style.overflow = "hidden";
+      
+      // Start timer
+      seconds = 0;
+      timerInterval = setInterval(() => {
+        seconds++;
+        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById("timer").textContent = `${mins}:${secs}`;
+      }, 1000);
+      
+      // Add event listeners
+      document.getElementById("exitQuizBtn").addEventListener("click", () => {
+        clearInterval(timerInterval);
+        document.getElementById("quizOverlay").classList.remove("open");
+        document.body.style.overflow = "";
+      });
+      
+      document.getElementById("restartQuizBtn").addEventListener("click", () => {
+        startQuiz(unitKey);
+      });
+      
+      document.getElementById("submitQuizBtn").addEventListener("click", submitQuiz);
+      
+      // Add event listeners to radio buttons
+      document.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener("change", updateQuizProgress);
+      });
+    }
+
+    // Update quiz progress
+    function updateQuizProgress() {
+      const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+      const total = currentQuizQuestions.length;
+      const percent = Math.round((answered / total) * 100);
+      
+      document.getElementById("quizCompletionFill").style.width = `${percent}%`;
+      document.getElementById("quizCompletionText").textContent = `${answered} of ${total} answered`;
+    }
+
+    // Submit quiz
+    function submitQuiz() {
+      clearInterval(timerInterval);
+      
+      let score = 0;
+      lastQuizReview = [];
+      
+      currentQuizQuestions.forEach((question, index) => {
+        const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+        const labels = document.querySelectorAll(`input[name="question-${index}"]`);
+        const selectedValue = selected ? selected.value : null;
+        
+        labels.forEach((input) => {
+          const optionWrapper = input.closest(".question-option");
+          if (!optionWrapper) return;
+          const isCorrect = input.value === question.answer;
+          const isSelected = input.checked;
+          
+          optionWrapper.classList.remove("correct", "wrong", "selected");
+          if (isSelected) optionWrapper.classList.add("selected");
+          if (isCorrect) optionWrapper.classList.add("correct");
+          if (isSelected && !isCorrect) optionWrapper.classList.add("wrong");
+        });
+        
+        if (selected && selected.value === question.answer) score += 1;
+        lastQuizReview.push({
+          number: index + 1,
+          question: question.question,
+          options: question.options,
+          selected: selectedValue,
+          answer: question.answer,
+          explanation: question.explanation,
+          correct: selectedValue === question.answer
+        });
+      });
+      
+      const accuracy = Math.round((score / currentQuizQuestions.length) * 100);
+      const earnedXp = score * 25;
+      streak += 1;
+      xp += earnedXp;
+      
+      if (!leaderboard[currentPlayer]) {
+        leaderboard[currentPlayer] = { points: 0, quizzes: 0 };
+      }
+      leaderboard[currentPlayer].points += earnedXp;
+      leaderboard[currentPlayer].quizzes += 1;
+      
+      if (currentQuizUnitKey) {
+        bestScores[currentQuizUnitKey] = Math.max(bestScores[currentQuizUnitKey] || 0, accuracy);
+      }
+      
+      const result = {
+        unit: currentQuizTitle,
+        unitKey: currentQuizUnitKey,
+        time: new Date().toLocaleString(),
+        xpEarned: earnedXp,
+        score: `${score}/${currentQuizQuestions.length}`,
+        accuracy,
+        seconds
+      };
+      
+      history.unshift(result);
+      saveState();
+      updateStats();
+      showResults(result);
+      showToast(`Quiz submitted. You scored ${accuracy}% and earned ${earnedXp} XP.`);
+    }
+
+    // Show results
+    function showResults(result) {
+      updateUnitProgress(currentUnitKey);
+      
+      document.getElementById("quizShell").innerHTML = `
+        <section class="h-full overflow-y-auto p-3 lg:p-6">
+          <div class="glass-strong mx-auto max-w-5xl rounded-[36px] p-6 text-center lg:p-10 panel-enter">
+            <div class="flex justify-end gap-3">
+              <button id="resultRestartBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-300">Restart</button>
+              <button id="resultExitBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover:bg-white/15">Exit</button>
+            </div>
+            <p class="display-font mt-4 text-sm font-bold uppercase tracking-[0.24em] text-emerald-200">Mission Complete</p>
+            <h2 class="mt-3 text-5xl font-black">Quiz Complete</h2>
+            <p class="mt-4 text-3xl font-black text-blue-300">${result.score} correct</p>
+            <p class="mt-2 text-xl soft-text">Accuracy: ${result.accuracy}% | Time: ${formatTime(result.seconds)} | XP earned: ${result.xpEarned}</p>
+
+            <div class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
+              <div class="glass rounded-[26px] p-6">
+                <p class="text-sm uppercase tracking-[0.2em] text-slate-300">Streak</p>
+                <p class="mt-3 text-5xl font-black text-orange-300">${streak}</p>
+              </div>
+              <div class="glass rounded-[26px] p-6">
+                <p class="text-sm uppercase tracking-[0.2em] text-slate-300">Total XP</p>
+                <p class="mt-3 text-5xl font-black text-emerald-300">${xp}</p>
+              </div>
+              <div class="glass rounded-[26px] p-6">
+                <p class="text-sm uppercase tracking-[0.2em] text-slate-300">${currentQuizUnitKey ? "Best Unit Score" : "Quiz Accuracy"}</p>
+                <p class="mt-3 text-5xl font-black text-blue-300">${currentQuizUnitKey ? (bestScores[currentQuizUnitKey] || result.accuracy) : result.accuracy}%</p>
+              </div>
+            </div>
+
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <button id="reviewAnswersAfterQuiz" class="rounded-2xl bg-emerald-500 px-6 py-4 font-bold transition hover:bg-emerald-400">Review Answers</button>
+              <button id="openHistoryAfterQuiz" class="rounded-2xl bg-rose-500 px-6 py-4 font-bold transition hover:bg-rose-400">Open History</button>
+              <button id="backToReviewAfterQuiz" class="rounded-2xl bg-white/10 px-6 py-4 font-bold transition hover:bg-white/15">Back To Review</button>
+            </div>
+          </div>
+        </section>
+      `;
+      
+      document.getElementById("resultRestartBtn").addEventListener("click", () => {
+        startQuiz(currentQuizUnitKey);
+      });
+      
+      document.getElementById("resultExitBtn").addEventListener("click", () => {
+        document.getElementById("quizOverlay").classList.remove("open");
+        document.body.style.overflow = "";
+      });
+      
+      document.getElementById("reviewAnswersAfterQuiz").addEventListener("click", showAnswerReview);
+      
+      document.getElementById("backToReviewAfterQuiz").addEventListener("click", () => {
+        document.getElementById("quizOverlay").classList.remove("open");
+        document.body.style.overflow = "";
+        if (currentUnitKey) showUnit(currentUnitKey);
+      });
+      
+      document.getElementById("openHistoryAfterQuiz").addEventListener("click", () => {
+        document.getElementById("quizOverlay").classList.remove("open");
+        document.body.style.overflow = "";
+        showHistory();
+      });
+    }
+
+    // Show answer review
+    function showAnswerReview() {
+      document.getElementById("quizShell").innerHTML = `
+        <section class="h-full overflow-y-auto p-3 lg:p-6">
+          <div class="glass-strong mx-auto max-w-6xl rounded-[36px] p-6 lg:p-8 panel-enter">
+            <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-emerald-200">Answer Review</p>
+                <h3 class="mt-2 text-4xl font-black">${currentQuizTitle}</h3>
+                <p class="mt-2 soft-text">See what you got right, what you missed, and why.</p>
+              </div>
+              <div class="flex gap-3">
+                <button id="reviewRestartBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-300">Restart</button>
+                <button id="reviewExitBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover:bg-white/15">Exit</button>
+              </div>
+            </div>
+            <div class="space-y-5">
+              ${lastQuizReview.map((item) => `
+                <article class="glass rounded-[28px] border ${item.correct ? "border-emerald-400/50" : "border-rose-400/50"} p-5">
+                  <div class="mb-3 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+                    <p class="text-xl font-black">Question ${item.number}</p>
+                    <span class="rounded-full px-4 py-2 text-sm font-bold ${item.correct ? "bg-emerald-400/20 text-emerald-200" : "bg-rose-400/20 text-rose-200"}">${item.correct ? "Correct" : "Needs Review"}</span>
+                  </div>
+                  <p class="text-lg font-semibold">${item.question}</p>
+                  <div class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
+                    ${item.options.map((option) => `
+                      <div class="rounded-2xl border border-white/10 px-4 py-3 ${
+                        option === item.answer ? "bg-emerald-400/15 text-emerald-100" : 
+                        option === item.selected ? "bg-rose-400/15 text-rose-100" : 
+                        "bg-white/5"
+                      }">
+                        ${option}
+                      </div>
+                    `).join("")}
+                  </div>
+                  <p class="mt-4 text-sm soft-text">Your answer: ${item.selected || "No answer selected"}</p>
+                  <p class="mt-1 text-sm text-emerald-200">Correct answer: ${item.answer}</p>
+                  <p class="mt-2 text-sm soft-text">Why: ${item.explanation || "Review the unit notes for this concept."}</p>
+                </article>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+      
+      document.getElementById("reviewRestartBtn").addEventListener("click", () => {
+        startQuiz(currentQuizUnitKey);
+      });
+      
+      document.getElementById("reviewExitBtn").addEventListener("click", () => {
+        document.getElementById("quizOverlay").classList.remove("open");
+        document.body.style.overflow = "";
+      });
+    }
+
+    // Show history
+    function showHistory() {
+      const content = history.length ? history.map((item) => `
+        <article class="glass rounded-[26px] p-5 panel-enter">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p class="text-2xl font-black">${item.unit}</p>
+              <p class="mt-2 soft-text">${item.time}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-2xl font-black text-emerald-300">+${item.xpEarned} XP</p>
+              <p class="mt-1 soft-text">${item.score} | ${item.accuracy}% | ${formatTime(item.seconds)}</p>
+            </div>
+          </div>
+        </article>
+      `).join("") : `
+        <div class="glass rounded-[26px] p-8 text-center">
+          <p class="text-2xl font-black">No history yet</p>
+          <p class="mt-2 soft-text">Finish a quiz and your results will show up here.</p>
+        </div>
+      `;
+      
+      document.getElementById("contentArea").innerHTML = `
+        <section class="glass rounded-[32px] p-6 lg:p-8 panel-enter">
+          <div class="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h3 class="text-4xl font-black">Quiz History</h3>
+              <p class="mt-2 soft-text">Your most recent attempts are at the top.</p>
+            </div>
+            <button id="clearHistoryBtn" class="rounded-2xl bg-white/10 px-5 py-3 font-bold transition hover:bg-white/15">Clear History</button>
+          </div>
+          <div class="space-y-4">${content}</div>
+        </section>
+      `;
+      
+      const clearBtn = document.getElementById("clearHistoryBtn");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+          history = [];
+          saveState();
+          updateStats();
+          updateUnitProgress(currentUnitKey);
+          showHistory();
+          showToast("History cleared.");
+        });
+      }
+    }
+
+    // Format time
+    function formatTime(totalSeconds) {
+      const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+      const secs = (totalSeconds % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    // Save state to localStorage
+    function saveState() {
+      localStorage.setItem(storageKeys.streak, streak);
+      localStorage.setItem(storageKeys.xp, xp);
+      localStorage.setItem(storageKeys.history, JSON.stringify(history));
+      localStorage.setItem(storageKeys.best, JSON.stringify(bestScores));
+      localStorage.setItem(storageKeys.leaderboard, JSON.stringify(leaderboard));
+      localStorage.setItem(storageKeys.currentPlayer, currentPlayer);
+      localStorage.setItem(storageKeys.authUser, JSON.stringify(currentUserProfile));
     }
 
     // Bind global actions
@@ -1301,11 +1819,76 @@
       });
       
       // Google Sign In
-      document.getElementById("googleSignInBtn").addEventListener("click", () => {
-        showToast("Google Sign-In would be implemented with Firebase");
+      document.getElementById("googleSignInBtn").addEventListener("click", signInWithGoogle);
+      document.getElementById("googleSignInMainBtn").addEventListener("click", signInWithGoogle);
+      
+      // Email/Password Auth
+      document.getElementById("signUpBtn").addEventListener("click", signUpWithEmail);
+      document.getElementById("signInBtn").addEventListener("click", signInWithEmail);
+      document.getElementById("signOutBtn").addEventListener("click", signOutUser);
+      
+      // Quiz actions
+      document.body.addEventListener("click", (e) => {
+        const action = e.target.closest("[data-action]");
+        if (!action) return;
+        
+        const unitKey = action.dataset.unitKey;
+        const questionIndex = action.dataset.questionIndex;
+        
+        switch (action.dataset.action) {
+          case "preview-unit":
+            showUnit(unitKey);
+            document.getElementById("appDrawer").classList.remove("open");
+            document.getElementById("drawerOverlay").classList.remove("open");
+            document.getElementById("hamburgerMenu").classList.remove("open");
+            break;
+          case "launch-unit":
+            startQuiz(unitKey);
+            document.getElementById("appDrawer").classList.remove("open");
+            document.getElementById("drawerOverlay").classList.remove("open");
+            document.getElementById("hamburgerMenu").classList.remove("open");
+            break;
+          case "open-question":
+            const question = units[currentUnitKey].questions[questionIndex];
+            alert(`${question.question}\n\nA. ${question.options[0]}\nB. ${question.options[1]}\nC. ${question.options[2]}\nD. ${question.options[3]}\n\nAnswer: ${question.answer}\n\nExplanation: ${question.explanation}`);
+            break;
+          case "study-flash":
+            const unit = units[unitKey];
+            const randomNote = unit.notes[Math.floor(Math.random() * unit.notes.length)];
+            const randomQuestion = unit.questions[Math.floor(Math.random() * unit.questions.length)];
+            alert(`Flash Review\n\nUnit: ${unit.title}\n\nKey note: ${randomNote}\n\nQuick question: ${randomQuestion.question}\n\nAnswer: ${randomQuestion.answer}`);
+            break;
+        }
       });
       
-      // Add more event listeners as needed
+      // Other buttons
+      document.getElementById("quickQuizBtn").addEventListener("click", () => {
+        if (currentUnitKey) {
+          startQuiz(currentUnitKey);
+        } else {
+          showToast("Please select a unit first");
+        }
+      });
+      
+      document.getElementById("createTestBtn").addEventListener("click", () => {
+        showToast("Create Test feature coming soon!");
+      });
+      
+      document.getElementById("historyBtn").addEventListener("click", showHistory);
+      
+      document.getElementById("shuffleBtn").addEventListener("click", () => {
+        showToast("Shuffle Questions feature coming soon!");
+      });
+      
+      document.getElementById("headerLeaderboardBtn").addEventListener("click", () => {
+        showToast("Leaderboard feature coming soon!");
+      });
+      
+      document.getElementById("headerSettingsBtn").addEventListener("click", () => {
+        document.getElementById("settingsPanel").classList.add("open");
+        document.getElementById("appDrawer").classList.add("open");
+        document.getElementById("drawerOverlay").classList.add("open");
+      });
     }
 
     // Show toast message
