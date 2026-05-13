@@ -38,10 +38,10 @@
       min-height: 100vh;
       overflow-x: hidden;
       font-family: "Manrope", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(106, 167, 255, 0.18), transparent 24%),
-        radial-gradient(circle at 85% 15%, rgba(124, 240, 194, 0.12), transparent 20%),
-        radial-gradient(circle at bottom right, rgba(255, 141, 181, 0.14), transparent 24%),
+      background: 
+        radial-gradient(circle at top left, rgba(106, 167, 255, 0.18), transparent 24%), 
+        radial-gradient(circle at 85% 15%, rgba(124, 240, 194, 0.12), transparent 20%), 
+        radial-gradient(circle at bottom right, rgba(255, 141, 181, 0.14), transparent 24%), 
         linear-gradient(135deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3));
     }
 
@@ -158,7 +158,7 @@
       transition: width 0.35s ease;
     }
 
-    .drawer-overlay,
+    .drawer-overlay, 
     .quiz-overlay {
       position: fixed;
       inset: 0;
@@ -170,7 +170,7 @@
       transition: opacity 0.35s ease, visibility 0.35s ease;
     }
 
-    .drawer-overlay.open,
+    .drawer-overlay.open, 
     .quiz-overlay.open {
       opacity: 1;
       visibility: visible;
@@ -180,11 +180,11 @@
       position: fixed;
       inset: 0;
       z-index: 90;
-      background:
-        radial-gradient(circle at top left, rgba(106, 167, 255, 0.18), transparent 24%),
-        radial-gradient(circle at 85% 15%, rgba(124, 240, 194, 0.12), transparent 20%),
-        radial-gradient(circle at bottom right, rgba(255, 141, 181, 0.14), transparent 24%),
-        linear-gradient(135deg, rgba(8,17,31,0.96), rgba(17,24,39,0.98) 45%, rgba(28,43,74,0.98));
+      background: 
+        radial-gradient(circle at top left, rgba(106, 167, 255, 0.18), transparent 24%), 
+        radial-gradient(circle at 85% 15%, rgba(124, 240, 194, 0.12), transparent 20%), 
+        radial-gradient(circle at bottom right, rgba(255, 141, 181, 0.14), transparent 24%), 
+        linear-gradient(135deg, rgba(8, 17, 31, 0.96), rgba(17, 24, 39, 0.98) 45%, rgba(28, 43, 74, 0.98));
       backdrop-filter: blur(18px);
       display: none;
       align-items: center;
@@ -229,7 +229,7 @@
 
     .theme-chip.active {
       border-color: rgba(255, 255, 255, 0.45);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.16) inset;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16) inset;
     }
 
     .quiz-shell {
@@ -246,8 +246,8 @@
       opacity: 1;
     }
 
-    .quiz-field,
-    .quiz-select,
+    .quiz-field, 
+    .quiz-select, 
     .quiz-textarea {
       width: 100%;
       border-radius: 1rem;
@@ -259,8 +259,8 @@
       transition: border-color 0.2s ease, background 0.2s ease;
     }
 
-    .quiz-field:focus,
-    .quiz-select:focus,
+    .quiz-field:focus, 
+    .quiz-select:focus, 
     .quiz-textarea:focus {
       border-color: rgba(255, 255, 255, 0.35);
       background: rgba(0, 0, 0, 0.96);
@@ -276,7 +276,7 @@
       overflow: hidden;
       border-radius: 1.25rem;
       border: 1px dashed rgba(255, 255, 255, 0.18);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
       padding: 1rem 1.1rem;
     }
 
@@ -358,13 +358,15 @@
                 <button id="signOutBtn" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover:bg-white/15">Sign Out</button>
               </div>
               <div class="flex items-center gap-3">
-
-  <button id="profileMenuBtn"
-    class="glass h-14 w-14 overflow-hidden rounded-full border border-white/10 transition hover:scale-105">
-    <img id="headerProfileImage"
-      src="https://ui-avatars.com/api/?name=Guest&background=111827&color=fff"
-      class="h-full w-full object-cover">
-  </button>
+                <button id="profileMenuBtn"
+                  class="glass h-14 w-14 overflow-hidden rounded-full border border-white/10 transition hover:scale-105">
+                  <img id="headerProfileImage"
+                    src="https://ui-avatars.com/api/?name=Guest&background=111827&color=fff"
+                    class="h-full w-full object-cover">
+                </button>
+              </div>
+            </div>
+          </div>
 
           <div id="settingsPanel" class="settings-panel">
             <div class="mt-4 rounded-[24px] border border-white/10 bg-white/5 p-4">
@@ -491,116 +493,115 @@
           <button id="headerSettingsBtn" class="glass rounded-2xl px-5 py-4 font-bold transition hover:bg-white/10">Customize</button>
         </div>
       </header>
-      </header>
 
-<div id="profileDropdown"
-  class="hidden absolute right-6 top-24 z-50 w-80 glass rounded-[28px] p-5">
+      <div id="profileDropdown"
+        class="hidden absolute right-6 top-24 z-50 w-80 glass rounded-[28px] p-5">
 
-  <div class="flex items-center gap-4">
-    <img id="profileDropdownImage"
-      src="https://ui-avatars.com/api/?name=Guest&background=111827&color=fff"
-      class="h-16 w-16 rounded-full object-cover">
+        <div class="flex items-center gap-4">
+          <img id="profileDropdownImage"
+            src="https://ui-avatars.com/api/?name=Guest&background=111827&color=fff"
+            class="h-16 w-16 rounded-full object-cover">
 
-    <div>
-      <h3 id="profileDropdownName"
-        class="text-xl font-black">Guest</h3>
+          <div>
+            <h3 id="profileDropdownName"
+              class="text-xl font-black">Guest</h3>
 
-      <p id="profileDropdownEmail"
-        class="text-sm soft-text">
-        Not signed in
-      </p>
-    </div>
-  </div>
+            <p id="profileDropdownEmail"
+              class="text-sm soft-text">
+              Not signed in
+            </p>
+          </div>
+        </div>
 
-  <label
-    class="mt-5 flex cursor-pointer items-center justify-center rounded-2xl bg-blue-500 px-4 py-3 font-bold transition hover:bg-blue-400">
+        <label
+          class="mt-5 flex cursor-pointer items-center justify-center rounded-2xl bg-blue-500 px-4 py-3 font-bold transition hover:bg-blue-400">
 
-    Change Photo
-    <input id="quickProfileUpload"
-      type="file"
-      accept="image/*"
-      class="hidden">
-  </label>
+          Change Photo
+          <input id="quickProfileUpload"
+            type="file"
+            accept="image/*"
+            class="hidden">
+        </label>
 
-  <div class="mt-4 grid grid-cols-2 gap-3">
-    <button id="quickSignInBtn"
-      class="rounded-2xl bg-white/10 px-4 py-3 font-bold hover:bg-white/15">
-      Sign In
-    </button>
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <button id="quickSignInBtn"
+            class="rounded-2xl bg-white/10 px-4 py-3 font-bold hover:bg-white/15">
+            Sign In
+          </button>
 
-    <button id="quickSignOutBtn"
-      class="rounded-2xl bg-rose-500 px-4 py-3 font-bold hover:bg-rose-400">
-      Sign Out
-    </button>
-  </div>
-</div>
+          <button id="quickSignOutBtn"
+            class="rounded-2xl bg-rose-500 px-4 py-3 font-bold hover:bg-rose-400">
+            Sign Out
+          </button>
+        </div>
+      </div>
 
       <div id="homeSections" class="space-y-6">
-      <section id="section-hero" data-section-id="hero" class="glass-strong rounded-[32px] p-6 lg:p-8">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div class="max-w-3xl">
-            <p class="display-font text-sm font-bold uppercase tracking-[0.3em] text-slate-300">Study Command Center</p>
-            <h2 class="mt-3 text-4xl font-black leading-tight lg:text-5xl">Build momentum, review smarter, and actually finish quizzes.</h2>
-            <p class="mt-3 max-w-2xl text-lg soft-text">The broken start buttons are fixed, the quiz engine is rebuilt, and the whole experience is cleaner, faster, and more interactive.</p>
-          </div>
-          <div class="w-full max-w-md">
-            <label class="mb-2 block text-sm font-bold uppercase tracking-[0.22em] text-slate-300" for="searchBar">Search Units</label>
-            <input id="searchBar" type="text" placeholder="Try: fractions, cells, medieval..." class="w-full rounded-2xl border border-white/10 bg-black/20 px-5 py-4 outline-none transition focus:border-blue-300" />
-          </div>
-        </div>
-      </section>
-
-      <section id="section-stats" data-section-id="stats" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div class="glass card-hover rounded-[28px] p-6">
-          <p class="text-sm uppercase tracking-[0.2em] text-orange-200">Study Streak</p>
-          <p id="streakCount" class="mt-3 text-5xl font-black text-orange-300">0</p>
-        </div>
-        <div class="glass card-hover rounded-[28px] p-6">
-          <p class="text-sm uppercase tracking-[0.2em] text-emerald-200">XP Points</p>
-          <p id="xpCount" class="mt-3 text-5xl font-black text-emerald-300">0</p>
-        </div>
-        <div class="glass card-hover rounded-[28px] p-6">
-          <p class="text-sm uppercase tracking-[0.2em] text-pink-200">Quiz History</p>
-          <p id="historyCount" class="mt-3 text-5xl font-black text-pink-300">0</p>
-        </div>
-        <div class="glass card-hover rounded-[28px] p-6">
-          <p class="text-sm uppercase tracking-[0.2em] text-blue-200">Best Accuracy</p>
-          <p id="bestScoreCount" class="mt-3 text-5xl font-black text-blue-300">0%</p>
-        </div>
-      </section>
-
-      <section id="section-units" data-section-id="units" class="glass rounded-[32px] p-6 lg:p-8">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h3 class="text-3xl font-black">Pick A Unit</h3>
-            <p class="mt-2 soft-text">No more course outlines up top. Jump straight into any unit from one clean grid.</p>
-          </div>
-          <div class="flex flex-wrap gap-3">
-            <button id="quickQuizBtn" class="rounded-2xl bg-blue-500 px-5 py-3 font-bold transition hover:bg-blue-400">Quick Quiz</button>
-            <button id="createTestBtn" class="rounded-2xl bg-emerald-500 px-5 py-3 font-bold transition hover:bg-emerald-400">Create Test</button>
-            <button id="historyBtn" class="rounded-2xl bg-rose-500 px-5 py-3 font-bold transition hover:bg-rose-400">History</button>
-            <button id="shuffleBtn" class="rounded-2xl bg-amber-500 px-5 py-3 font-bold text-slate-900 transition hover:bg-amber-400">Shuffle Questions</button>
-          </div>
-        </div>
-
-        <div id="unitGrid" class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3"></div>
-      </section>
-
-      <section id="section-focus" data-section-id="focus" class="glass rounded-[32px] p-6 lg:p-8">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 id="unitTitle" class="text-4xl font-black">Welcome to Exam Bank</h2>
-            <p id="unitDescription" class="mt-2 text-lg soft-text">Choose a course and unit to begin studying.</p>
-          </div>
-          <div class="min-w-[240px]">
-            <p class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-300">Completion</p>
-            <div class="progress-bar">
-              <div id="unitProgressFill" class="progress-fill" style="width: 0%;"></div>
+        <section id="section-hero" data-section-id="hero" class="glass-strong rounded-[32px] p-6 lg:p-8">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div class="max-w-3xl">
+              <p class="display-font text-sm font-bold uppercase tracking-[0.3em] text-slate-300">Study Command Center</p>
+              <h2 class="mt-3 text-4xl font-black leading-tight lg:text-5xl">Build momentum, review smarter, and actually finish quizzes.</h2>
+              <p class="mt-3 max-w-2xl text-lg soft-text">The broken start buttons are fixed, the quiz engine is rebuilt, and the whole experience is cleaner, faster, and more interactive.</p>
             </div>
-            <p id="unitProgressText" class="mt-2 text-sm soft-text">No unit selected</p>
+            <div class="w-full max-w-md">
+              <label class="mb-2 block text-sm font-bold uppercase tracking-[0.22em] text-slate-300" for="searchBar">Search Units</label>
+              <input id="searchBar" type="text" placeholder="Try: fractions, cells, medieval..." class="w-full rounded-2xl border border-white/10 bg-black/20 px-5 py-4 outline-none transition focus:border-blue-300" />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <section id="section-stats" data-section-id="stats" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div class="glass card-hover rounded-[28px] p-6">
+            <p class="text-sm uppercase tracking-[0.2em] text-orange-200">Study Streak</p>
+            <p id="streakCount" class="mt-3 text-5xl font-black text-orange-300">0</p>
+          </div>
+          <div class="glass card-hover rounded-[28px] p-6">
+            <p class="text-sm uppercase tracking-[0.2em] text-emerald-200">XP Points</p>
+            <p id="xpCount" class="mt-3 text-5xl font-black text-emerald-300">0</p>
+          </div>
+          <div class="glass card-hover rounded-[28px] p-6">
+            <p class="text-sm uppercase tracking-[0.2em] text-pink-200">Quiz History</p>
+            <p id="historyCount" class="mt-3 text-5xl font-black text-pink-300">0</p>
+          </div>
+          <div class="glass card-hover rounded-[28px] p-6">
+            <p class="text-sm uppercase tracking-[0.2em] text-blue-200">Best Accuracy</p>
+            <p id="bestScoreCount" class="mt-3 text-5xl font-black text-blue-300">0%</p>
+          </div>
+        </section>
+
+        <section id="section-units" data-section-id="units" class="glass rounded-[32px] p-6 lg:p-8">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h3 class="text-3xl font-black">Pick A Unit</h3>
+              <p class="mt-2 soft-text">No more course outlines up top. Jump straight into any unit from one clean grid.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button id="quickQuizBtn" class="rounded-2xl bg-blue-500 px-5 py-3 font-bold transition hover:bg-blue-400">Quick Quiz</button>
+              <button id="createTestBtn" class="rounded-2xl bg-emerald-500 px-5 py-3 font-bold transition hover:bg-emerald-400">Create Test</button>
+              <button id="historyBtn" class="rounded-2xl bg-rose-500 px-5 py-3 font-bold transition hover:bg-rose-400">History</button>
+              <button id="shuffleBtn" class="rounded-2xl bg-amber-500 px-5 py-3 font-bold text-slate-900 transition hover:bg-amber-400">Shuffle Questions</button>
+            </div>
+          </div>
+
+          <div id="unitGrid" class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3"></div>
+        </section>
+
+        <section id="section-focus" data-section-id="focus" class="glass rounded-[32px] p-6 lg:p-8">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h2 id="unitTitle" class="text-4xl font-black">Welcome to Exam Bank</h2>
+              <p id="unitDescription" class="mt-2 text-lg soft-text">Choose a course and unit to begin studying.</p>
+            </div>
+            <div class="min-w-[240px]">
+              <p class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-300">Completion</p>
+              <div class="progress-bar">
+                <div id="unitProgressFill" class="progress-fill" style="width: 0%;"></div>
+              </div>
+              <p id="unitProgressText" class="mt-2 text-sm soft-text">No unit selected</p>
+            </div>
+          </div>
+        </section>
       </div>
 
       <section id="contentArea" class="mt-6"></section>
@@ -618,222 +619,223 @@
   <script>
     const rawUnits = {
       math1: {
-        title: "Math Unit 1 - Numbers",
-        description: "September to October",
-        subject: "Math",
-        accent: "blue",
-        icon: "123",
-        notes: ["Integers and whole numbers", "Place value", "Order of operations", "Prime and composite numbers"],
+        title: "Math Unit 1 - Numbers", 
+        description: "September to October", 
+        subject: "Math", 
+        accent: "blue", 
+        icon: "123", 
+        notes: ["Integers and whole numbers", "Place value", "Order of operations", "Prime and composite numbers"], 
         questions: [
-          { question: "What is 7 squared?", options: ["14", "49", "21", "56"], answer: "49", explanation: "Seven squared means 7 x 7." },
-          { question: "Solve 15 + 8 x 2.", options: ["46", "31", "23", "16"], answer: "31", explanation: "Multiply first, then add: 8 x 2 = 16 and 15 + 16 = 31." },
-          { question: "Which number is prime?", options: ["21", "29", "35", "39"], answer: "29", explanation: "A prime number has exactly two factors: 1 and itself." },
-          { question: "Round 4,783 to the nearest hundred.", options: ["4,700", "4,800", "5,000", "4,750"], answer: "4,800", explanation: "The tens digit is 8, so round the hundreds digit up." },
+          { question: "What is 7 squared?", options: ["14", "49", "21", "56"], answer: "49", explanation: "Seven squared means 7 x 7." }, 
+          { question: "Solve 15 + 8 x 2.", options: ["46", "31", "23", "16"], answer: "31", explanation: "Multiply first, then add: 8 x 2 = 16 and 15 + 16 = 31." }, 
+          { question: "Which number is prime?", options: ["21", "29", "35", "39"], answer: "29", explanation: "A prime number has exactly two factors: 1 and itself." }, 
+          { question: "Round 4,783 to the nearest hundred.", options: ["4,700", "4,800", "5,000", "4,750"], answer: "4,800", explanation: "The tens digit is 8, so round the hundreds digit up." }, 
           { question: "Which shows the correct place value of the 6 in 4,682?", options: ["6 ones", "6 tens", "6 hundreds", "6 thousands"], answer: "6 hundreds", explanation: "In 4,682 the 6 is in the hundreds place." }
         ]
-      },
+      }, 
       math2: {
-        title: "Math Unit 2 - Fraction Operations",
-        description: "October to November",
-        subject: "Math",
-        accent: "blue",
-        icon: "1/2",
-        notes: ["Adding fractions", "Subtracting fractions", "Multiplying fractions", "Dividing fractions"],
+        title: "Math Unit 2 - Fraction Operations", 
+        description: "October to November", 
+        subject: "Math", 
+        accent: "blue", 
+        icon: "1/2", 
+        notes: ["Adding fractions", "Subtracting fractions", "Multiplying fractions", "Dividing fractions"], 
         questions: [
-          { question: "Add 2/3 + 1/6.", options: ["5/6", "1/2", "2/9", "1"], answer: "5/6", explanation: "Convert 2/3 to 4/6, then add 4/6 + 1/6." },
-          { question: "Multiply 3/4 x 2/5.", options: ["6/20", "3/10", "5/8", "1/2"], answer: "3/10", explanation: "Multiply numerators and denominators, then simplify 6/20 to 3/10." },
-          { question: "Which denominator can 1/2 and 1/3 both convert to?", options: ["4", "5", "6", "8"], answer: "6", explanation: "Six is the least common denominator of 2 and 3." },
-          { question: "What is 5/8 - 1/4?", options: ["1/4", "3/8", "4/8", "1/2"], answer: "3/8", explanation: "Convert 1/4 to 2/8, then subtract." },
-          { question: "To divide by a fraction, you should:", options: ["Add the denominators", "Flip the second fraction and multiply", "Multiply by zero", "Subtract both numerators"], answer: "Flip the second fraction and multiply", explanation: "Dividing fractions means multiply by the reciprocal." }
+          { question: "Add 2/3 + 1/6.", options: ["5/6", "1/2", "2/9", "1"], answer: "5/6", explanation: "Convert 2/3 to 4/6, then add 4/6 + 1/6." }, 
+          { question: "Multiply 3/4 x 2/5.", options: ["6/20", "3/10", "5/8", "1/2"], answer: "3/10", explanation: "Multiply numerators and denominators, then simplify 6/20 to 3/10." }, 
+          { question: "Which denominator can 1/2 and 1/3 both convert to?", options: ["4", "5", "6", "8"], answer: "6", explanation: "Six is the least common denominator of 2 and 3." }, 
+          { question: "What is 5/8 - 1/4?", options: ["1/4", "3/8", "4/8", "1/2"], answer: "3/8", explanation: "Convert 1/4 to 2/8, then subtract." }, 
+          { question: "To divide by a fraction, you should: ", options: ["Add the denominators", "Flip the second fraction and multiply", "Multiply by zero", "Subtract both numerators"], answer: "Flip the second fraction and multiply", explanation: "Dividing fractions means multiply by the reciprocal." }
         ]
-      },
+      }, 
       math3: {
-        title: "Math Unit 3 - Percent, Ratio, Rates",
-        description: "November to December",
-        subject: "Math",
-        accent: "blue",
-        icon: "%",
-        notes: ["Percentages", "Ratios", "Rates", "Comparisons"],
+        title: "Math Unit 3 - Percent, Ratio, Rates", 
+        description: "November to December", 
+        subject: "Math", 
+        accent: "blue", 
+        icon: "%", 
+        notes: ["Percentages", "Ratios", "Rates", "Comparisons"], 
         questions: [
-          { question: "What is 25% of 200?", options: ["25", "50", "75", "100"], answer: "50", explanation: "Twenty-five percent is one quarter, and one quarter of 200 is 50." },
-          { question: "Simplify 12:18.", options: ["6:9", "2:3", "4:5", "12:6"], answer: "2:3", explanation: "Divide both parts by 6." },
-          { question: "Convert 0.45 to a percent.", options: ["4.5%", "45%", "450%", "0.45%"], answer: "45%", explanation: "Multiply the decimal by 100 to change it to a percent." },
-          { question: "Which is the better buy: 3 notebooks for $6 or 5 notebooks for $15?", options: ["3 for $6", "5 for $15", "They cost the same per notebook", "Not enough information"], answer: "3 for $6", explanation: "The unit rates are $2 each versus $3 each." },
-          { question: "A ratio of 8 red to 12 blue simplifies to:", options: ["4:6", "2:3", "8:3", "3:2"], answer: "2:3", explanation: "Divide both parts by 4." }
+          { question: "What is 25% of 200?", options: ["25", "50", "75", "100"], answer: "50", explanation: "Twenty-five percent is one quarter, and one quarter of 200 is 50." }, 
+          { question: "Simplify 12:18.", options: ["6:9", "2:3", "4:5", "12:6"], answer: "2:3", explanation: "Divide both parts by 6." }, 
+          { question: "Convert 0.45 to a percent.", options: ["4.5%", "45%", "450%", "0.45%"], answer: "45%", explanation: "Multiply the decimal by 100 to change it to a percent." }, 
+          { question: "Which is the better buy: 3 notebooks for $6 or 5 notebooks for $15?", options: ["3 for $6", "5 for $15", "They cost the same per notebook", "Not enough information"], answer: "3 for $6", explanation: "The unit rates are $2 each versus $3 each." }, 
+          { question: "A ratio of 8 red to 12 blue simplifies to: ", options: ["4:6", "2:3", "8:3", "3:2"], answer: "2:3", explanation: "Divide both parts by 4." }
         ]
-      },
+      }, 
       math4: {
-        title: "Math Unit 4 - Squares and Triangles",
-        description: "January to March",
-        subject: "Math",
-        accent: "blue",
-        icon: "TRI",
-        notes: ["Area", "Perimeter", "Triangles", "Pythagorean theorem"],
+        title: "Math Unit 4 - Squares and Triangles", 
+        description: "January to March", 
+        subject: "Math", 
+        accent: "blue", 
+        icon: "TRI", 
+        notes: ["Area", "Perimeter", "Triangles", "Pythagorean theorem"], 
         questions: [
-          { question: "What is the area of a square with side 6 cm?", options: ["12 cm2", "24 cm2", "36 cm2", "18 cm2"], answer: "36 cm2", explanation: "Area of a square is side x side." },
-          { question: "How many sides does a triangle have?", options: ["2", "3", "4", "5"], answer: "3", explanation: "All triangles have three sides." },
-          { question: "In a right triangle, a squared + b squared equals:", options: ["c squared", "ab", "2c", "a + b"], answer: "c squared", explanation: "That is the Pythagorean theorem." },
-          { question: "What is the perimeter of a triangle with sides 4 cm, 5 cm, and 6 cm?", options: ["11 cm", "14 cm", "15 cm", "30 cm"], answer: "15 cm", explanation: "Add all side lengths." },
-          { question: "A triangle with all equal sides is called:", options: ["Scalene", "Isosceles", "Right", "Equilateral"], answer: "Equilateral", explanation: "Equilateral triangles have three equal sides." }
+          { question: "What is the area of a square with side 6 cm?", options: ["12 cm2", "24 cm2", "36 cm2", "18 cm2"], answer: "36 cm2", explanation: "Area of a square is side x side." }, 
+          { question: "How many sides does a triangle have?", options: ["2", "3", "4", "5"], answer: "3", explanation: "All triangles have three sides." }, 
+          { question: "In a right triangle, a squared + b squared equals: ", options: ["c squared", "ab", "2c", "a + b"], answer: "c squared", explanation: "That is the Pythagorean theorem." }, 
+          { question: "What is the perimeter of a triangle with sides 4 cm, 5 cm, and 6 cm?", options: ["11 cm", "14 cm", "15 cm", "30 cm"], answer: "15 cm", explanation: "Add all side lengths." }, 
+          { question: "A triangle with all equal sides is called: ", options: ["Scalene", "Isosceles", "Right", "Equilateral"], answer: "Equilateral", explanation: "Equilateral triangles have three equal sides." }
         ]
-      },
+      }, 
       math5: {
-        title: "Math Unit 5 - Algebra and Linear Equations",
-        description: "March",
-        subject: "Math",
-        accent: "blue",
-        icon: "x",
-        notes: ["Variables", "Equations", "Slope", "Graphing"],
+        title: "Math Unit 5 - Algebra and Linear Equations", 
+        description: "March", 
+        subject: "Math", 
+        accent: "blue", 
+        icon: "x", 
+        notes: ["Variables", "Equations", "Slope", "Graphing"], 
         questions: [
-          { question: "Solve x + 7 = 19.", options: ["10", "12", "14", "26"], answer: "12", explanation: "Subtract 7 from both sides." },
-          { question: "Simplify 4x + 2x.", options: ["6", "8x", "6x", "2x"], answer: "6x", explanation: "Combine like terms." },
-          { question: "What is the slope in y = 3x + 1?", options: ["1", "3", "x", "4"], answer: "3", explanation: "In slope-intercept form y = mx + b, m is the slope." },
-          { question: "Solve 2x = 18.", options: ["7", "8", "9", "16"], answer: "9", explanation: "Divide both sides by 2." },
+          { question: "Solve x + 7 = 19.", options: ["10", "12", "14", "26"], answer: "12", explanation: "Subtract 7 from both sides." }, 
+          { question: "Simplify 4x + 2x.", options: ["6", "8x", "6x", "2x"], answer: "6x", explanation: "Combine like terms." }, 
+          { question: "What is the slope in y = 3x + 1?", options: ["1", "3", "x", "4"], answer: "3", explanation: "In slope-intercept form y = mx + b, m is the slope." }, 
+          { question: "Solve 2x = 18.", options: ["7", "8", "9", "16"], answer: "9", explanation: "Divide both sides by 2." }, 
           { question: "Which point is on the line y = x + 3?", options: ["(1, 2)", "(2, 5)", "(3, 1)", "(0, 1)"], answer: "(2, 5)", explanation: "If x = 2, then y must be 5." }
         ]
-      },
+      }, 
       math6: {
-        title: "Math Unit 6 - Prisms and Cylinders",
-        description: "April to May",
-        subject: "Math",
-        accent: "blue",
-        icon: "3D",
-        notes: ["Volume", "Surface area", "3D shapes", "Nets"],
+        title: "Math Unit 6 - Prisms and Cylinders", 
+        description: "April to May", 
+        subject: "Math", 
+        accent: "blue", 
+        icon: "3D", 
+        notes: ["Volume", "Surface area", "3D shapes", "Nets"], 
         questions: [
-          { question: "Which shape has two circular faces?", options: ["Cube", "Cylinder", "Prism", "Pyramid"], answer: "Cylinder", explanation: "A cylinder has two congruent circular bases." },
-          { question: "Volume measures how much space is inside a shape.", options: ["True", "False", "Only for 2D", "Only for triangles"], answer: "True", explanation: "Volume describes interior space in 3D objects." },
-          { question: "A net is:", options: ["A 2D pattern of a 3D object", "A type of equation", "A graph line", "A ruler"], answer: "A 2D pattern of a 3D object", explanation: "Nets fold into three-dimensional solids." },
-          { question: "How many faces does a rectangular prism have?", options: ["4", "5", "6", "8"], answer: "6", explanation: "A rectangular prism has six faces." },
+          { question: "Which shape has two circular faces?", options: ["Cube", "Cylinder", "Prism", "Pyramid"], answer: "Cylinder", explanation: "A cylinder has two congruent circular bases." }, 
+          { question: "Volume measures how much space is inside a shape.", options: ["True", "False", "Only for 2D", "Only for triangles"], answer: "True", explanation: "Volume describes interior space in 3D objects." }, 
+          { question: "A net is: ", options: ["A 2D pattern of a 3D object", "A type of equation", "A graph line", "A ruler"], answer: "A 2D pattern of a 3D object", explanation: "Nets fold into three-dimensional solids." }, 
+          { question: "How many faces does a rectangular prism have?", options: ["4", "5", "6", "8"], answer: "6", explanation: "A rectangular prism has six faces." }, 
           { question: "Which formula finds the volume of a prism?", options: ["Base area x height", "Length + width + height", "2 x pi x r", "Side x side"], answer: "Base area x height", explanation: "Prism volume is base area times height." }
         ]
-      },
+      }, 
       math7: {
-        title: "Math Unit 7 - Statistics and Probability",
-        description: "May",
-        subject: "Math",
-        accent: "blue",
-        icon: "Pi",
-        notes: ["Mean", "Median", "Mode", "Probability"],
+        title: "Math Unit 7 - Statistics and Probability", 
+        description: "May", 
+        subject: "Math", 
+        accent: "blue", 
+        icon: "Pi", 
+        notes: ["Mean", "Median", "Mode", "Probability"], 
         questions: [
-          { question: "What is the mean of 2, 4, 6?", options: ["3", "4", "5", "6"], answer: "4", explanation: "Add the numbers and divide by 3." },
-          { question: "Probability describes how likely something is to happen.", options: ["True", "False", "Only in geometry", "Only in graphs"], answer: "True", explanation: "Probability measures chance." },
-          { question: "Which graph is useful for comparing categories?", options: ["Bar graph", "Line segment", "Angle chart", "Cube net"], answer: "Bar graph", explanation: "Bar graphs compare different groups clearly." },
-          { question: "What is the median of 3, 7, 9?", options: ["3", "6", "7", "9"], answer: "7", explanation: "The median is the middle number in order." },
-          { question: "If you flip a fair coin, the probability of heads is:", options: ["1/4", "1/3", "1/2", "1"], answer: "1/2", explanation: "There are two equally likely outcomes." }
+          { question: "What is the mean of 2, 4, 6?", options: ["3", "4", "5", "6"], answer: "4", explanation: "Add the numbers and divide by 3." }, 
+          { question: "Probability describes how likely something is to happen.", options: ["True", "False", "Only in geometry", "Only in graphs"], answer: "True", explanation: "Probability measures chance." }, 
+          { question: "Which graph is useful for comparing categories?", options: ["Bar graph", "Line segment", "Angle chart", "Cube net"], answer: "Bar graph", explanation: "Bar graphs compare different groups clearly." }, 
+          { question: "What is the median of 3, 7, 9?", options: ["3", "6", "7", "9"], answer: "7", explanation: "The median is the middle number in order." }, 
+          { question: "If you flip a fair coin, the probability of heads is: ", options: ["1/4", "1/3", "1/2", "1"], answer: "1/2", explanation: "There are two equally likely outcomes." }
         ]
-      },
+      }, 
       science1: {
-        title: "Science Unit 1 - Mix and Flow of Matter",
-        description: "September to October",
-        subject: "Science",
-        accent: "green",
-        icon: "H2O",
-        notes: ["Matter", "Mixtures", "Solutions", "Fluid flow"],
+        title: "Science Unit 1 - Mix and Flow of Matter", 
+        description: "September to October", 
+        subject: "Science", 
+        accent: "green", 
+        icon: "H2O", 
+        notes: ["Matter", "Mixtures", "Solutions", "Fluid flow"], 
         questions: [
-          { question: "What is viscosity?", options: ["A liquid's resistance to flow", "A kind of microscope", "A type of gas", "A solid mixture"], answer: "A liquid's resistance to flow", explanation: "More viscous liquids flow more slowly." },
-          { question: "A homogeneous mixture is:", options: ["Evenly mixed", "Layered", "Frozen", "Magnetic"], answer: "Evenly mixed", explanation: "Its parts are spread out uniformly." },
-          { question: "What can affect fluid flow?", options: ["Temperature", "Thickness", "Pipe size", "All of these"], answer: "All of these", explanation: "Several factors change how easily a fluid moves." },
-          { question: "Which is an example of a solution?", options: ["Salt water", "Trail mix", "Sand and gravel", "Oil and water"], answer: "Salt water", explanation: "A solution is evenly mixed." },
-          { question: "Matter is anything that has:", options: ["Mass and volume", "Only color", "No particles", "Only energy"], answer: "Mass and volume", explanation: "Matter takes up space and has mass." }
+          { question: "What is viscosity?", options: ["A liquid's resistance to flow", "A kind of microscope", "A type of gas", "A solid mixture"], answer: "A liquid's resistance to flow", explanation: "More viscous liquids flow more slowly." }, 
+          { question: "A homogeneous mixture is: ", options: ["Evenly mixed", "Layered", "Frozen", "Magnetic"], answer: "Evenly mixed", explanation: "Its parts are spread out uniformly." }, 
+          { question: "What can affect fluid flow?", options: ["Temperature", "Thickness", "Pipe size", "All of these"], answer: "All of these", explanation: "Several factors change how easily a fluid moves." }, 
+          { question: "Which is an example of a solution?", options: ["Salt water", "Trail mix", "Sand and gravel", "Oil and water"], answer: "Salt water", explanation: "A solution is evenly mixed." }, 
+          { question: "Matter is anything that has: ", options: ["Mass and volume", "Only color", "No particles", "Only energy"], answer: "Mass and volume", explanation: "Matter takes up space and has mass." }
         ]
-      },
+      }, 
       science2: {
-        title: "Science Unit 2 - Cells and Systems",
-        description: "November to December",
-        subject: "Science",
-        accent: "green",
-        icon: "DNA",
-        notes: ["Cells", "Organ systems", "Microscopes", "Cell theory"],
+        title: "Science Unit 2 - Cells and Systems", 
+        description: "November to December", 
+        subject: "Science", 
+        accent: "green", 
+        icon: "DNA", 
+        notes: ["Cells", "Organ systems", "Microscopes", "Cell theory"], 
         questions: [
-          { question: "What is the function of the nucleus?", options: ["Controls cell activities", "Makes blood", "Protects skin", "Moves bones"], answer: "Controls cell activities", explanation: "The nucleus acts like the control center of the cell." },
-          { question: "Cell theory says all living things are made of cells.", options: ["True", "False", "Only plants", "Only humans"], answer: "True", explanation: "That is one of the main ideas of cell theory." },
-          { question: "An organ system is:", options: ["Organs working together", "One single organ", "A kind of cell", "A microscope part"], answer: "Organs working together", explanation: "Body systems are groups of organs with a shared job." },
-          { question: "Which structure controls what enters and leaves the cell?", options: ["Cell membrane", "Nucleus", "Cytoplasm", "Chloroplast"], answer: "Cell membrane", explanation: "The membrane is the cell's boundary." },
+          { question: "What is the function of the nucleus?", options: ["Controls cell activities", "Makes blood", "Protects skin", "Moves bones"], answer: "Controls cell activities", explanation: "The nucleus acts like the control center of the cell." }, 
+          { question: "Cell theory says all living things are made of cells.", options: ["True", "False", "Only plants", "Only humans"], answer: "True", explanation: "That is one of the main ideas of cell theory." }, 
+          { question: "An organ system is: ", options: ["Organs working together", "One single organ", "A kind of cell", "A microscope part"], answer: "Organs working together", explanation: "Body systems are groups of organs with a shared job." }, 
+          { question: "Which structure controls what enters and leaves the cell?", options: ["Cell membrane", "Nucleus", "Cytoplasm", "Chloroplast"], answer: "Cell membrane", explanation: "The membrane is the cell's boundary." }, 
           { question: "Plant cells have which structure that animal cells do not?", options: ["Cell wall", "Nucleus", "Cell membrane", "Cytoplasm"], answer: "Cell wall", explanation: "Plant cells have a rigid cell wall." }
         ]
-      },
+      }, 
       science3: {
-        title: "Science Unit 3 - Light and Optical Systems",
-        description: "January to February",
-        subject: "Science",
-        accent: "green",
-        icon: "Lens",
-        notes: ["Reflection", "Refraction", "Lenses", "Human eye"],
+        title: "Science Unit 3 - Light and Optical Systems", 
+        description: "January to February", 
+        subject: "Science", 
+        accent: "green", 
+        icon: "Lens", 
+        notes: ["Reflection", "Refraction", "Lenses", "Human eye"], 
         questions: [
-          { question: "Refraction happens when light:", options: ["Bends", "Stops", "Explodes", "Freezes"], answer: "Bends", explanation: "Light bends when it moves between different materials." },
-          { question: "A convex lens usually:", options: ["Spreads light out forever", "Bends light inward", "Blocks all light", "Creates sound"], answer: "Bends light inward", explanation: "Convex lenses focus light toward a point." },
-          { question: "Reflection is when light:", options: ["Bounces off a surface", "Turns into heat only", "Disappears", "Enters water"], answer: "Bounces off a surface", explanation: "Mirrors show reflection clearly." },
-          { question: "Which device uses lenses to make small objects appear larger?", options: ["Microscope", "Thermometer", "Magnet", "Balance"], answer: "Microscope", explanation: "Microscopes use lenses to magnify." },
-          { question: "The pupil is the part of the eye that:", options: ["Lets light in", "Pumps blood", "Creates sound", "Moves your leg"], answer: "Lets light in", explanation: "The pupil is the opening where light enters the eye." }
+          { question: "Refraction happens when light: ", options: ["Bends", "Stops", "Explodes", "Freezes"], answer: "Bends", explanation: "Light bends when it moves between different materials." }, 
+          { question: "A convex lens usually: ", options: ["Spreads light out forever", "Bends light inward", "Blocks all light", "Creates sound"], answer: "Bends light inward", explanation: "Convex lenses focus light toward a point." }, 
+          { question: "Reflection is when light: ", options: ["Bounces off a surface", "Turns into heat only", "Disappears", "Enters water"], answer: "Bounces off a surface", explanation: "Mirrors show reflection clearly." }, 
+          { question: "Which device uses lenses to make small objects appear larger?", options: ["Microscope", "Thermometer", "Magnet", "Balance"], answer: "Microscope", explanation: "Microscopes use lenses to magnify." }, 
+          { question: "The pupil is the part of the eye that: ", options: ["Lets light in", "Pumps blood", "Creates sound", "Moves your leg"], answer: "Lets light in", explanation: "The pupil is the opening where light enters the eye." }
         ]
-      },
+      }, 
       science4: {
-        title: "Science Unit 4 - Mechanical Systems",
-        description: "March to April",
-        subject: "Science",
-        accent: "green",
-        icon: "Gear",
-        notes: ["Simple machines", "Mechanical advantage", "Force", "Motion"],
+        title: "Science Unit 4 - Mechanical Systems", 
+        description: "March to April", 
+        subject: "Science", 
+        accent: "green", 
+        icon: "Gear", 
+        notes: ["Simple machines", "Mechanical advantage", "Force", "Motion"], 
         questions: [
-          { question: "A pulley helps:", options: ["Change the direction of force", "Create electricity", "Grow plants", "Measure mass"], answer: "Change the direction of force", explanation: "Pulleys can make lifting easier by redirecting force." },
-          { question: "Mechanical advantage helps make work easier.", options: ["True", "False", "Only in chemistry", "Only in optics"], answer: "True", explanation: "Machines help reduce the force needed." },
-          { question: "Which is a simple machine?", options: ["Lever", "Cell", "Lens", "Atom"], answer: "Lever", explanation: "A lever is one of the six simple machines." },
-          { question: "Force can change an object's:", options: ["Motion", "Color only", "Temperature only", "Name"], answer: "Motion", explanation: "A push or pull can start, stop, or change direction." },
+          { question: "A pulley helps: ", options: ["Change the direction of force", "Create electricity", "Grow plants", "Measure mass"], answer: "Change the direction of force", explanation: "Pulleys can make lifting easier by redirecting force." }, 
+          { question: "Mechanical advantage helps make work easier.", options: ["True", "False", "Only in chemistry", "Only in optics"], answer: "True", explanation: "Machines help reduce the force needed." }, 
+          { question: "Which is a simple machine?", options: ["Lever", "Cell", "Lens", "Atom"], answer: "Lever", explanation: "A lever is one of the six simple machines." }, 
+          { question: "Force can change an object's: ", options: ["Motion", "Color only", "Temperature only", "Name"], answer: "Motion", explanation: "A push or pull can start, stop, or change direction." }, 
           { question: "Which simple machine is a ramp?", options: ["Inclined plane", "Wedge", "Pulley", "Screw"], answer: "Inclined plane", explanation: "A ramp is an inclined plane." }
         ]
-      },
+      }, 
       science5: {
-        title: "Science Unit 5 - Freshwater and Saltwater Systems",
-        description: "May to June",
-        subject: "Science",
-        accent: "green",
-        icon: "Wave",
-        notes: ["Water ecosystems", "Human impacts", "Conservation", "Habitats"],
+        title: "Science Unit 5 - Freshwater and Saltwater Systems", 
+        description: "May to June", 
+        subject: "Science", 
+        accent: "green", 
+        icon: "Wave", 
+        notes: ["Water ecosystems", "Human impacts", "Conservation", "Habitats"], 
         questions: [
-          { question: "An ecosystem is:", options: ["Living things and their environment", "Only fish", "A machine", "A planet"], answer: "Living things and their environment", explanation: "Ecosystems include organisms and the places they live." },
-          { question: "Why should we conserve water?", options: ["It is limited and important", "To make it disappear", "So rivers stop", "No reason"], answer: "It is limited and important", explanation: "People and ecosystems depend on clean water." },
-          { question: "Pollution can harm water habitats.", options: ["True", "False", "Only saltwater", "Only snow"], answer: "True", explanation: "Pollution damages plants, animals, and water quality." },
-          { question: "Which is a freshwater habitat?", options: ["Lake", "Ocean", "Coral reef", "Tide pool"], answer: "Lake", explanation: "Lakes and rivers are freshwater systems." },
-          { question: "Runoff from roads and farms can:", options: ["Carry pollution into water", "Create new fish instantly", "Turn lakes into deserts", "Remove all plants"], answer: "Carry pollution into water", explanation: "Runoff often carries harmful substances into waterways." }
+          { question: "An ecosystem is: ", options: ["Living things and their environment", "Only fish", "A machine", "A planet"], answer: "Living things and their environment", explanation: "Ecosystems include organisms and the places they live." }, 
+          { question: "Why should we conserve water?", options: ["It is limited and important", "To make it disappear", "So rivers stop", "No reason"], answer: "It is limited and important", explanation: "People and ecosystems depend on clean water." }, 
+          { question: "Pollution can harm water habitats.", options: ["True", "False", "Only saltwater", "Only snow"], answer: "True", explanation: "Pollution damages plants, animals, and water quality." }, 
+          { question: "Which is a freshwater habitat?", options: ["Lake", "Ocean", "Coral reef", "Tide pool"], answer: "Lake", explanation: "Lakes and rivers are freshwater systems." }, 
+          { question: "Runoff from roads and farms can: ", options: ["Carry pollution into water", "Create new fish instantly", "Turn lakes into deserts", "Remove all plants"], answer: "Carry pollution into water", explanation: "Runoff often carries harmful substances into waterways." }
         ]
-      },
+      }, 
       socialvocab: {
-        title: "Social Studies Vocabulary",
-        description: "Medieval and Renaissance terms",
-        subject: "Social Studies",
-        accent: "pink",
-        icon: "Globe",
-        notes: ["Byzantine Empire", "Middle Ages", "Feudal system", "Guilds", "Urbanization", "Republic", "Oligarchy"],
+        title: "Social Studies Vocabulary", 
+        description: "Medieval and Renaissance terms", 
+        subject: "Social Studies", 
+        accent: "pink", 
+        icon: "Globe", 
+        notes: ["Byzantine Empire", "Middle Ages", "Feudal system", "Guilds", "Urbanization", "Republic", "Oligarchy"], 
         questions: [
-          { question: "What was the Byzantine Empire?", options: ["The eastern part of the Roman Empire", "A guild", "A trade route only", "A pyramid kingdom"], answer: "The eastern part of the Roman Empire", explanation: "It continued Roman traditions in the east." },
-          { question: "What is a guild?", options: ["A group of skilled workers", "A castle wall", "A king's crown", "A farming tool"], answer: "A group of skilled workers", explanation: "Guilds organized craftspeople and merchants." },
-          { question: "Urbanization means:", options: ["Growth of towns and cities", "Moving to farms", "Trading spices", "Writing laws"], answer: "Growth of towns and cities", explanation: "Urbanization happens when more people live in towns and cities." },
-          { question: "The feudal system was based on:", options: ["Land, loyalty, and service", "Factory jobs", "Democracy votes only", "Modern banking"], answer: "Land, loyalty, and service", explanation: "Feudal relationships were built on land and protection." },
-          { question: "An oligarchy is a government ruled by:", options: ["A few powerful people", "One emperor only", "All citizens directly", "Skilled workers"], answer: "A few powerful people", explanation: "Oligarchy means rule by a small group." }
+          { question: "What was the Byzantine Empire?", options: ["The eastern part of the Roman Empire", "A guild", "A trade route only", "A pyramid kingdom"], answer: "The eastern part of the Roman Empire", explanation: "It continued Roman traditions in the east." }, 
+          { question: "What is a guild?", options: ["A group of skilled workers", "A castle wall", "A king's crown", "A farming tool"], answer: "A group of skilled workers", explanation: "Guilds organized craftspeople and merchants." }, 
+          { question: "Urbanization means: ", options: ["Growth of towns and cities", "Moving to farms", "Trading spices", "Writing laws"], answer: "Growth of towns and cities", explanation: "Urbanization happens when more people live in towns and cities." }, 
+          { question: "The feudal system was based on: ", options: ["Land, loyalty, and service", "Factory jobs", "Democracy votes only", "Modern banking"], answer: "Land, loyalty, and service", explanation: "Feudal relationships were built on land and protection." }, 
+          { question: "An oligarchy is a government ruled by: ", options: ["A few powerful people", "One emperor only", "All citizens directly", "Skilled workers"], answer: "A few powerful people", explanation: "Oligarchy means rule by a small group." }
         ]
       }
     };
 
     const storageKeys = {
-      streak: "examBank.studyStreak",
-      xp: "examBank.xpPoints",
-      history: "examBank.quizHistory",
-      best: "examBank.bestScores",
-      theme: "examBank.theme",
-      sectionOrder: "examBank.sectionOrder",
-      accent: "examBank.accent",
-      surface: "examBank.surface",
-      leaderboard: "examBank.leaderboard",
-      currentPlayer: "examBank.currentPlayer",
+      streak: "examBank.studyStreak", 
+      xp: "examBank.xpPoints", 
+      history: "examBank.quizHistory", 
+      best: "examBank.bestScores", 
+      theme: "examBank.theme", 
+      sectionOrder: "examBank.sectionOrder", 
+      accent: "examBank.accent", 
+      surface: "examBank.surface", 
+      leaderboard: "examBank.leaderboard", 
+      currentPlayer: "examBank.currentPlayer", 
       authUser: "examBank.authUser"
     };
+    
     const firebaseConfig = {
-      apiKey: "AIzaSyCO_lCaHej5QUNyDpzV84Y2DfIG87zOl-s",
-      authDomain: "exam-bank-grade-8.firebaseapp.com",
-      projectId: "exam-bank-grade-8",
-      storageBucket: "exam-bank-grade-8.appspot.com",
-      messagingSenderId: "429310662726",
-      appId: "1:429310662726:web:33932a1b13bda4e5efd247",
+      apiKey: "AIzaSyCO_lCaHej5QUNyDpzV84Y2DfIG87zOl-s", 
+      authDomain: "exam-bank-grade-8.firebaseapp.com", 
+      projectId: "exam-bank-grade-8", 
+      storageBucket: "exam-bank-grade-8.appspot.com", 
+      messagingSenderId: "429310662726", 
+      appId: "1:429310662726:web:33932a1b13bda4e5efd247", 
       measurementId: "G-0NM09ZRS5G"
     };
 
@@ -842,108 +844,108 @@
     const defaultSectionOrder = ["hero", "stats", "units", "focus"];
     const themes = {
       aurora: {
-        bg1: "#08111f",
-        bg2: "#11182b",
-        bg3: "#1c2b4a",
-        card: "rgba(255, 255, 255, 0.08)",
-        cardStrong: "rgba(255, 255, 255, 0.12)",
+        bg1: "#08111f", 
+        bg2: "#11182b", 
+        bg3: "#1c2b4a", 
+        card: "rgba(255, 255, 255, 0.08)", 
+        cardStrong: "rgba(255, 255, 255, 0.12)", 
         border: "rgba(255, 255, 255, 0.12)"
-      },
+      }, 
       sunset: {
-        bg1: "#24110b",
-        bg2: "#4a1d1f",
-        bg3: "#6b3a1f",
-        card: "rgba(255, 245, 238, 0.08)",
-        cardStrong: "rgba(255, 239, 227, 0.12)",
+        bg1: "#24110b", 
+        bg2: "#4a1d1f", 
+        bg3: "#6b3a1f", 
+        card: "rgba(255, 245, 238, 0.08)", 
+        cardStrong: "rgba(255, 239, 227, 0.12)", 
         border: "rgba(255, 224, 205, 0.16)"
-      },
+      }, 
       forest: {
-        bg1: "#08150f",
-        bg2: "#0f2a20",
-        bg3: "#174638",
-        card: "rgba(239, 255, 248, 0.08)",
-        cardStrong: "rgba(229, 255, 244, 0.12)",
+        bg1: "#08150f", 
+        bg2: "#0f2a20", 
+        bg3: "#174638", 
+        card: "rgba(239, 255, 248, 0.08)", 
+        cardStrong: "rgba(229, 255, 244, 0.12)", 
         border: "rgba(196, 255, 223, 0.16)"
-      },
+      }, 
       midnight: {
-        bg1: "#070b17",
-        bg2: "#121936",
-        bg3: "#1c2557",
-        card: "rgba(239, 244, 255, 0.08)",
-        cardStrong: "rgba(226, 235, 255, 0.12)",
+        bg1: "#070b17", 
+        bg2: "#121936", 
+        bg3: "#1c2557", 
+        card: "rgba(239, 244, 255, 0.08)", 
+        cardStrong: "rgba(226, 235, 255, 0.12)", 
         border: "rgba(200, 214, 255, 0.15)"
-      },
+      }, 
       neon: {
-        bg1: "#12051d",
-        bg2: "#1c0d32",
-        bg3: "#0e3144",
-        card: "rgba(255, 255, 255, 0.08)",
-        cardStrong: "rgba(255, 255, 255, 0.13)",
+        bg1: "#12051d", 
+        bg2: "#1c0d32", 
+        bg3: "#0e3144", 
+        card: "rgba(255, 255, 255, 0.08)", 
+        cardStrong: "rgba(255, 255, 255, 0.13)", 
         border: "rgba(182, 255, 248, 0.2)"
-      },
+      }, 
       ocean: {
-        bg1: "#041420",
-        bg2: "#0a2740",
-        bg3: "#0d4866",
-        card: "rgba(240, 250, 255, 0.08)",
-        cardStrong: "rgba(233, 248, 255, 0.12)",
+        bg1: "#041420", 
+        bg2: "#0a2740", 
+        bg3: "#0d4866", 
+        card: "rgba(240, 250, 255, 0.08)", 
+        cardStrong: "rgba(233, 248, 255, 0.12)", 
         border: "rgba(181, 232, 255, 0.18)"
-      },
+      }, 
       ember: {
-        bg1: "#1a0c08",
-        bg2: "#3b1710",
-        bg3: "#5b2915",
-        card: "rgba(255, 245, 238, 0.08)",
-        cardStrong: "rgba(255, 239, 230, 0.12)",
+        bg1: "#1a0c08", 
+        bg2: "#3b1710", 
+        bg3: "#5b2915", 
+        card: "rgba(255, 245, 238, 0.08)", 
+        cardStrong: "rgba(255, 239, 230, 0.12)", 
         border: "rgba(255, 205, 171, 0.18)"
-      },
+      }, 
       lavender: {
-        bg1: "#140c22",
-        bg2: "#2a1b48",
-        bg3: "#4a2f75",
-        card: "rgba(249, 244, 255, 0.08)",
-        cardStrong: "rgba(246, 239, 255, 0.12)",
+        bg1: "#140c22", 
+        bg2: "#2a1b48", 
+        bg3: "#4a2f75", 
+        card: "rgba(249, 244, 255, 0.08)", 
+        cardStrong: "rgba(246, 239, 255, 0.12)", 
         border: "rgba(222, 198, 255, 0.18)"
-      },
+      }, 
       paper: {
-        bg1: "#f3e9d6",
-        bg2: "#e4d2b7",
-        bg3: "#d1b38c",
-        card: "rgba(255, 255, 255, 0.45)",
-        cardStrong: "rgba(255, 255, 255, 0.6)",
+        bg1: "#f3e9d6", 
+        bg2: "#e4d2b7", 
+        bg3: "#d1b38c", 
+        card: "rgba(255, 255, 255, 0.45)", 
+        cardStrong: "rgba(255, 255, 255, 0.6)", 
         border: "rgba(104, 72, 41, 0.12)"
-      },
+      }, 
       matrix: {
-        bg1: "#040c06",
-        bg2: "#0b1c11",
-        bg3: "#10351d",
-        card: "rgba(225, 255, 232, 0.08)",
-        cardStrong: "rgba(214, 255, 223, 0.12)",
+        bg1: "#040c06", 
+        bg2: "#0b1c11", 
+        bg3: "#10351d", 
+        card: "rgba(225, 255, 232, 0.08)", 
+        cardStrong: "rgba(214, 255, 223, 0.12)", 
         border: "rgba(130, 255, 168, 0.18)"
       }
     };
     const accents = {
-      ice: { start: "#67e8f9", end: "#60a5fa" },
-      rose: { start: "#f9a8d4", end: "#f43f5e" },
-      gold: { start: "#fde68a", end: "#fb923c" },
-      mint: { start: "#86efac", end: "#14b8a6" },
-      violet: { start: "#a78bfa", end: "#d946ef" },
+      ice: { start: "#67e8f9", end: "#60a5fa" }, 
+      rose: { start: "#f9a8d4", end: "#f43f5e" }, 
+      gold: { start: "#fde68a", end: "#fb923c" }, 
+      mint: { start: "#86efac", end: "#14b8a6" }, 
+      violet: { start: "#a78bfa", end: "#d946ef" }, 
       lava: { start: "#f87171", end: "#f59e0b" }
     };
     const surfaces = {
       soft: {
-        blur: "18px",
-        shadow: "0 14px 50px rgba(0, 0, 0, 0.28)",
+        blur: "18px", 
+        shadow: "0 14px 50px rgba(0, 0, 0, 0.28)", 
         shadowStrong: "0 18px 60px rgba(0, 0, 0, 0.32)"
-      },
+      }, 
       crisp: {
-        blur: "8px",
-        shadow: "0 10px 34px rgba(0, 0, 0, 0.2)",
+        blur: "8px", 
+        shadow: "0 10px 34px rgba(0, 0, 0, 0.2)", 
         shadowStrong: "0 14px 40px rgba(0, 0, 0, 0.24)"
-      },
+      }, 
       glow: {
-        blur: "24px",
-        shadow: "0 16px 60px rgba(96, 165, 250, 0.18)",
+        blur: "24px", 
+        shadow: "0 16px 60px rgba(96, 165, 250, 0.18)", 
         shadowStrong: "0 20px 72px rgba(124, 240, 194, 0.18)"
       }
     };
@@ -961,16 +963,16 @@
       .sort((a, b) => b.points - a.points);
     let teamEntries = [];
     let firebaseState = {
-      ready: false,
-      failed: false,
-      db: null,
-      auth: null,
-      storage: null,
-      collectionRef: null,
-      teamCollectionRef: null,
-      helpers: null,
-      authHelpers: null,
-      storageHelpers: null,
+      ready: false, 
+      failed: false, 
+      db: null, 
+      auth: null, 
+      storage: null, 
+      collectionRef: null, 
+      teamCollectionRef: null, 
+      helpers: null, 
+      authHelpers: null, 
+      storageHelpers: null, 
       unsubscribe: null
     };
     let streak = Number(localStorage.getItem(storageKeys.streak)) || 0;
@@ -989,9 +991,9 @@
 
       Object.entries(data).forEach(([key, unit]) => {
         result[key] = {
-          ...unit,
+          ...unit, 
           questions: unit.questions.map((item) => ({
-            ...item,
+            ...item, 
             explanation: item.explanation || ""
           }))
         };
@@ -1011,30 +1013,30 @@
     async function initFirebaseSync() {
       try {
         const [{ initializeApp }, firestore, authMod, storageMod] = await Promise.all([
-          import("https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"),
-          import("https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js"),
-          import("https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js"),
+          import("https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"), 
+          import("https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js"), 
+          import("https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js"), 
           import("https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js")
         ]);
         const {
-          getFirestore,
-          collection,
-          doc,
-          getDoc,
-          setDoc,
-          updateDoc,
-          increment,
-          serverTimestamp,
-          query,
-          orderBy,
+          getFirestore, 
+          collection, 
+          doc, 
+          getDoc, 
+          setDoc, 
+          updateDoc, 
+          increment, 
+          serverTimestamp, 
+          query, 
+          orderBy, 
           onSnapshot
         } = firestore;
         const {
-          getAuth,
-          onAuthStateChanged,
-          createUserWithEmailAndPassword,
-          signInWithEmailAndPassword,
-          signOut,
+          getAuth, 
+          onAuthStateChanged, 
+          createUserWithEmailAndPassword, 
+          signInWithEmailAndPassword, 
+          signOut, 
           updateProfile
         } = authMod;
         const { getStorage, ref, uploadBytes, getDownloadURL } = storageMod;
@@ -1073,12 +1075,12 @@
         leaderboardEntries = snapshot.docs.map((entry) => {
           const data = entry.data();
           return {
-            id: entry.id,
-            name: data.displayName || entry.id,
-            points: data.points || 0,
-            quizzes: data.quizzes || 0,
-            teamId: data.teamId || "",
-            teamName: data.teamName || "",
+            id: entry.id, 
+            name: data.displayName || entry.id, 
+            points: data.points || 0, 
+            quizzes: data.quizzes || 0, 
+            teamId: data.teamId || "", 
+            teamName: data.teamName || "", 
             photoURL: data.photoURL || ""
           };
         });
@@ -1098,10 +1100,10 @@
         teamEntries = snapshot.docs.map((entry) => {
           const data = entry.data();
           return {
-            id: entry.id,
-            name: data.name || entry.id,
-            points: data.points || 0,
-            memberIds: data.memberIds || [],
+            id: entry.id, 
+            name: data.name || entry.id, 
+            points: data.points || 0, 
+            memberIds: data.memberIds || [], 
             memberNames: data.memberNames || []
           };
         });
@@ -1126,9 +1128,9 @@
         }
 
         currentUserProfile = {
-          uid: user.uid,
-          displayName: user.displayName || user.email || "Player",
-          email: user.email || "",
+          uid: user.uid, 
+          displayName: user.displayName || user.email || "Player", 
+          email: user.email || "", 
           photoURL: user.photoURL || ""
         };
         currentPlayer = currentUserProfile.displayName;
@@ -1206,19 +1208,19 @@
       const snap = await getDoc(playerRef);
       if (!snap.exists()) {
         await setDoc(playerRef, {
-          uid: currentUserProfile?.uid || getCurrentPlayerDocId(),
-          displayName: currentPlayer,
-          photoURL: currentUserProfile?.photoURL || "",
-          points: 0,
-          quizzes: 0,
-          teamId: "",
-          teamName: "",
+          uid: currentUserProfile?.uid || getCurrentPlayerDocId(), 
+          displayName: currentPlayer, 
+          photoURL: currentUserProfile?.photoURL || "", 
+          points: 0, 
+          quizzes: 0, 
+          teamId: "", 
+          teamName: "", 
           updatedAt: serverTimestamp()
         });
       } else if (snap.data().displayName !== currentPlayer || (currentUserProfile?.photoURL && snap.data().photoURL !== currentUserProfile.photoURL)) {
         await setDoc(playerRef, {
-          displayName: currentPlayer,
-          photoURL: currentUserProfile?.photoURL || "",
+          displayName: currentPlayer, 
+          photoURL: currentUserProfile?.photoURL || "", 
           updatedAt: serverTimestamp()
         }, { merge: true });
       }
@@ -1232,23 +1234,23 @@
 
       if (!snap.exists()) {
         await setDoc(playerRef, {
-          uid: currentUserProfile?.uid || getCurrentPlayerDocId(),
-          displayName: currentPlayer,
-          photoURL: currentUserProfile?.photoURL || "",
-          points: pointsEarned,
-          quizzes: 1,
-          teamId: "",
-          teamName: "",
+          uid: currentUserProfile?.uid || getCurrentPlayerDocId(), 
+          displayName: currentPlayer, 
+          photoURL: currentUserProfile?.photoURL || "", 
+          points: pointsEarned, 
+          quizzes: 1, 
+          teamId: "", 
+          teamName: "", 
           updatedAt: serverTimestamp()
         });
         return;
       }
 
       await updateDoc(playerRef, {
-        displayName: currentPlayer,
-        photoURL: currentUserProfile?.photoURL || "",
-        points: increment(pointsEarned),
-        quizzes: increment(1),
+        displayName: currentPlayer, 
+        photoURL: currentUserProfile?.photoURL || "", 
+        points: increment(pointsEarned), 
+        quizzes: increment(1), 
         updatedAt: serverTimestamp()
       });
 
@@ -1293,19 +1295,19 @@
       const { doc, setDoc, updateDoc, serverTimestamp } = firebaseState.helpers;
 
       await setDoc(doc(firebaseState.db, "teams", teamId), {
-        name,
-        ownerId: getCurrentPlayerDocId(),
-        memberIds,
-        memberNames,
-        points: memberProfiles.reduce((sum, entry) => sum + (entry.points || 0), 0),
+        name, 
+        ownerId: getCurrentPlayerDocId(), 
+        memberIds, 
+        memberNames, 
+        points: memberProfiles.reduce((sum, entry) => sum + (entry.points || 0), 0), 
         updatedAt: serverTimestamp()
       }, { merge: true });
 
       await Promise.all(memberIds.map((memberId) => {
         const member = leaderboardEntries.find((entry) => entry.id === memberId);
         return updateDoc(doc(firebaseState.db, "leaderboard", memberId), {
-          teamId,
-          teamName: name,
+          teamId, 
+          teamName: name, 
           updatedAt: serverTimestamp()
         });
       }));
@@ -1412,9 +1414,9 @@
       if (!list) return;
 
       const labels = {
-        hero: "Hero",
-        stats: "Stats",
-        units: "Unit Grid",
+        hero: "Hero", 
+        stats: "Stats", 
+        units: "Unit Grid", 
         focus: "Focus Panel"
       };
 
@@ -1593,18 +1595,18 @@
     function getAccentClasses(subject) {
       const map = {
         Math: {
-          border: "hover:border-blue-300",
-          button: "from-blue-500 to-cyan-400",
+          border: "hover:border-blue-300", 
+          button: "from-blue-500 to-cyan-400", 
           badge: "text-blue-200 bg-blue-400/10"
-        },
+        }, 
         Science: {
-          border: "hover:border-emerald-300",
-          button: "from-emerald-500 to-teal-400",
+          border: "hover:border-emerald-300", 
+          button: "from-emerald-500 to-teal-400", 
           badge: "text-emerald-200 bg-emerald-400/10"
-        },
+        }, 
         "Social Studies": {
-          border: "hover:border-pink-300",
-          button: "from-pink-500 to-rose-400",
+          border: "hover:border-pink-300", 
+          button: "from-pink-500 to-rose-400", 
           badge: "text-pink-200 bg-pink-400/10"
         }
       };
@@ -1640,14 +1642,14 @@
 
     function renderSidebar() {
       const groups = {
-        Math: unitKeys.filter((key) => units[key].subject === "Math"),
-        Science: unitKeys.filter((key) => units[key].subject === "Science"),
+        Math: unitKeys.filter((key) => units[key].subject === "Math"), 
+        Science: unitKeys.filter((key) => units[key].subject === "Science"), 
         "Social Studies": unitKeys.filter((key) => units[key].subject === "Social Studies")
       };
 
       const icons = {
-        Math: "Math",
-        Science: "Science",
+        Math: "Math", 
+        Science: "Science", 
         "Social Studies": "Social"
       };
 
@@ -2010,18 +2012,18 @@
         }
 
         const answerMap = {
-          A: optionA,
-          B: optionB,
-          C: optionC,
+          A: optionA, 
+          B: optionB, 
+          C: optionC, 
           D: optionD
         };
 
         startQuiz(null, {
-          title: "Extracurricular Test",
+          title: "Extracurricular Test", 
           questions: [{
-            question,
-            options,
-            answer: answerMap[correctKey],
+            question, 
+            options, 
+            answer: answerMap[correctKey], 
             explanation: explanation || "Custom extracurricular question."
           }]
         });
@@ -2085,12 +2087,12 @@
 
         if (selected && selected.value === question.answer) score += 1;
         lastQuizReview.push({
-          number: index + 1,
-          question: question.question,
-          options: question.options,
-          selected: selectedValue,
-          answer: question.answer,
-          explanation: question.explanation,
+          number: index + 1, 
+          question: question.question, 
+          options: question.options, 
+          selected: selectedValue, 
+          answer: question.answer, 
+          explanation: question.explanation, 
           correct: selectedValue === question.answer
         });
       });
@@ -2112,12 +2114,12 @@
       }
 
       const result = {
-        unit: currentQuizTitle,
-        unitKey: currentQuizUnitKey,
-        time: new Date().toLocaleString(),
-        xpEarned: earnedXp,
-        score: `${score}/${currentQuizQuestions.length}`,
-        accuracy,
+        unit: currentQuizTitle, 
+        unitKey: currentQuizUnitKey, 
+        time: new Date().toLocaleString(), 
+        xpEarned: earnedXp, 
+        score: `${score}/${currentQuizQuestions.length}`, 
+        accuracy, 
         seconds
       };
 
@@ -2210,8 +2212,8 @@
                   <div class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
                     ${item.options.map((option) => `
                       <div class="rounded-2xl border border-white/10 px-4 py-3 ${
-                        option === item.answer ? "bg-emerald-400/15 text-emerald-100" :
-                        option === item.selected ? "bg-rose-400/15 text-rose-100" :
+                        option === item.answer ? "bg-emerald-400/15 text-emerald-100" : 
+                        option === item.selected ? "bg-rose-400/15 text-rose-100" : 
                         "bg-white/5"
                       }">
                         ${option}
@@ -2343,11 +2345,11 @@
 
     function escapeHtml(value) {
       return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
+        .replaceAll("&", "&")
+        .replaceAll("<", "<")
+        .replaceAll(">", ">")
+        .replaceAll('"', """)
+        .replaceAll("'", "'");
     }
 
     function bindGlobalActions() {
@@ -2445,21 +2447,22 @@
     }
 
     init();
- const profileMenuBtn = document.getElementById("profileMenuBtn");
-const profileDropdown = document.getElementById("profileDropdown");
+    
+    const profileMenuBtn = document.getElementById("profileMenuBtn");
+    const profileDropdown = document.getElementById("profileDropdown");
 
-profileMenuBtn?.addEventListener("click", (e) => {
-  e.stopPropagation();
-  profileDropdown.classList.toggle("hidden");
-});
+    profileMenuBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      profileDropdown.classList.toggle("hidden");
+    });
 
-document.addEventListener("click", () => {
-  profileDropdown.classList.add("hidden");
-});
+    document.addEventListener("click", () => {
+      profileDropdown.classList.add("hidden");
+    });
 
-profileDropdown?.addEventListener("click", (e) => {
-  e.stopPropagation();
-});
+    profileDropdown?.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
   </script>
 </body>
 </html>
