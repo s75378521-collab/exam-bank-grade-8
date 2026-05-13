@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,  initial-scale=1.0" />
   <title>Exam Bank Portal X</title>
   
   <!-- Tailwind CSS CDN -->
@@ -390,6 +390,41 @@
       object-fit: cover;
       border: 2px solid rgba(255, 255, 255, 0.2);
     }
+    
+    /* Leaderboard styles */
+    .leaderboard-entry {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .leaderboard-entry .rank {
+      font-weight: bold;
+      margin-right: 1rem;
+      min-width: 30px;
+    }
+    
+    .leaderboard-entry .player-info {
+      flex: 1;
+    }
+    
+    .leaderboard-entry .player-name {
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+    
+    .leaderboard-entry .player-stats {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+    
+    .leaderboard-entry .player-score {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
   </style>
 </head>
 <body>
@@ -726,7 +761,10 @@
         <input id="authNameInput" class="quiz-field" type="text" placeholder="Display name">
         <input id="authEmailInput" class="quiz-field" type="email" placeholder="Email address">
         <input id="authPasswordInput" class="quiz-field" type="password" placeholder="Password">
-        <input id="profilePicInput" class="quiz-field" type="file" accept="image/*">
+        <div class="upload-shell">
+          <input id="profilePicInput" class="quiz-field" type="file" accept="image/*">
+          <div class="text-center text-sm soft-text">Upload profile picture</div>
+        </div>
         
         <!-- Google Login Button -->
         <button id="googleSignInBtn" class="google-login-btn w-full">
@@ -744,6 +782,20 @@
           <button id="signInBtn" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover:bg-white/15">Sign In</button>
           <button id="signOutBtn" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover:bg-white/15">Sign Out</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard Modal -->
+  <div id="leaderboardModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-70">
+    <div class="glass rounded-3xl p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold">Leaderboard</h3>
+        <button id="closeLeaderboardModal" class="text-2xl">×</button>
+      </div>
+      
+      <div id="leaderboardContent" class="space-y-4">
+        <!-- Leaderboard entries will be populated here -->
       </div>
     </div>
   </div>
@@ -777,7 +829,7 @@
           { question: "Which shows the correct place value of the 6 in 4,682?", options: ["6 ones", "6 tens", "6 hundreds", "6 thousands"], answer: "6 hundreds", explanation: "In 4,682 the 6 is in the hundreds place." },
           { question: "What is the absolute value of -15?", options: ["-15", "0", "15", "30"], answer: "15", explanation: "Absolute value is the distance from zero, always positive." },
           { question: "Which is the largest integer?", options: ["-5", "0", "3", "-1"], answer: "3", explanation: "Positive numbers are greater than negative numbers." },
-          { question: "What is 3 to the power of 4?", options: ["12", "27", "81", "64"], answer: "81", explanation: "3^4 = 3 x 3 x 3 x 3 = 81." },
+          { question: "What is 3 to the power of 4?", options: ["12", "27", "81", "64"], answer: "81", explanation: "3⁴ = 3 x 3 x 3 x 3 = 81." },
           { question: "Which is NOT a factor of 12?", options: ["2", "3", "5", "6"], answer: "5", explanation: "Factors of 12 are 1, 2, 3, 4, 6, 12." },
           { question: "What is the greatest common factor of 18 and 24?", options: ["2", "3", "6", "12"], answer: "6", explanation: "Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 24: 1, 2, 3, 4, 6, 8, 12, 24. GCF is 6." }
         ]
@@ -830,15 +882,15 @@
         icon: "TRI",
         notes: ["Area", "Perimeter", "Triangles", "Pythagorean theorem"],
         questions: [
-          { question: "What is the area of a square with side 6 cm?", options: ["12 cm2", "24 cm2", "36 cm2", "18 cm2"], answer: "36 cm2", explanation: "Area of a square is side x side." },
+          { question: "What is the area of a square with side 6 cm?", options: ["12 cm²", "24 cm²", "36 cm²", "18 cm²"], answer: "36 cm²", explanation: "Area of a square is side x side." },
           { question: "How many sides does a triangle have?", options: ["2", "3", "4", "5"], answer: "3", explanation: "All triangles have three sides." },
           { question: "In a right triangle, a squared + b squared equals: ", options: ["c squared", "ab", "2c", "a + b"], answer: "c squared", explanation: "That is the Pythagorean theorem." },
           { question: "What is the perimeter of a triangle with sides 4 cm, 5 cm, and 6 cm?", options: ["11 cm", "14 cm", "15 cm", "30 cm"], answer: "15 cm", explanation: "Add all side lengths." },
           { question: "A triangle with all equal sides is called: ", options: ["Scalene", "Isosceles", "Right", "Equilateral"], answer: "Equilateral", explanation: "Equilateral triangles have three equal sides." },
-          { question: "What is the area of a triangle with base 8 cm and height 5 cm?", options: ["10 cm2", "20 cm2", "30 cm2", "40 cm2"], answer: "20 cm2", explanation: "Area = (1/2) x base x height = (1/2) x 8 x 5 = 20." },
+          { question: "What is the area of a triangle with base 8 cm and height 5 cm?", options: ["10 cm²", "20 cm²", "30 cm²", "40 cm²"], answer: "20 cm²", explanation: "Area = (1/2) x base x height = (1/2) x 8 x 5 = 20." },
           { question: "What type of triangle has one 90-degree angle?", options: ["Acute", "Obtuse", "Right", "Equilateral"], answer: "Right", explanation: "A right triangle has one 90-degree angle." },
           { question: "If two sides of a triangle are 3 cm and 4 cm, what is the minimum length of the third side?", options: ["1 cm", "2 cm", "3 cm", "4 cm"], answer: "2 cm", explanation: "Triangle inequality: third side > |4-3| = 1, so minimum is 2." },
-          { question: "What is the perimeter of a square with area 64 cm2?", options: ["16 cm", "24 cm", "32 cm", "64 cm"], answer: "32 cm", explanation: "Side = √64 = 8 cm. Perimeter = 4 x 8 = 32 cm." },
+          { question: "What is the perimeter of a square with area 64 cm²?", options: ["16 cm", "24 cm", "32 cm", "64 cm"], answer: "32 cm", explanation: "Side = √64 = 8 cm. Perimeter = 4 x 8 = 32 cm." },
           { question: "In a right triangle, if a=3 and b=4, what is c?", options: ["5", "6", "7", "8"], answer: "5", explanation: "Pythagorean theorem: c² = 3² + 4² = 9 + 16 = 25. So c = 5." }
         ]
       },
@@ -1488,11 +1540,19 @@
         seconds: seconds
       });
       
+      // Update leaderboard
+      if (!leaderboard[currentPlayer]) {
+        leaderboard[currentPlayer] = { points: 0, quizzes: 0 };
+      }
+      leaderboard[currentPlayer].points += earnedXp;
+      leaderboard[currentPlayer].quizzes++;
+      
       // Save to localStorage
       localStorage.setItem(storageKeys.streak, streak);
       localStorage.setItem(storageKeys.xp, xp);
       localStorage.setItem(storageKeys.history, JSON.stringify(history));
       localStorage.setItem(storageKeys.best, JSON.stringify(bestScores));
+      localStorage.setItem(storageKeys.leaderboard, JSON.stringify(leaderboard));
       
       // Update UI
       updateStats();
@@ -1659,6 +1719,34 @@
       });
     }
 
+    // Show leaderboard
+    function showLeaderboard() {
+      const leaderboardModal = document.getElementById("leaderboardModal");
+      const leaderboardContent = document.getElementById("leaderboardContent");
+      
+      // Sort leaderboard by points
+      const sortedLeaderboard = Object.entries(leaderboard)
+        .sort((a, b) => b[1].points - a[1].points)
+        .slice(0, 10); // Top 10 players
+      
+      // Generate leaderboard HTML
+      leaderboardContent.innerHTML = sortedLeaderboard.length > 0 
+        ? sortedLeaderboard.map(([name, data], index) => `
+          <div class="leaderboard-entry">
+            <div class="rank">#${index + 1}</div>
+            <div class="player-info">
+              <div class="player-name">${name}</div>
+              <div class="player-stats">${data.quizzes} quizzes</div>
+            </div>
+            <div class="player-score">${data.points} XP</div>
+          </div>
+        `).join("")
+        : `<div class="text-center py-8 soft-text">No players yet. Complete quizzes to appear on the leaderboard!</div>`;
+      
+      leaderboardModal.classList.remove("hidden");
+      leaderboardModal.classList.add("flex");
+    }
+
     // Format time
     function formatTime(totalSeconds) {
       const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
@@ -1670,6 +1758,42 @@
     function closeQuizOverlay() {
       document.getElementById("quizOverlay").classList.remove("open");
       document.body.style.overflow = "";
+    }
+
+    // Close leaderboard modal
+    function closeLeaderboardModal() {
+      document.getElementById("leaderboardModal").classList.add("hidden");
+      document.getElementById("leaderboardModal").classList.remove("flex");
+    }
+
+    // Handle profile photo upload
+    function handleProfilePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // In a real app, you would upload to a server/storage
+      // For this demo, we'll just create a local URL
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // Update profile image in UI
+        const imageUrl = e.target.result;
+        document.getElementById("headerProfileImage").src = imageUrl;
+        document.getElementById("headerProfileImageHeader").src = imageUrl;
+        document.getElementById("profileDropdownImage").src = imageUrl;
+        
+        // Update user profile
+        if (!currentUserProfile) {
+          currentUserProfile = { photoURL: imageUrl };
+        } else {
+          currentUserProfile.photoURL = imageUrl;
+        }
+        
+        // Save to localStorage
+        localStorage.setItem(storageKeys.authUser, JSON.stringify(currentUserProfile));
+        
+        showToast("Profile photo updated!");
+      };
+      reader.readAsDataURL(file);
     }
 
     // Bind global actions
@@ -1723,6 +1847,11 @@
         document.getElementById("authModal").classList.remove("flex");
       });
       
+      // Leaderboard modal
+      document.getElementById("openLeaderboardBtn").addEventListener("click", showLeaderboard);
+      document.getElementById("headerLeaderboardBtn").addEventListener("click", showLeaderboard);
+      document.getElementById("closeLeaderboardModal").addEventListener("click", closeLeaderboardModal);
+      
       // Google Sign In
       document.getElementById("googleSignInMainBtn").addEventListener("click", () => {
         showToast("Google Sign-In would be implemented with Firebase");
@@ -1730,6 +1859,22 @@
       
       document.getElementById("googleSignInBtn").addEventListener("click", () => {
         showToast("Google Sign-In would be implemented with Firebase");
+      });
+      
+      // Profile photo upload
+      document.getElementById("quickProfileUpload").addEventListener("change", handleProfilePhotoUpload);
+      document.getElementById("profilePicInput").addEventListener("change", handleProfilePhotoUpload);
+      
+      // Settings
+      document.getElementById("headerSettingsBtn").addEventListener("click", () => {
+        document.getElementById("settingsPanel").classList.add("open");
+        document.getElementById("appDrawer").classList.add("open");
+        document.getElementById("drawerOverlay").classList.add("open");
+        document.getElementById("hamburgerMenu").classList.add("open");
+      });
+      
+      document.getElementById("openSettingsBtn").addEventListener("click", () => {
+        document.getElementById("settingsPanel").classList.add("open");
       });
       
       // Quiz actions
@@ -1742,21 +1887,21 @@
         const questionIndex = actionBtn.dataset.questionIndex;
         
         switch (action) {
-          case "preview-unit":
+          case "preview-unit": 
             showUnit(unitKey);
             closeDrawer();
             break;
-          case "launch-unit":
+          case "launch-unit": 
             startQuiz(unitKey);
             closeDrawer();
             break;
-          case "open-question":
+          case "open-question": 
             // Show question preview
             const unit = units[currentUnitKey];
             const question = unit.questions[questionIndex];
-            alert(`${question.question}\n\nOptions:\n${question.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join("\n")}\n\nAnswer: ${question.answer}\n\nExplanation: ${question.explanation}`);
+            alert(`${question.question}\n\nOptions: \n${question.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join("\n")}\n\nAnswer: ${question.answer}\n\nExplanation: ${question.explanation}`);
             break;
-          case "study-flash":
+          case "study-flash": 
             // Flash review
             const randomNote = unit.notes[Math.floor(Math.random() * unit.notes.length)];
             const randomQuestion = unit.questions[Math.floor(Math.random() * unit.questions.length)];
@@ -1775,6 +1920,13 @@
       text.textContent = message;
       toast.classList.add("show");
       setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    // Close drawer
+    function closeDrawer() {
+      document.getElementById("appDrawer").classList.remove("open");
+      document.getElementById("drawerOverlay").classList.remove("open");
+      document.getElementById("hamburgerMenu").classList.remove("open");
     }
 
     // Start the app when DOM is loaded
