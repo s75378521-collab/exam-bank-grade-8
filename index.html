@@ -13,11 +13,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-  
   <style>
     :root {
       --bg-1: #08111f;
@@ -168,7 +163,7 @@
       transition: width 0.35s ease;
     }
 
-    .drawer-overlay,
+    .drawer-overlay, 
     .quiz-overlay {
       position: fixed;
       inset: 0;
@@ -180,7 +175,7 @@
       transition: opacity 0.35s ease, visibility 0.35s ease;
     }
 
-    .drawer-overlay.open,
+    .drawer-overlay.open, 
     .quiz-overlay.open {
       opacity: 1;
       visibility: visible;
@@ -257,8 +252,8 @@
       opacity: 1;
     }
 
-    .quiz-field,
-    .quiz-select,
+    .quiz-field, 
+    .quiz-select, 
     .quiz-textarea {
       width: 100%;
       border-radius: 1rem;
@@ -270,8 +265,8 @@
       transition: border-color 0.2s ease, background 0.2s ease;
     }
 
-    .quiz-field:focus,
-    .quiz-select:focus,
+    .quiz-field:focus, 
+    .quiz-select:focus, 
     .quiz-textarea:focus {
       border-color: rgba(255, 255, 255, 0.35);
       background: rgba(0, 0, 0, 0.96);
@@ -385,6 +380,15 @@
 
     .hamburger-menu.open .hamburger-line:nth-child(3) {
       transform: rotate(-45deg) translate(6px, -6px);
+    }
+    
+    /* Profile image styles */
+    .profile-image {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
@@ -566,6 +570,12 @@
             <p id="headerPointsCount" class="text-2xl font-black text-emerald-300">0</p>
           </div>
           <button id="headerSettingsBtn" class="glass rounded-2xl px-5 py-4 font-bold transition hover:bg-white/10">Customize</button>
+          <button id="profileMenuBtnHeader" class="glass rounded-2xl px-3 py-2 transition hover:bg-white/10">
+            <img id="headerProfileImageHeader" 
+                 src="https://ui-avatars.com/api/?name=Guest&background=111827&color=fff" 
+                 class="profile-image" 
+                 alt="Profile">
+          </button>
         </div>
       </header>
 
@@ -749,11 +759,6 @@
       appId: "1:429310662726:web:33932a1b13bda4e5efd247",
       measurementId: "G-0NM09ZRS5G"
     };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
 
     // Extended units with more questions
     const rawUnits = {
@@ -1058,113 +1063,6 @@
     let timerInterval = null;
     let seconds = 0;
 
-    // Google Sign-In
-    function signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then((result) => {
-          const user = result.user;
-          currentUserProfile = {
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL
-          };
-          currentPlayer = user.displayName;
-          updateStats();
-          document.getElementById("authModal").classList.add("hidden");
-          document.getElementById("authModal").classList.remove("flex");
-          showToast("Signed in with Google successfully!");
-        })
-        .catch((error) => {
-          console.error("Google sign-in error:", error);
-          showToast("Google sign-in failed: " + error.message);
-        });
-    }
-
-    // Sign Up with Email/Password
-    function signUpWithEmail() {
-      const email = document.getElementById("authEmailInput").value;
-      const password = document.getElementById("authPasswordInput").value;
-      const name = document.getElementById("authNameInput").value;
-      
-      if (!email || !password || !name) {
-        showToast("Please fill in all fields");
-        return;
-      }
-      
-      auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          return user.updateProfile({
-            displayName: name
-          });
-        })
-        .then(() => {
-          currentUserProfile = {
-            uid: auth.currentUser.uid,
-            displayName: auth.currentUser.displayName,
-            email: auth.currentUser.email,
-            photoURL: auth.currentUser.photoURL
-          };
-          currentPlayer = auth.currentUser.displayName;
-          updateStats();
-          document.getElementById("authModal").classList.add("hidden");
-          document.getElementById("authModal").classList.remove("flex");
-          showToast("Account created successfully!");
-        })
-        .catch((error) => {
-          console.error("Sign-up error:", error);
-          showToast("Sign-up failed: " + error.message);
-        });
-    }
-
-    // Sign In with Email/Password
-    function signInWithEmail() {
-      const email = document.getElementById("authEmailInput").value;
-      const password = document.getElementById("authPasswordInput").value;
-      
-      if (!email || !password) {
-        showToast("Please enter email and password");
-        return;
-      }
-      
-      auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          currentUserProfile = {
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL
-          };
-          currentPlayer = user.displayName;
-          updateStats();
-          document.getElementById("authModal").classList.add("hidden");
-          document.getElementById("authModal").classList.remove("flex");
-          showToast("Signed in successfully!");
-        })
-        .catch((error) => {
-          console.error("Sign-in error:", error);
-          showToast("Sign-in failed: " + error.message);
-        });
-    }
-
-    // Sign Out
-    function signOutUser() {
-      auth.signOut()
-        .then(() => {
-          currentUserProfile = null;
-          currentPlayer = "Guest";
-          updateStats();
-          showToast("Signed out successfully!");
-        })
-        .catch((error) => {
-          console.error("Sign-out error:", error);
-          showToast("Sign-out failed: " + error.message);
-        });
-    }
-
     // Initialize the app
     function init() {
       // Render UI components
@@ -1181,24 +1079,6 @@
       // Show initial unit
       const initialUnit = unitKeys[0];
       showUnit(initialUnit);
-      
-      // Set up auth state listener
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          currentUserProfile = {
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL
-          };
-          currentPlayer = user.displayName || "User";
-          updateStats();
-        } else {
-          currentUserProfile = null;
-          currentPlayer = "Guest";
-          updateStats();
-        }
-      });
     }
 
     // Render sidebar units
@@ -1366,13 +1246,19 @@
       const headerPoints = document.getElementById("headerPointsCount");
       if (headerPoints) headerPoints.textContent = xp;
       document.getElementById("currentPlayerLabel").textContent = `Current player: ${currentPlayer}`;
+      document.getElementById("profileDropdownName").textContent = currentPlayer;
       
       // Update profile images
-      const profileImage = currentUserProfile?.photoURL || "https://ui-avatars.com/api/?name=Guest&background=111827&color=fff";
-      document.getElementById("headerProfileImage").src = profileImage;
-      document.getElementById("profileDropdownImage").src = profileImage;
-      document.getElementById("profileDropdownName").textContent = currentUserProfile?.displayName || "Guest";
-      document.getElementById("profileDropdownEmail").textContent = currentUserProfile?.email || "Not signed in";
+      const profileImageSrc = currentUserProfile?.photoURL || 
+                              `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`;
+      
+      document.getElementById("headerProfileImage").src = profileImageSrc;
+      document.getElementById("headerProfileImageHeader").src = profileImageSrc;
+      document.getElementById("profileDropdownImage").src = profileImageSrc;
+      
+      if (currentUserProfile?.email) {
+        document.getElementById("profileDropdownEmail").textContent = currentUserProfile.email;
+      }
     }
 
     // Best accuracy
@@ -1416,10 +1302,12 @@
       currentQuizTitle = unit.title;
       currentQuizQuestions = [...unit.questions].sort(() => Math.random() - 0.5);
       
-      const quizShell = document.getElementById("quizShell");
-      quizShell.innerHTML = `
+      const overlay = document.getElementById("quizOverlay");
+      const shell = document.getElementById("quizShell");
+      
+      shell.innerHTML = `
         <section class="h-full overflow-y-auto p-3 lg:p-6">
-          <div class="glass-strong mx-auto max-w-6xl rounded-[36px] p-6 lg:p-8">
+          <div class="glass-strong mx-auto max-w-6xl rounded-[36px] p-5 lg:p-8">
             <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-blue-200">Full Screen Quiz</p>
@@ -1478,40 +1366,51 @@
         </section>
       `;
       
-      document.getElementById("quizOverlay").classList.add("open");
+      overlay.classList.add("open");
       document.body.style.overflow = "hidden";
       
       // Start timer
+      startTimer();
+      
+      // Bind quiz actions
+      document.getElementById("submitQuizBtn").addEventListener("click", submitQuiz);
+      document.getElementById("restartQuizBtn").addEventListener("click", () => startQuiz(unitKey));
+      document.getElementById("exitQuizBtn").addEventListener("click", closeQuizOverlay);
+      
+      // Bind radio button changes
+      document.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener("change", updateQuizCompletion);
+      });
+      
+      updateQuizCompletion();
+    }
+
+    // Start timer
+    function startTimer() {
+      clearInterval(timerInterval);
       seconds = 0;
       timerInterval = setInterval(() => {
         seconds++;
-        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const secs = (seconds % 60).toString().padStart(2, '0');
+        const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+        const secs = String(seconds % 60).padStart(2, "0");
         document.getElementById("timer").textContent = `${mins}:${secs}`;
       }, 1000);
-      
-      // Add event listeners
-      document.getElementById("exitQuizBtn").addEventListener("click", () => {
-        clearInterval(timerInterval);
-        document.getElementById("quizOverlay").classList.remove("open");
-        document.body.style.overflow = "";
-      });
-      
-      document.getElementById("restartQuizBtn").addEventListener("click", () => {
-        startQuiz(unitKey);
-      });
-      
-      document.getElementById("submitQuizBtn").addEventListener("click", submitQuiz);
-      
-      // Add event listeners to radio buttons
-      document.querySelectorAll('input[type="radio"]').forEach(input => {
-        input.addEventListener("change", updateQuizProgress);
-      });
     }
 
-    // Update quiz progress
-    function updateQuizProgress() {
-      const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+    // Update quiz completion
+    function updateQuizCompletion() {
+      // Update selected styles
+      document.querySelectorAll(".question-option").forEach(option => {
+        const input = option.querySelector('input[type="radio"]');
+        option.classList.toggle("selected", input && input.checked);
+      });
+      
+      // Update progress bar
+      const answered = new Set(
+        [...document.querySelectorAll('input[type="radio"]:checked')]
+          .map(input => parseInt(input.dataset.questionIndex))
+      ).size;
+      
       const total = currentQuizQuestions.length;
       const percent = Math.round((answered / total) * 100);
       
@@ -1528,22 +1427,32 @@
       
       currentQuizQuestions.forEach((question, index) => {
         const selected = document.querySelector(`input[name="question-${index}"]:checked`);
-        const labels = document.querySelectorAll(`input[name="question-${index}"]`);
         const selectedValue = selected ? selected.value : null;
         
-        labels.forEach((input) => {
+        // Update UI for correct/incorrect answers
+        document.querySelectorAll(`input[name="question-${index}"]`).forEach(input => {
           const optionWrapper = input.closest(".question-option");
-          if (!optionWrapper) return;
           const isCorrect = input.value === question.answer;
-          const isSelected = input.checked;
           
           optionWrapper.classList.remove("correct", "wrong", "selected");
-          if (isSelected) optionWrapper.classList.add("selected");
-          if (isCorrect) optionWrapper.classList.add("correct");
-          if (isSelected && !isCorrect) optionWrapper.classList.add("wrong");
+          
+          if (input.checked) {
+            optionWrapper.classList.add("selected");
+          }
+          
+          if (isCorrect) {
+            optionWrapper.classList.add("correct");
+          } else if (input.checked) {
+            optionWrapper.classList.add("wrong");
+          }
         });
         
-        if (selected && selected.value === question.answer) score += 1;
+        // Check if answer is correct
+        if (selectedValue === question.answer) {
+          score++;
+        }
+        
+        // Add to review
         lastQuizReview.push({
           number: index + 1,
           question: question.question,
@@ -1555,43 +1464,57 @@
         });
       });
       
+      // Calculate results
       const accuracy = Math.round((score / currentQuizQuestions.length) * 100);
-      const earnedXp = score * 25;
-      streak += 1;
+      const earnedXp = score * 10;
+      
+      // Update stats
+      streak++;
       xp += earnedXp;
       
-      if (!leaderboard[currentPlayer]) {
-        leaderboard[currentPlayer] = { points: 0, quizzes: 0 };
-      }
-      leaderboard[currentPlayer].points += earnedXp;
-      leaderboard[currentPlayer].quizzes += 1;
-      
-      if (currentQuizUnitKey) {
-        bestScores[currentQuizUnitKey] = Math.max(bestScores[currentQuizUnitKey] || 0, accuracy);
+      // Update best scores
+      if (!bestScores[currentQuizUnitKey] || accuracy > bestScores[currentQuizUnitKey]) {
+        bestScores[currentQuizUnitKey] = accuracy;
       }
       
-      const result = {
+      // Add to history
+      history.unshift({
         unit: currentQuizTitle,
         unitKey: currentQuizUnitKey,
         time: new Date().toLocaleString(),
         xpEarned: earnedXp,
         score: `${score}/${currentQuizQuestions.length}`,
-        accuracy,
-        seconds
-      };
+        accuracy: accuracy,
+        seconds: seconds
+      });
       
-      history.unshift(result);
-      saveState();
+      // Save to localStorage
+      localStorage.setItem(storageKeys.streak, streak);
+      localStorage.setItem(storageKeys.xp, xp);
+      localStorage.setItem(storageKeys.history, JSON.stringify(history));
+      localStorage.setItem(storageKeys.best, JSON.stringify(bestScores));
+      
+      // Update UI
       updateStats();
-      showResults(result);
-      showToast(`Quiz submitted. You scored ${accuracy}% and earned ${earnedXp} XP.`);
+      updateUnitProgress(currentQuizUnitKey);
+      
+      // Show results
+      showResults({
+        score: `${score}/${currentQuizQuestions.length}`,
+        accuracy: accuracy,
+        xpEarned: earnedXp,
+        time: seconds
+      });
+      
+      showToast(`Quiz completed! Score: ${accuracy}% | XP: ${earnedXp}`);
     }
 
     // Show results
     function showResults(result) {
-      updateUnitProgress(currentUnitKey);
+      const overlay = document.getElementById("quizOverlay");
+      const shell = document.getElementById("quizShell");
       
-      document.getElementById("quizShell").innerHTML = `
+      shell.innerHTML = `
         <section class="h-full overflow-y-auto p-3 lg:p-6">
           <div class="glass-strong mx-auto max-w-5xl rounded-[36px] p-6 text-center lg:p-10 panel-enter">
             <div class="flex justify-end gap-3">
@@ -1601,7 +1524,7 @@
             <p class="display-font mt-4 text-sm font-bold uppercase tracking-[0.24em] text-emerald-200">Mission Complete</p>
             <h2 class="mt-3 text-5xl font-black">Quiz Complete</h2>
             <p class="mt-4 text-3xl font-black text-blue-300">${result.score} correct</p>
-            <p class="mt-2 text-xl soft-text">Accuracy: ${result.accuracy}% | Time: ${formatTime(result.seconds)} | XP earned: ${result.xpEarned}</p>
+            <p class="mt-2 text-xl soft-text">Accuracy: ${result.accuracy}% | Time: ${formatTime(result.time)} | XP earned: ${result.xpEarned}</p>
 
             <div class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
               <div class="glass rounded-[26px] p-6">
@@ -1627,33 +1550,26 @@
         </section>
       `;
       
-      document.getElementById("resultRestartBtn").addEventListener("click", () => {
-        startQuiz(currentQuizUnitKey);
-      });
-      
-      document.getElementById("resultExitBtn").addEventListener("click", () => {
-        document.getElementById("quizOverlay").classList.remove("open");
-        document.body.style.overflow = "";
-      });
-      
+      // Bind result actions
+      document.getElementById("resultRestartBtn").addEventListener("click", () => startQuiz(currentQuizUnitKey));
+      document.getElementById("resultExitBtn").addEventListener("click", closeQuizOverlay);
       document.getElementById("reviewAnswersAfterQuiz").addEventListener("click", showAnswerReview);
-      
       document.getElementById("backToReviewAfterQuiz").addEventListener("click", () => {
-        document.getElementById("quizOverlay").classList.remove("open");
-        document.body.style.overflow = "";
+        closeQuizOverlay();
         if (currentUnitKey) showUnit(currentUnitKey);
       });
-      
       document.getElementById("openHistoryAfterQuiz").addEventListener("click", () => {
-        document.getElementById("quizOverlay").classList.remove("open");
-        document.body.style.overflow = "";
+        closeQuizOverlay();
         showHistory();
       });
     }
 
     // Show answer review
     function showAnswerReview() {
-      document.getElementById("quizShell").innerHTML = `
+      const overlay = document.getElementById("quizOverlay");
+      const shell = document.getElementById("quizShell");
+      
+      shell.innerHTML = `
         <section class="h-full overflow-y-auto p-3 lg:p-6">
           <div class="glass-strong mx-auto max-w-6xl rounded-[36px] p-6 lg:p-8 panel-enter">
             <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -1668,7 +1584,7 @@
               </div>
             </div>
             <div class="space-y-5">
-              ${lastQuizReview.map((item) => `
+              ${lastQuizReview.map(item => `
                 <article class="glass rounded-[28px] border ${item.correct ? "border-emerald-400/50" : "border-rose-400/50"} p-5">
                   <div class="mb-3 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                     <p class="text-xl font-black">Question ${item.number}</p>
@@ -1676,12 +1592,8 @@
                   </div>
                   <p class="text-lg font-semibold">${item.question}</p>
                   <div class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
-                    ${item.options.map((option) => `
-                      <div class="rounded-2xl border border-white/10 px-4 py-3 ${
-                        option === item.answer ? "bg-emerald-400/15 text-emerald-100" : 
-                        option === item.selected ? "bg-rose-400/15 text-rose-100" : 
-                        "bg-white/5"
-                      }">
+                    ${item.options.map(option => `
+                      <div class="rounded-2xl border border-white/10 px-4 py-3 ${option === item.answer ? "bg-emerald-400/15 text-emerald-100" : option === item.selected ? "bg-rose-400/15 text-rose-100" : "bg-white/5"}">
                         ${option}
                       </div>
                     `).join("")}
@@ -1696,19 +1608,14 @@
         </section>
       `;
       
-      document.getElementById("reviewRestartBtn").addEventListener("click", () => {
-        startQuiz(currentQuizUnitKey);
-      });
-      
-      document.getElementById("reviewExitBtn").addEventListener("click", () => {
-        document.getElementById("quizOverlay").classList.remove("open");
-        document.body.style.overflow = "";
-      });
+      // Bind review actions
+      document.getElementById("reviewRestartBtn").addEventListener("click", () => startQuiz(currentQuizUnitKey));
+      document.getElementById("reviewExitBtn").addEventListener("click", closeQuizOverlay);
     }
 
     // Show history
     function showHistory() {
-      const content = history.length ? history.map((item) => `
+      const content = history.length ? history.map(item => `
         <article class="glass rounded-[26px] p-5 panel-enter">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
@@ -1741,35 +1648,28 @@
         </section>
       `;
       
-      const clearBtn = document.getElementById("clearHistoryBtn");
-      if (clearBtn) {
-        clearBtn.addEventListener("click", () => {
-          history = [];
-          saveState();
-          updateStats();
-          updateUnitProgress(currentUnitKey);
-          showHistory();
-          showToast("History cleared.");
-        });
-      }
+      // Bind history actions
+      document.getElementById("clearHistoryBtn").addEventListener("click", () => {
+        history = [];
+        localStorage.setItem(storageKeys.history, JSON.stringify(history));
+        updateStats();
+        updateUnitProgress(currentUnitKey);
+        showHistory();
+        showToast("History cleared.");
+      });
     }
 
     // Format time
     function formatTime(totalSeconds) {
-      const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-      const secs = (totalSeconds % 60).toString().padStart(2, '0');
+      const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+      const secs = String(totalSeconds % 60).padStart(2, "0");
       return `${mins}:${secs}`;
     }
 
-    // Save state to localStorage
-    function saveState() {
-      localStorage.setItem(storageKeys.streak, streak);
-      localStorage.setItem(storageKeys.xp, xp);
-      localStorage.setItem(storageKeys.history, JSON.stringify(history));
-      localStorage.setItem(storageKeys.best, JSON.stringify(bestScores));
-      localStorage.setItem(storageKeys.leaderboard, JSON.stringify(leaderboard));
-      localStorage.setItem(storageKeys.currentPlayer, currentPlayer);
-      localStorage.setItem(storageKeys.authUser, JSON.stringify(currentUserProfile));
+    // Close quiz overlay
+    function closeQuizOverlay() {
+      document.getElementById("quizOverlay").classList.remove("open");
+      document.body.style.overflow = "";
     }
 
     // Bind global actions
@@ -1799,6 +1699,11 @@
         document.getElementById("profileDropdown").classList.toggle("hidden");
       });
       
+      document.getElementById("profileMenuBtnHeader").addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.getElementById("profileDropdown").classList.toggle("hidden");
+      });
+      
       document.addEventListener("click", () => {
         document.getElementById("profileDropdown").classList.add("hidden");
       });
@@ -1819,41 +1724,40 @@
       });
       
       // Google Sign In
-      document.getElementById("googleSignInBtn").addEventListener("click", signInWithGoogle);
-      document.getElementById("googleSignInMainBtn").addEventListener("click", signInWithGoogle);
+      document.getElementById("googleSignInMainBtn").addEventListener("click", () => {
+        showToast("Google Sign-In would be implemented with Firebase");
+      });
       
-      // Email/Password Auth
-      document.getElementById("signUpBtn").addEventListener("click", signUpWithEmail);
-      document.getElementById("signInBtn").addEventListener("click", signInWithEmail);
-      document.getElementById("signOutBtn").addEventListener("click", signOutUser);
+      document.getElementById("googleSignInBtn").addEventListener("click", () => {
+        showToast("Google Sign-In would be implemented with Firebase");
+      });
       
       // Quiz actions
       document.body.addEventListener("click", (e) => {
-        const action = e.target.closest("[data-action]");
-        if (!action) return;
+        const actionBtn = e.target.closest("[data-action]");
+        if (!actionBtn) return;
         
-        const unitKey = action.dataset.unitKey;
-        const questionIndex = action.dataset.questionIndex;
+        const action = actionBtn.dataset.action;
+        const unitKey = actionBtn.dataset.unitKey;
+        const questionIndex = actionBtn.dataset.questionIndex;
         
-        switch (action.dataset.action) {
+        switch (action) {
           case "preview-unit":
             showUnit(unitKey);
-            document.getElementById("appDrawer").classList.remove("open");
-            document.getElementById("drawerOverlay").classList.remove("open");
-            document.getElementById("hamburgerMenu").classList.remove("open");
+            closeDrawer();
             break;
           case "launch-unit":
             startQuiz(unitKey);
-            document.getElementById("appDrawer").classList.remove("open");
-            document.getElementById("drawerOverlay").classList.remove("open");
-            document.getElementById("hamburgerMenu").classList.remove("open");
+            closeDrawer();
             break;
           case "open-question":
-            const question = units[currentUnitKey].questions[questionIndex];
-            alert(`${question.question}\n\nA. ${question.options[0]}\nB. ${question.options[1]}\nC. ${question.options[2]}\nD. ${question.options[3]}\n\nAnswer: ${question.answer}\n\nExplanation: ${question.explanation}`);
+            // Show question preview
+            const unit = units[currentUnitKey];
+            const question = unit.questions[questionIndex];
+            alert(`${question.question}\n\nOptions:\n${question.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join("\n")}\n\nAnswer: ${question.answer}\n\nExplanation: ${question.explanation}`);
             break;
           case "study-flash":
-            const unit = units[unitKey];
+            // Flash review
             const randomNote = unit.notes[Math.floor(Math.random() * unit.notes.length)];
             const randomQuestion = unit.questions[Math.floor(Math.random() * unit.questions.length)];
             alert(`Flash Review\n\nUnit: ${unit.title}\n\nKey note: ${randomNote}\n\nQuick question: ${randomQuestion.question}\n\nAnswer: ${randomQuestion.answer}`);
@@ -1861,34 +1765,7 @@
         }
       });
       
-      // Other buttons
-      document.getElementById("quickQuizBtn").addEventListener("click", () => {
-        if (currentUnitKey) {
-          startQuiz(currentUnitKey);
-        } else {
-          showToast("Please select a unit first");
-        }
-      });
-      
-      document.getElementById("createTestBtn").addEventListener("click", () => {
-        showToast("Create Test feature coming soon!");
-      });
-      
-      document.getElementById("historyBtn").addEventListener("click", showHistory);
-      
-      document.getElementById("shuffleBtn").addEventListener("click", () => {
-        showToast("Shuffle Questions feature coming soon!");
-      });
-      
-      document.getElementById("headerLeaderboardBtn").addEventListener("click", () => {
-        showToast("Leaderboard feature coming soon!");
-      });
-      
-      document.getElementById("headerSettingsBtn").addEventListener("click", () => {
-        document.getElementById("settingsPanel").classList.add("open");
-        document.getElementById("appDrawer").classList.add("open");
-        document.getElementById("drawerOverlay").classList.add("open");
-      });
+      // Add more event listeners as needed
     }
 
     // Show toast message
