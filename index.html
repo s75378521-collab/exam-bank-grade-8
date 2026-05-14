@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,  initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Exam Bank Portal X</title>
   
   <!-- Tailwind CSS CDN -->
@@ -494,6 +494,30 @@
       background: #ef4444;
       color: white;
     }
+    
+    /* League styles */
+    .league-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+    
+    .league-bronze { background: linear-gradient(90deg, #cd7f32, #a6632a); }
+    .league-silver { background: linear-gradient(90deg, #c0c0c0, #a0a0a0); }
+    .league-gold { background: linear-gradient(90deg, #ffd700, #e6c200); }
+    .league-platinum { background: linear-gradient(90deg, #e5e4e2, #c9c8c7); }
+    .league-diamond { background: linear-gradient(90deg, #b9f2ff, #9ad3e0); }
+    .league-master { background: linear-gradient(90deg, #9d00ff, #7a00cc); }
+    .league-grandmaster { background: linear-gradient(90deg, #ff0000, #cc0000); }
+    
+    .league-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -867,9 +891,104 @@
         <button id="closeLeaderboardModal" class="text-2xl">×</button>
       </div>
       
-      <div id="leaderboardContent" class="space-y-4">
-        <!-- Leaderboard entries will be populated here -->
-        <div class="text-center py-8 soft-text">Loading leaderboard...</div>
+      <div class="mb-6">
+        <h4 class="text-xl font-bold mb-2">Your Rank</h4>
+        <div id="userRank" class="glass rounded-2xl p-4 flex items-center">
+          <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
+            <span class="font-bold">#-</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <span class="font-bold">Loading...</span>
+              <span class="font-bold">0 XP</span>
+            </div>
+            <div class="flex items-center mt-1">
+              <div class="league-badge league-bronze">
+                <svg class="league-icon" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+                </svg>
+                Bronze
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mb-6">
+        <h4 class="text-xl font-bold mb-2">Top Players</h4>
+        <div id="leaderboardContent" class="space-y-4">
+          <!-- Leaderboard entries will be populated here -->
+          <div class="text-center py-8 soft-text">Loading leaderboard...</div>
+        </div>
+      </div>
+      
+      <div>
+        <h4 class="text-xl font-bold mb-2">Leagues</h4>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass rounded-2xl p-4">
+            <div class="flex items-center mb-2">
+              <svg class="league-icon text-amber-700" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              <span class="font-bold ml-2">Bronze</span>
+            </div>
+            <p class="text-sm">0 - 499 XP</p>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="flex items-center mb-2">
+              <svg class="league-icon text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              <span class="font-bold ml-2">Silver</span>
+            </div>
+            <p class="text-sm">500 - 999 XP</p>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="flex items-center mb-2">
+              <svg class="league-icon text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              <span class="font-bold ml-2">Gold</span>
+            </div>
+            <p class="text-sm">1000 - 1999 XP</p>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="flex items-center mb-2">
+              <svg class="league-icon text-blue-300" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              <span class="font-bold ml-2">Platinum</span>
+            </div>
+            <p class="text-sm">2000 - 3999 XP</p>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="flex items-center mb-2">
+              <svg class="league-icon text-cyan-300" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              <span class="font-bold ml-2">Diamond</span>
+            </div>
+            <p class="text-sm">4000 - 7999 XP</p>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="flex items-center mb-2">
+              <svg class="league-icon text-purple-500" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              <span class="font-bold ml-2">Master</span>
+            </div>
+            <p class="text-sm">8000 - 15999 XP</p>
+          </div>
+          <div class="glass rounded-2xl p-4 col-span-2">
+            <div class="flex items-center mb-2">
+              <svg class="league-icon text-red-500" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              <span class="font-bold ml-2">Grandmaster</span>
+            </div>
+            <p class="text-sm">16000+ XP</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -918,13 +1037,13 @@
   <script>
     // Firebase configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyCO_lCaHej5QUNyDpzV84Y2DfIG87zOl-s", 
-      authDomain: "exam-bank-grade-8.firebaseapp.com", 
-      projectId: "exam-bank-grade-8", 
-      storageBucket: "exam-bank-grade-8.appspot.com", 
-      messagingSenderId: "429310662726", 
-      appId: "1:429310662726:web:33932a1b13bda4e5efd247", 
-      measurementId: "G-0NM09ZRS5G",
+      apiKey: "AIzaSyCO_lCaHej5QUNyDpzV84Y2DfIG87zOl-s",  
+      authDomain: "exam-bank-grade-8.firebaseapp.com",  
+      projectId: "exam-bank-grade-8",  
+      storageBucket: "exam-bank-grade-8.appspot.com",  
+      messagingSenderId: "429310662726",  
+      appId: "1:429310662726:web:33932a1b13bda4e5efd247",  
+      measurementId: "G-0NM09ZRS5G", 
       databaseURL: "https://exam-bank-grade-8-default-rtdb.firebaseio.com/"
     };
 
@@ -937,262 +1056,262 @@
     // Extended units with more questions
     const rawUnits = {
       math1: {
-        title: "Math Unit 1 - Numbers", 
-        description: "September to October", 
-        subject: "Math", 
-        accent: "blue", 
-        icon: "123", 
-        notes: ["Integers and whole numbers", "Place value", "Order of operations", "Prime and composite numbers"], 
+        title: "Math Unit 1 - Numbers",  
+        description: "September to October",  
+        subject: "Math",  
+        accent: "blue",  
+        icon: "123",  
+        notes: ["Integers and whole numbers", "Place value", "Order of operations", "Prime and composite numbers"],  
         questions: [
-          { question: "What is 7 squared?", options: ["14", "49", "21", "56"], answer: "49", explanation: "Seven squared means 7 x 7." }, 
-          { question: "Solve 15 + 8 x 2.", options: ["46", "31", "23", "16"], answer: "31", explanation: "Multiply first, then add: 8 x 2 = 16 and 15 + 16 = 31." }, 
-          { question: "Which number is prime?", options: ["21", "29", "35", "39"], answer: "29", explanation: "A prime number has exactly two factors: 1 and itself." }, 
-          { question: "Round 4, 783 to the nearest hundred.", options: ["4, 700", "4, 800", "5, 000", "4, 750"], answer: "4, 800", explanation: "The tens digit is 8, so round the hundreds digit up." }, 
-          { question: "Which shows the correct place value of the 6 in 4, 682?", options: ["6 ones", "6 tens", "6 hundreds", "6 thousands"], answer: "6 hundreds", explanation: "In 4, 682 the 6 is in the hundreds place." }, 
-          { question: "What is the absolute value of -15?", options: ["-15", "0", "15", "30"], answer: "15", explanation: "Absolute value is the distance from zero, always positive." }, 
-          { question: "Which is the largest integer?", options: ["-5", "0", "3", "-1"], answer: "3", explanation: "Positive numbers are greater than negative numbers." }, 
-          { question: "What is 3 to the power of 4?", options: ["12", "27", "81", "64"], answer: "81", explanation: "3⁴ = 3 x 3 x 3 x 3 = 81." }, 
-          { question: "Which is NOT a factor of 12?", options: ["2", "3", "5", "6"], answer: "5", explanation: "Factors of 12 are 1, 2, 3, 4, 6, 12." }, 
+          { question: "What is 7 squared?", options: ["14", "49", "21", "56"], answer: "49", explanation: "Seven squared means 7 x 7." },  
+          { question: "Solve 15 + 8 x 2.", options: ["46", "31", "23", "16"], answer: "31", explanation: "Multiply first, then add: 8 x 2 = 16 and 15 + 16 = 31." },  
+          { question: "Which number is prime?", options: ["21", "29", "35", "39"], answer: "29", explanation: "A prime number has exactly two factors: 1 and itself." },  
+          { question: "Round 4, 783 to the nearest hundred.", options: ["4, 700", "4, 800", "5, 000", "4, 750"], answer: "4, 800", explanation: "The tens digit is 8, so round the hundreds digit up." },  
+          { question: "Which shows the correct place value of the 6 in 4, 682?", options: ["6 ones", "6 tens", "6 hundreds", "6 thousands"], answer: "6 hundreds", explanation: "In 4, 682 the 6 is in the hundreds place." },  
+          { question: "What is the absolute value of -15?", options: ["-15", "0", "15", "30"], answer: "15", explanation: "Absolute value is the distance from zero, always positive." },  
+          { question: "Which is the largest integer?", options: ["-5", "0", "3", "-1"], answer: "3", explanation: "Positive numbers are greater than negative numbers." },  
+          { question: "What is 3 to the power of 4?", options: ["12", "27", "81", "64"], answer: "81", explanation: "3⁴ = 3 x 3 x 3 x 3 = 81." },  
+          { question: "Which is NOT a factor of 12?", options: ["2", "3", "5", "6"], answer: "5", explanation: "Factors of 12 are 1, 2, 3, 4, 6, 12." },  
           { question: "What is the greatest common factor of 18 and 24?", options: ["2", "3", "6", "12"], answer: "6", explanation: "Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 24: 1, 2, 3, 4, 6, 8, 12, 24. GCF is 6." }
         ]
-      }, 
+      },  
       math2: {
-        title: "Math Unit 2 - Fraction Operations", 
-        description: "October to November", 
-        subject: "Math", 
-        accent: "blue", 
-        icon: "1/2", 
-        notes: ["Adding fractions", "Subtracting fractions", "Multiplying fractions", "Dividing fractions"], 
+        title: "Math Unit 2 - Fraction Operations",  
+        description: "October to November",  
+        subject: "Math",  
+        accent: "blue",  
+        icon: "1/2",  
+        notes: ["Adding fractions", "Subtracting fractions", "Multiplying fractions", "Dividing fractions"],  
         questions: [
-          { question: "Add 2/3 + 1/6.", options: ["5/6", "1/2", "2/9", "1"], answer: "5/6", explanation: "Convert 2/3 to 4/6, then add 4/6 + 1/6." }, 
-          { question: "Multiply 3/4 x 2/5.", options: ["6/20", "3/10", "5/8", "1/2"], answer: "3/10", explanation: "Multiply numerators and denominators, then simplify 6/20 to 3/10." }, 
-          { question: "Which denominator can 1/2 and 1/3 both convert to?", options: ["4", "5", "6", "8"], answer: "6", explanation: "Six is the least common denominator of 2 and 3." }, 
-          { question: "What is 5/8 - 1/4?", options: ["1/4", "3/8", "4/8", "1/2"], answer: "3/8", explanation: "Convert 1/4 to 2/8, then subtract." }, 
-          { question: "To divide by a fraction, you should: ", options: ["Add the denominators", "Flip the second fraction and multiply", "Multiply by zero", "Subtract both numerators"], answer: "Flip the second fraction and multiply", explanation: "Dividing fractions means multiply by the reciprocal." }, 
-          { question: "What is 3/4 of 24?", options: ["6", "12", "18", "24"], answer: "18", explanation: "Multiply 3/4 x 24 = 18." }, 
-          { question: "Simplify 12/18 to lowest terms.", options: ["2/3", "3/4", "4/6", "6/9"], answer: "2/3", explanation: "Divide numerator and denominator by GCF of 6." }, 
-          { question: "Convert 7/4 to a mixed number.", options: ["1 1/4", "1 3/4", "2 1/4", "1 2/4"], answer: "1 3/4", explanation: "7 divided by 4 is 1 remainder 3." }, 
-          { question: "Which is larger: 3/5 or 2/3?", options: ["3/5", "2/3", "They are equal", "Cannot compare"], answer: "2/3", explanation: "Convert to common denominator: 9/15 vs 10/15." }, 
+          { question: "Add 2/3 + 1/6.", options: ["5/6", "1/2", "2/9", "1"], answer: "5/6", explanation: "Convert 2/3 to 4/6, then add 4/6 + 1/6." },  
+          { question: "Multiply 3/4 x 2/5.", options: ["6/20", "3/10", "5/8", "1/2"], answer: "3/10", explanation: "Multiply numerators and denominators, then simplify 6/20 to 3/10." },  
+          { question: "Which denominator can 1/2 and 1/3 both convert to?", options: ["4", "5", "6", "8"], answer: "6", explanation: "Six is the least common denominator of 2 and 3." },  
+          { question: "What is 5/8 - 1/4?", options: ["1/4", "3/8", "4/8", "1/2"], answer: "3/8", explanation: "Convert 1/4 to 2/8, then subtract." },  
+          { question: "To divide by a fraction, you should: ", options: ["Add the denominators", "Flip the second fraction and multiply", "Multiply by zero", "Subtract both numerators"], answer: "Flip the second fraction and multiply", explanation: "Dividing fractions means multiply by the reciprocal." },  
+          { question: "What is 3/4 of 24?", options: ["6", "12", "18", "24"], answer: "18", explanation: "Multiply 3/4 x 24 = 18." },  
+          { question: "Simplify 12/18 to lowest terms.", options: ["2/3", "3/4", "4/6", "6/9"], answer: "2/3", explanation: "Divide numerator and denominator by GCF of 6." },  
+          { question: "Convert 7/4 to a mixed number.", options: ["1 1/4", "1 3/4", "2 1/4", "1 2/4"], answer: "1 3/4", explanation: "7 divided by 4 is 1 remainder 3." },  
+          { question: "Which is larger: 3/5 or 2/3?", options: ["3/5", "2/3", "They are equal", "Cannot compare"], answer: "2/3", explanation: "Convert to common denominator: 9/15 vs 10/15." },  
           { question: "What is 2 1/3 + 1 1/2?", options: ["3 1/6", "3 5/6", "4 1/6", "3 2/5"], answer: "3 5/6", explanation: "Convert to improper fractions: 7/3 + 3/2 = 14/6 + 9/6 = 23/6 = 3 5/6." }
         ]
-      }, 
+      },  
       math3: {
-        title: "Math Unit 3 - Percent, Ratio, Rates", 
-        description: "November to December", 
-        subject: "Math", 
-        accent: "blue", 
-        icon: "%", 
-        notes: ["Percentages", "Ratios", "Rates", "Comparisons"], 
+        title: "Math Unit 3 - Percent, Ratio, Rates",  
+        description: "November to December",  
+        subject: "Math",  
+        accent: "blue",  
+        icon: "%",  
+        notes: ["Percentages", "Ratios", "Rates", "Comparisons"],  
         questions: [
-          { question: "What is 25% of 200?", options: ["25", "50", "75", "100"], answer: "50", explanation: "Twenty-five percent is one quarter, and one quarter of 200 is 50." }, 
-          { question: "Simplify 12:18.", options: ["6:9", "2:3", "4:5", "12:6"], answer: "2:3", explanation: "Divide both parts by 6." }, 
-          { question: "Convert 0.45 to a percent.", options: ["4.5%", "45%", "450%", "0.45%"], answer: "45%", explanation: "Multiply the decimal by 100 to change it to a percent." }, 
-          { question: "Which is the better buy: 3 notebooks for $6 or 5 notebooks for $15?", options: ["3 for $6", "5 for $15", "They cost the same per notebook", "Not enough information"], answer: "3 for $6", explanation: "The unit rates are $2 each versus $3 each." }, 
-          { question: "A ratio of 8 red to 12 blue simplifies to: ", options: ["4:6", "2:3", "8:3", "3:2"], answer: "2:3", explanation: "Divide both parts by 4." }, 
-          { question: "What is 15% of 80?", options: ["10", "12", "15", "18"], answer: "12", explanation: "0.15 x 80 = 12." }, 
-          { question: "If 3 out of 5 students prefer pizza, what percent is this?", options: ["30%", "50%", "60%", "75%"], answer: "60%", explanation: "3/5 = 0.6 = 60%." }, 
-          { question: "A car travels 240 miles in 4 hours. What is its rate?", options: ["40 mph", "50 mph", "60 mph", "70 mph"], answer: "60 mph", explanation: "Rate = Distance/Time = 240/4 = 60." }, 
-          { question: "If a shirt costs $25 and is on sale for 20% off, what is the sale price?", options: ["$5", "$20", "$22", "$30"], answer: "$20", explanation: "Discount = 0.20 x $25 = $5. Sale price = $25 - $5 = $20." }, 
+          { question: "What is 25% of 200?", options: ["25", "50", "75", "100"], answer: "50", explanation: "Twenty-five percent is one quarter, and one quarter of 200 is 50." },  
+          { question: "Simplify 12:18.", options: ["6:9", "2:3", "4:5", "12:6"], answer: "2:3", explanation: "Divide both parts by 6." },  
+          { question: "Convert 0.45 to a percent.", options: ["4.5%", "45%", "450%", "0.45%"], answer: "45%", explanation: "Multiply the decimal by 100 to change it to a percent." },  
+          { question: "Which is the better buy: 3 notebooks for $6 or 5 notebooks for $15?", options: ["3 for $6", "5 for $15", "They cost the same per notebook", "Not enough information"], answer: "3 for $6", explanation: "The unit rates are $2 each versus $3 each." },  
+          { question: "A ratio of 8 red to 12 blue simplifies to: ", options: ["4:6", "2:3", "8:3", "3:2"], answer: "2:3", explanation: "Divide both parts by 4." },  
+          { question: "What is 15% of 80?", options: ["10", "12", "15", "18"], answer: "12", explanation: "0.15 x 80 = 12." },  
+          { question: "If 3 out of 5 students prefer pizza, what percent is this?", options: ["30%", "50%", "60%", "75%"], answer: "60%", explanation: "3/5 = 0.6 = 60%." },  
+          { question: "A car travels 240 miles in 4 hours. What is its rate?", options: ["40 mph", "50 mph", "60 mph", "70 mph"], answer: "60 mph", explanation: "Rate = Distance/Time = 240/4 = 60." },  
+          { question: "If a shirt costs $25 and is on sale for 20% off, what is the sale price?", options: ["$5", "$20", "$22", "$30"], answer: "$20", explanation: "Discount = 0.20 x $25 = $5. Sale price = $25 - $5 = $20." },  
           { question: "In a class of 30 students, the ratio of boys to girls is 2:3. How many boys are there?", options: ["10", "12", "15", "18"], answer: "12", explanation: "Total parts = 2+3 = 5. Boys = (2/5) x 30 = 12." }
         ]
-      }, 
+      },  
       math4: {
-        title: "Math Unit 4 - Squares and Triangles", 
-        description: "January to March", 
-        subject: "Math", 
-        accent: "blue", 
-        icon: "TRI", 
-        notes: ["Area", "Perimeter", "Triangles", "Pythagorean theorem"], 
+        title: "Math Unit 4 - Squares and Triangles",  
+        description: "January to March",  
+        subject: "Math",  
+        accent: "blue",  
+        icon: "TRI",  
+        notes: ["Area", "Perimeter", "Triangles", "Pythagorean theorem"],  
         questions: [
-          { question: "What is the area of a square with side 6 cm?", options: ["12 cm²", "24 cm²", "36 cm²", "18 cm²"], answer: "36 cm²", explanation: "Area of a square is side x side." }, 
-          { question: "How many sides does a triangle have?", options: ["2", "3", "4", "5"], answer: "3", explanation: "All triangles have three sides." }, 
-          { question: "In a right triangle, a squared + b squared equals: ", options: ["c squared", "ab", "2c", "a + b"], answer: "c squared", explanation: "That is the Pythagorean theorem." }, 
-          { question: "What is the perimeter of a triangle with sides 4 cm, 5 cm, and 6 cm?", options: ["11 cm", "14 cm", "15 cm", "30 cm"], answer: "15 cm", explanation: "Add all side lengths." }, 
-          { question: "A triangle with all equal sides is called: ", options: ["Scalene", "Isosceles", "Right", "Equilateral"], answer: "Equilateral", explanation: "Equilateral triangles have three equal sides." }, 
-          { question: "What is the area of a triangle with base 8 cm and height 5 cm?", options: ["10 cm²", "20 cm²", "30 cm²", "40 cm²"], answer: "20 cm²", explanation: "Area = (1/2) x base x height = (1/2) x 8 x 5 = 20." }, 
-          { question: "What type of triangle has one 90-degree angle?", options: ["Acute", "Obtuse", "Right", "Equilateral"], answer: "Right", explanation: "A right triangle has one 90-degree angle." }, 
-          { question: "If two sides of a triangle are 3 cm and 4 cm, what is the minimum length of the third side?", options: ["1 cm", "2 cm", "3 cm", "4 cm"], answer: "2 cm", explanation: "Triangle inequality: third side > |4-3| = 1, so minimum is 2." }, 
-          { question: "What is the perimeter of a square with area 64 cm²?", options: ["16 cm", "24 cm", "32 cm", "64 cm"], answer: "32 cm", explanation: "Side = √64 = 8 cm. Perimeter = 4 x 8 = 32 cm." }, 
+          { question: "What is the area of a square with side 6 cm?", options: ["12 cm²", "24 cm²", "36 cm²", "18 cm²"], answer: "36 cm²", explanation: "Area of a square is side x side." },  
+          { question: "How many sides does a triangle have?", options: ["2", "3", "4", "5"], answer: "3", explanation: "All triangles have three sides." },  
+          { question: "In a right triangle, a squared + b squared equals: ", options: ["c squared", "ab", "2c", "a + b"], answer: "c squared", explanation: "That is the Pythagorean theorem." },  
+          { question: "What is the perimeter of a triangle with sides 4 cm, 5 cm, and 6 cm?", options: ["11 cm", "14 cm", "15 cm", "30 cm"], answer: "15 cm", explanation: "Add all side lengths." },  
+          { question: "A triangle with all equal sides is called: ", options: ["Scalene", "Isosceles", "Right", "Equilateral"], answer: "Equilateral", explanation: "Equilateral triangles have three equal sides." },  
+          { question: "What is the area of a triangle with base 8 cm and height 5 cm?", options: ["10 cm²", "20 cm²", "30 cm²", "40 cm²"], answer: "20 cm²", explanation: "Area = (1/2) x base x height = (1/2) x 8 x 5 = 20." },  
+          { question: "What type of triangle has one 90-degree angle?", options: ["Acute", "Obtuse", "Right", "Equilateral"], answer: "Right", explanation: "A right triangle has one 90-degree angle." },  
+          { question: "If two sides of a triangle are 3 cm and 4 cm, what is the minimum length of the third side?", options: ["1 cm", "2 cm", "3 cm", "4 cm"], answer: "2 cm", explanation: "Triangle inequality: third side > |4-3| = 1, so minimum is 2." },  
+          { question: "What is the perimeter of a square with area 64 cm²?", options: ["16 cm", "24 cm", "32 cm", "64 cm"], answer: "32 cm", explanation: "Side = √64 = 8 cm. Perimeter = 4 x 8 = 32 cm." },  
           { question: "In a right triangle, if a=3 and b=4, what is c?", options: ["5", "6", "7", "8"], answer: "5", explanation: "Pythagorean theorem: c² = 3² + 4² = 9 + 16 = 25. So c = 5." }
         ]
-      }, 
+      },  
       math5: {
-        title: "Math Unit 5 - Algebra and Linear Equations", 
-        description: "March", 
-        subject: "Math", 
-        accent: "blue", 
-        icon: "x", 
-        notes: ["Variables", "Equations", "Slope", "Graphing"], 
+        title: "Math Unit 5 - Algebra and Linear Equations",  
+        description: "March",  
+        subject: "Math",  
+        accent: "blue",  
+        icon: "x",  
+        notes: ["Variables", "Equations", "Slope", "Graphing"],  
         questions: [
-          { question: "Solve x + 7 = 19.", options: ["10", "12", "14", "26"], answer: "12", explanation: "Subtract 7 from both sides." }, 
-          { question: "Simplify 4x + 2x.", options: ["6", "8x", "6x", "2x"], answer: "6x", explanation: "Combine like terms." }, 
-          { question: "What is the slope in y = 3x + 1?", options: ["1", "3", "x", "4"], answer: "3", explanation: "In slope-intercept form y = mx + b, m is the slope." }, 
-          { question: "Solve 2x = 18.", options: ["7", "8", "9", "16"], answer: "9", explanation: "Divide both sides by 2." }, 
-          { question: "Which point is on the line y = x + 3?", options: ["(1, 2)", "(2, 5)", "(3, 1)", "(0, 1)"], answer: "(2, 5)", explanation: "If x = 2, then y must be 5." }, 
-          { question: "Solve for y: 3y - 5 = 16.", options: ["5", "7", "9", "11"], answer: "7", explanation: "Add 5: 3y = 21. Divide by 3: y = 7." }, 
-          { question: "What is the y-intercept of y = 2x - 4?", options: ["-4", "2", "4", "0"], answer: "-4", explanation: "In y = mx + b, b is the y-intercept." }, 
-          { question: "If x = -2, what is y in y = 3x + 1?", options: ["-5", "-3", "1", "7"], answer: "-5", explanation: "y = 3(-2) + 1 = -6 + 1 = -5." }, 
-          { question: "Solve: 5(x - 3) = 20.", options: ["5", "7", "9", "11"], answer: "7", explanation: "Divide by 5: x - 3 = 4. Add 3: x = 7." }, 
+          { question: "Solve x + 7 = 19.", options: ["10", "12", "14", "26"], answer: "12", explanation: "Subtract 7 from both sides." },  
+          { question: "Simplify 4x + 2x.", options: ["6", "8x", "6x", "2x"], answer: "6x", explanation: "Combine like terms." },  
+          { question: "What is the slope in y = 3x + 1?", options: ["1", "3", "x", "4"], answer: "3", explanation: "In slope-intercept form y = mx + b, m is the slope." },  
+          { question: "Solve 2x = 18.", options: ["7", "8", "9", "16"], answer: "9", explanation: "Divide both sides by 2." },  
+          { question: "Which point is on the line y = x + 3?", options: ["(1, 2)", "(2, 5)", "(3, 1)", "(0, 1)"], answer: "(2, 5)", explanation: "If x = 2, then y must be 5." },  
+          { question: "Solve for y: 3y - 5 = 16.", options: ["5", "7", "9", "11"], answer: "7", explanation: "Add 5: 3y = 21. Divide by 3: y = 7." },  
+          { question: "What is the y-intercept of y = 2x - 4?", options: ["-4", "2", "4", "0"], answer: "-4", explanation: "In y = mx + b, b is the y-intercept." },  
+          { question: "If x = -2, what is y in y = 3x + 1?", options: ["-5", "-3", "1", "7"], answer: "-5", explanation: "y = 3(-2) + 1 = -6 + 1 = -5." },  
+          { question: "Solve: 5(x - 3) = 20.", options: ["5", "7", "9", "11"], answer: "7", explanation: "Divide by 5: x - 3 = 4. Add 3: x = 7." },  
           { question: "What is the slope between points (1, 2) and (4, 8)?", options: ["1", "2", "3", "4"], answer: "2", explanation: "Slope = (8-2)/(4-1) = 6/3 = 2." }
         ]
-      }, 
+      },  
       math6: {
-        title: "Math Unit 6 - Prisms and Cylinders", 
-        description: "April to May", 
-        subject: "Math", 
-        accent: "blue", 
-        icon: "3D", 
-        notes: ["Volume", "Surface area", "3D shapes", "Nets"], 
+        title: "Math Unit 6 - Prisms and Cylinders",  
+        description: "April to May",  
+        subject: "Math",  
+        accent: "blue",  
+        icon: "3D",  
+        notes: ["Volume", "Surface area", "3D shapes", "Nets"],  
         questions: [
-          { question: "Which shape has two circular faces?", options: ["Cube", "Cylinder", "Prism", "Pyramid"], answer: "Cylinder", explanation: "A cylinder has two congruent circular bases." }, 
-          { question: "Volume measures how much space is inside a shape.", options: ["True", "False", "Only for 2D", "Only for triangles"], answer: "True", explanation: "Volume describes interior space in 3D objects." }, 
-          { question: "A net is: ", options: ["A 2D pattern of a 3D object", "A type of equation", "A graph line", "A ruler"], answer: "A 2D pattern of a 3D object", explanation: "Nets fold into three-dimensional solids." }, 
-          { question: "How many faces does a rectangular prism have?", options: ["4", "5", "6", "8"], answer: "6", explanation: "A rectangular prism has six faces." }, 
-          { question: "Which formula finds the volume of a prism?", options: ["Base area x height", "Length + width + height", "2 x pi x r", "Side x side"], answer: "Base area x height", explanation: "Prism volume is base area times height." }, 
-          { question: "What is the volume of a cylinder with radius 3 and height 5?", options: ["15π", "30π", "45π", "90π"], answer: "45π", explanation: "V = πr²h = π(3²)(5) = 45π." }, 
-          { question: "How many edges does a cube have?", options: ["6", "8", "12", "16"], answer: "12", explanation: "A cube has 12 edges." }, 
-          { question: "What is the surface area of a cube with side 4?", options: ["16", "32", "64", "96"], answer: "96", explanation: "SA = 6s² = 6(4²) = 6(16) = 96." }, 
-          { question: "Which 3D shape has only one curved surface?", options: ["Cone", "Cylinder", "Sphere", "Prism"], answer: "Sphere", explanation: "A sphere has only one curved surface." }, 
+          { question: "Which shape has two circular faces?", options: ["Cube", "Cylinder", "Prism", "Pyramid"], answer: "Cylinder", explanation: "A cylinder has two congruent circular bases." },  
+          { question: "Volume measures how much space is inside a shape.", options: ["True", "False", "Only for 2D", "Only for triangles"], answer: "True", explanation: "Volume describes interior space in 3D objects." },  
+          { question: "A net is: ", options: ["A 2D pattern of a 3D object", "A type of equation", "A graph line", "A ruler"], answer: "A 2D pattern of a 3D object", explanation: "Nets fold into three-dimensional solids." },  
+          { question: "How many faces does a rectangular prism have?", options: ["4", "5", "6", "8"], answer: "6", explanation: "A rectangular prism has six faces." },  
+          { question: "Which formula finds the volume of a prism?", options: ["Base area x height", "Length + width + height", "2 x pi x r", "Side x side"], answer: "Base area x height", explanation: "Prism volume is base area times height." },  
+          { question: "What is the volume of a cylinder with radius 3 and height 5?", options: ["15π", "30π", "45π", "90π"], answer: "45π", explanation: "V = πr²h = π(3²)(5) = 45π." },  
+          { question: "How many edges does a cube have?", options: ["6", "8", "12", "16"], answer: "12", explanation: "A cube has 12 edges." },  
+          { question: "What is the surface area of a cube with side 4?", options: ["16", "32", "64", "96"], answer: "96", explanation: "SA = 6s² = 6(4²) = 6(16) = 96." },  
+          { question: "Which 3D shape has only one curved surface?", options: ["Cone", "Cylinder", "Sphere", "Prism"], answer: "Sphere", explanation: "A sphere has only one curved surface." },  
           { question: "What is the volume of a rectangular prism with dimensions 3 x 4 x 5?", options: ["12", "30", "48", "60"], answer: "60", explanation: "V = length x width x height = 3 x 4 x 5 = 60." }
         ]
-      }, 
+      },  
       math7: {
-        title: "Math Unit 7 - Statistics and Probability", 
-        description: "May", 
-        subject: "Math", 
-        accent: "blue", 
-        icon: "Pi", 
-        notes: ["Mean", "Median", "Mode", "Probability"], 
+        title: "Math Unit 7 - Statistics and Probability",  
+        description: "May",  
+        subject: "Math",  
+        accent: "blue",  
+        icon: "Pi",  
+        notes: ["Mean", "Median", "Mode", "Probability"],  
         questions: [
-          { question: "What is the mean of 2, 4, 6?", options: ["3", "4", "5", "6"], answer: "4", explanation: "Add the numbers and divide by 3." }, 
-          { question: "Probability describes how likely something is to happen.", options: ["True", "False", "Only in geometry", "Only in graphs"], answer: "True", explanation: "Probability measures chance." }, 
-          { question: "Which graph is useful for comparing categories?", options: ["Bar graph", "Line segment", "Angle chart", "Cube net"], answer: "Bar graph", explanation: "Bar graphs compare different groups clearly." }, 
-          { question: "What is the median of 3, 7, 9?", options: ["3", "6", "7", "9"], answer: "7", explanation: "The median is the middle number in order." }, 
-          { question: "If you flip a fair coin, the probability of heads is: ", options: ["1/4", "1/3", "1/2", "1"], answer: "1/2", explanation: "There are two equally likely outcomes." }, 
-          { question: "What is the mode of 2, 3, 3, 4, 5?", options: ["2", "3", "4", "5"], answer: "3", explanation: "Mode is the most frequent value." }, 
-          { question: "What is the range of 5, 10, 15, 20?", options: ["5", "10", "15", "20"], answer: "15", explanation: "Range = max - min = 20 - 5 = 15." }, 
-          { question: "In a bag with 3 red and 2 blue marbles, what is P(red)?", options: ["1/5", "2/5", "3/5", "1/2"], answer: "3/5", explanation: "P(red) = red marbles/total = 3/5." }, 
-          { question: "What is the median of 1, 3, 5, 7, 9?", options: ["3", "5", "7", "9"], answer: "5", explanation: "Middle value in ordered list." }, 
+          { question: "What is the mean of 2, 4, 6?", options: ["3", "4", "5", "6"], answer: "4", explanation: "Add the numbers and divide by 3." },  
+          { question: "Probability describes how likely something is to happen.", options: ["True", "False", "Only in geometry", "Only in graphs"], answer: "True", explanation: "Probability measures chance." },  
+          { question: "Which graph is useful for comparing categories?", options: ["Bar graph", "Line segment", "Angle chart", "Cube net"], answer: "Bar graph", explanation: "Bar graphs compare different groups clearly." },  
+          { question: "What is the median of 3, 7, 9?", options: ["3", "6", "7", "9"], answer: "7", explanation: "The median is the middle number in order." },  
+          { question: "If you flip a fair coin, the probability of heads is: ", options: ["1/4", "1/3", "1/2", "1"], answer: "1/2", explanation: "There are two equally likely outcomes." },  
+          { question: "What is the mode of 2, 3, 3, 4, 5?", options: ["2", "3", "4", "5"], answer: "3", explanation: "Mode is the most frequent value." },  
+          { question: "What is the range of 5, 10, 15, 20?", options: ["5", "10", "15", "20"], answer: "15", explanation: "Range = max - min = 20 - 5 = 15." },  
+          { question: "In a bag with 3 red and 2 blue marbles, what is P(red)?", options: ["1/5", "2/5", "3/5", "1/2"], answer: "3/5", explanation: "P(red) = red marbles/total = 3/5." },  
+          { question: "What is the median of 1, 3, 5, 7, 9?", options: ["3", "5", "7", "9"], answer: "5", explanation: "Middle value in ordered list." },  
           { question: "Which measure is most affected by outliers?", options: ["Mean", "Median", "Mode", "Range"], answer: "Mean", explanation: "Mean is affected by extreme values." }
         ]
-      }, 
+      },  
       science1: {
-        title: "Science Unit 1 - Mix and Flow of Matter", 
-        description: "September to October", 
-        subject: "Science", 
-        accent: "green", 
-        icon: "H2O", 
-        notes: ["Matter", "Mixtures", "Solutions", "Fluid flow"], 
+        title: "Science Unit 1 - Mix and Flow of Matter",  
+        description: "September to October",  
+        subject: "Science",  
+        accent: "green",  
+        icon: "H2O",  
+        notes: ["Matter", "Mixtures", "Solutions", "Fluid flow"],  
         questions: [
-          { question: "What is viscosity?", options: ["A liquid's resistance to flow", "A kind of microscope", "A type of gas", "A solid mixture"], answer: "A liquid's resistance to flow", explanation: "More viscous liquids flow more slowly." }, 
-          { question: "A homogeneous mixture is: ", options: ["Evenly mixed", "Layered", "Frozen", "Magnetic"], answer: "Evenly mixed", explanation: "Its parts are spread out uniformly." }, 
-          { question: "What can affect fluid flow?", options: ["Temperature", "Thickness", "Pipe size", "All of these"], answer: "All of these", explanation: "Several factors change how easily a fluid moves." }, 
-          { question: "Which is an example of a solution?", options: ["Salt water", "Trail mix", "Sand and gravel", "Oil and water"], answer: "Salt water", explanation: "A solution is evenly mixed." }, 
-          { question: "Matter is anything that has: ", options: ["Mass and volume", "Only color", "No particles", "Only energy"], answer: "Mass and volume", explanation: "Matter takes up space and has mass." }, 
-          { question: "Which state of matter has a definite shape?", options: ["Solid", "Liquid", "Gas", "Plasma"], answer: "Solid", explanation: "Solids maintain their shape." }, 
-          { question: "What happens during evaporation?", options: ["Liquid to gas", "Gas to liquid", "Solid to liquid", "Liquid to solid"], answer: "Liquid to gas", explanation: "Evaporation is liquid turning to gas." }, 
-          { question: "Which is a heterogeneous mixture?", options: ["Salt water", "Air", "Pizza", "Sugar water"], answer: "Pizza", explanation: "Pizza has visibly different parts." }, 
-          { question: "What is the particle theory of matter?", options: ["All matter is made of particles", "Matter is continuous", "Only solids have particles", "Particles don't move"], answer: "All matter is made of particles", explanation: "Particle theory states all matter consists of tiny particles." }, 
+          { question: "What is viscosity?", options: ["A liquid's resistance to flow", "A kind of microscope", "A type of gas", "A solid mixture"], answer: "A liquid's resistance to flow", explanation: "More viscous liquids flow more slowly." },  
+          { question: "A homogeneous mixture is: ", options: ["Evenly mixed", "Layered", "Frozen", "Magnetic"], answer: "Evenly mixed", explanation: "Its parts are spread out uniformly." },  
+          { question: "What can affect fluid flow?", options: ["Temperature", "Thickness", "Pipe size", "All of these"], answer: "All of these", explanation: "Several factors change how easily a fluid moves." },  
+          { question: "Which is an example of a solution?", options: ["Salt water", "Trail mix", "Sand and gravel", "Oil and water"], answer: "Salt water", explanation: "A solution is evenly mixed." },  
+          { question: "Matter is anything that has: ", options: ["Mass and volume", "Only color", "No particles", "Only energy"], answer: "Mass and volume", explanation: "Matter takes up space and has mass." },  
+          { question: "Which state of matter has a definite shape?", options: ["Solid", "Liquid", "Gas", "Plasma"], answer: "Solid", explanation: "Solids maintain their shape." },  
+          { question: "What happens during evaporation?", options: ["Liquid to gas", "Gas to liquid", "Solid to liquid", "Liquid to solid"], answer: "Liquid to gas", explanation: "Evaporation is liquid turning to gas." },  
+          { question: "Which is a heterogeneous mixture?", options: ["Salt water", "Air", "Pizza", "Sugar water"], answer: "Pizza", explanation: "Pizza has visibly different parts." },  
+          { question: "What is the particle theory of matter?", options: ["All matter is made of particles", "Matter is continuous", "Only solids have particles", "Particles don't move"], answer: "All matter is made of particles", explanation: "Particle theory states all matter consists of tiny particles." },  
           { question: "Which property describes how easily a liquid flows?", options: ["Viscosity", "Density", "Solubility", "Conductivity"], answer: "Viscosity", explanation: "Viscosity measures flow resistance." }
         ]
-      }, 
+      },  
       science2: {
-        title: "Science Unit 2 - Cells and Systems", 
-        description: "November to December", 
-        subject: "Science", 
-        accent: "green", 
-        icon: "DNA", 
-        notes: ["Cells", "Organ systems", "Microscopes", "Cell theory"], 
+        title: "Science Unit 2 - Cells and Systems",  
+        description: "November to December",  
+        subject: "Science",  
+        accent: "green",  
+        icon: "DNA",  
+        notes: ["Cells", "Organ systems", "Microscopes", "Cell theory"],  
         questions: [
-          { question: "What is the function of the nucleus?", options: ["Controls cell activities", "Makes blood", "Protects skin", "Moves bones"], answer: "Controls cell activities", explanation: "The nucleus acts like the control center of the cell." }, 
-          { question: "Cell theory says all living things are made of cells.", options: ["True", "False", "Only plants", "Only humans"], answer: "True", explanation: "That is one of the main ideas of cell theory." }, 
-          { question: "An organ system is: ", options: ["Organs working together", "One single organ", "A kind of cell", "A microscope part"], answer: "Organs working together", explanation: "Body systems are groups of organs with a shared job." }, 
-          { question: "Which structure controls what enters and leaves the cell?", options: ["Cell membrane", "Nucleus", "Cytoplasm", "Chloroplast"], answer: "Cell membrane", explanation: "The membrane is the cell's boundary." }, 
-          { question: "Plant cells have which structure that animal cells do not?", options: ["Cell wall", "Nucleus", "Cell membrane", "Cytoplasm"], answer: "Cell wall", explanation: "Plant cells have a rigid cell wall." }, 
-          { question: "What is the function of mitochondria?", options: ["Produce energy", "Store water", "Make proteins", "Control cell division"], answer: "Produce energy", explanation: "Mitochondria are the cell's powerhouses." }, 
-          { question: "Which organelle contains chlorophyll?", options: ["Chloroplast", "Nucleus", "Ribosome", "Vacuole"], answer: "Chloroplast", explanation: "Chloroplasts perform photosynthesis." }, 
-          { question: "What is the basic unit of life?", options: ["Organ", "Tissue", "Cell", "Organism"], answer: "Cell", explanation: "Cells are the fundamental units of life." }, 
-          { question: "Which microscope part magnifies the specimen?", options: ["Eyepiece", "Stage", "Base", "Light source"], answer: "Eyepiece", explanation: "The eyepiece contains lenses that magnify." }, 
+          { question: "What is the function of the nucleus?", options: ["Controls cell activities", "Makes blood", "Protects skin", "Moves bones"], answer: "Controls cell activities", explanation: "The nucleus acts like the control center of the cell." },  
+          { question: "Cell theory says all living things are made of cells.", options: ["True", "False", "Only plants", "Only humans"], answer: "True", explanation: "That is one of the main ideas of cell theory." },  
+          { question: "An organ system is: ", options: ["Organs working together", "One single organ", "A kind of cell", "A microscope part"], answer: "Organs working together", explanation: "Body systems are groups of organs with a shared job." },  
+          { question: "Which structure controls what enters and leaves the cell?", options: ["Cell membrane", "Nucleus", "Cytoplasm", "Chloroplast"], answer: "Cell membrane", explanation: "The membrane is the cell's boundary." },  
+          { question: "Plant cells have which structure that animal cells do not?", options: ["Cell wall", "Nucleus", "Cell membrane", "Cytoplasm"], answer: "Cell wall", explanation: "Plant cells have a rigid cell wall." },  
+          { question: "What is the function of mitochondria?", options: ["Produce energy", "Store water", "Make proteins", "Control cell division"], answer: "Produce energy", explanation: "Mitochondria are the cell's powerhouses." },  
+          { question: "Which organelle contains chlorophyll?", options: ["Chloroplast", "Nucleus", "Ribosome", "Vacuole"], answer: "Chloroplast", explanation: "Chloroplasts perform photosynthesis." },  
+          { question: "What is the basic unit of life?", options: ["Organ", "Tissue", "Cell", "Organism"], answer: "Cell", explanation: "Cells are the fundamental units of life." },  
+          { question: "Which microscope part magnifies the specimen?", options: ["Eyepiece", "Stage", "Base", "Light source"], answer: "Eyepiece", explanation: "The eyepiece contains lenses that magnify." },  
           { question: "What is the function of the vacuole?", options: ["Store materials", "Produce energy", "Make proteins", "Control cell activities"], answer: "Store materials", explanation: "Vacuoles store water, nutrients, and waste." }
         ]
-      }, 
+      },  
       science3: {
-        title: "Science Unit 3 - Light and Optical Systems", 
-        description: "January to February", 
-        subject: "Science", 
-        accent: "green", 
-        icon: "Lens", 
-        notes: ["Reflection", "Refraction", "Lenses", "Human eye"], 
+        title: "Science Unit 3 - Light and Optical Systems",  
+        description: "January to February",  
+        subject: "Science",  
+        accent: "green",  
+        icon: "Lens",  
+        notes: ["Reflection", "Refraction", "Lenses", "Human eye"],  
         questions: [
-          { question: "Refraction happens when light: ", options: ["Bends", "Stops", "Explodes", "Freezes"], answer: "Bends", explanation: "Light bends when it moves between different materials." }, 
-          { question: "A convex lens usually: ", options: ["Spreads light out forever", "Bends light inward", "Blocks all light", "Creates sound"], answer: "Bends light inward", explanation: "Convex lenses focus light toward a point." }, 
-          { question: "Reflection is when light: ", options: ["Bounces off a surface", "Turns into heat only", "Disappears", "Enters water"], answer: "Bounces off a surface", explanation: "Mirrors show reflection clearly." }, 
-          { question: "Which device uses lenses to make small objects appear larger?", options: ["Microscope", "Thermometer", "Magnet", "Balance"], answer: "Microscope", explanation: "Microscopes use lenses to magnify." }, 
-          { question: "The pupil is the part of the eye that: ", options: ["Lets light in", "Pumps blood", "Creates sound", "Moves your leg"], answer: "Lets light in", explanation: "The pupil is the opening where light enters the eye." }, 
-          { question: "What is the transparent front part of the eye?", options: ["Cornea", "Lens", "Retina", "Iris"], answer: "Cornea", explanation: "The cornea is the clear front layer." }, 
-          { question: "Which color has the longest wavelength?", options: ["Red", "Blue", "Green", "Violet"], answer: "Red", explanation: "Red light has the longest visible wavelength." }, 
-          { question: "What causes a rainbow?", options: ["Refraction and dispersion", "Reflection only", "Absorption", "Diffusion"], answer: "Refraction and dispersion", explanation: "Light bends and separates into colors." }, 
-          { question: "Which part of the eye focuses light?", options: ["Lens", "Retina", "Iris", "Cornea"], answer: "Lens", explanation: "The lens adjusts to focus light." }, 
+          { question: "Refraction happens when light: ", options: ["Bends", "Stops", "Explodes", "Freezes"], answer: "Bends", explanation: "Light bends when it moves between different materials." },  
+          { question: "A convex lens usually: ", options: ["Spreads light out forever", "Bends light inward", "Blocks all light", "Creates sound"], answer: "Bends light inward", explanation: "Convex lenses focus light toward a point." },  
+          { question: "Reflection is when light: ", options: ["Bounces off a surface", "Turns into heat only", "Disappears", "Enters water"], answer: "Bounces off a surface", explanation: "Mirrors show reflection clearly." },  
+          { question: "Which device uses lenses to make small objects appear larger?", options: ["Microscope", "Thermometer", "Magnet", "Balance"], answer: "Microscope", explanation: "Microscopes use lenses to magnify." },  
+          { question: "The pupil is the part of the eye that: ", options: ["Lets light in", "Pumps blood", "Creates sound", "Moves your leg"], answer: "Lets light in", explanation: "The pupil is the opening where light enters the eye." },  
+          { question: "What is the transparent front part of the eye?", options: ["Cornea", "Lens", "Retina", "Iris"], answer: "Cornea", explanation: "The cornea is the clear front layer." },  
+          { question: "Which color has the longest wavelength?", options: ["Red", "Blue", "Green", "Violet"], answer: "Red", explanation: "Red light has the longest visible wavelength." },  
+          { question: "What causes a rainbow?", options: ["Refraction and dispersion", "Reflection only", "Absorption", "Diffusion"], answer: "Refraction and dispersion", explanation: "Light bends and separates into colors." },  
+          { question: "Which part of the eye focuses light?", options: ["Lens", "Retina", "Iris", "Cornea"], answer: "Lens", explanation: "The lens adjusts to focus light." },  
           { question: "What is the law of reflection?", options: ["Angle of incidence equals angle of reflection", "Light always bends", "Light travels in circles", "Reflection is random"], answer: "Angle of incidence equals angle of reflection", explanation: "This is the fundamental law of reflection." }
         ]
-      }, 
+      },  
       science4: {
-        title: "Science Unit 4 - Mechanical Systems", 
-        description: "March to April", 
-        subject: "Science", 
-        accent: "green", 
-        icon: "Gear", 
-        notes: ["Simple machines", "Mechanical advantage", "Force", "Motion"], 
+        title: "Science Unit 4 - Mechanical Systems",  
+        description: "March to April",  
+        subject: "Science",  
+        accent: "green",  
+        icon: "Gear",  
+        notes: ["Simple machines", "Mechanical advantage", "Force", "Motion"],  
         questions: [
-          { question: "A pulley helps: ", options: ["Change the direction of force", "Create electricity", "Grow plants", "Measure mass"], answer: "Change the direction of force", explanation: "Pulleys can make lifting easier by redirecting force." }, 
-          { question: "Mechanical advantage helps make work easier.", options: ["True", "False", "Only in chemistry", "Only in optics"], answer: "True", explanation: "Machines help reduce the force needed." }, 
-          { question: "Which is a simple machine?", options: ["Lever", "Cell", "Lens", "Atom"], answer: "Lever", explanation: "A lever is one of the six simple machines." }, 
-          { question: "Force can change an object's: ", options: ["Motion", "Color only", "Temperature only", "Name"], answer: "Motion", explanation: "A push or pull can start, stop, or change direction." }, 
-          { question: "Which simple machine is a ramp?", options: ["Inclined plane", "Wedge", "Pulley", "Screw"], answer: "Inclined plane", explanation: "A ramp is an inclined plane." }, 
-          { question: "What is the fulcrum of a lever?", options: ["The pivot point", "The effort", "The load", "The arm"], answer: "The pivot point", explanation: "The fulcrum is where the lever pivots." }, 
-          { question: "Which simple machine is found in a doorknob?", options: ["Wheel and axle", "Wedge", "Screw", "Pulley"], answer: "Wheel and axle", explanation: "Doorknobs are wheel and axle systems." }, 
-          { question: "What is work in physics terms?", options: ["Force x distance", "Force + distance", "Force / distance", "Force - distance"], answer: "Force x distance", explanation: "Work = force applied over a distance." }, 
-          { question: "Which reduces friction?", options: ["Lubricant", "Rough surface", "Heavy load", "High speed"], answer: "Lubricant", explanation: "Lubricants reduce friction between surfaces." }, 
+          { question: "A pulley helps: ", options: ["Change the direction of force", "Create electricity", "Grow plants", "Measure mass"], answer: "Change the direction of force", explanation: "Pulleys can make lifting easier by redirecting force." },  
+          { question: "Mechanical advantage helps make work easier.", options: ["True", "False", "Only in chemistry", "Only in optics"], answer: "True", explanation: "Machines help reduce the force needed." },  
+          { question: "Which is a simple machine?", options: ["Lever", "Cell", "Lens", "Atom"], answer: "Lever", explanation: "A lever is one of the six simple machines." },  
+          { question: "Force can change an object's: ", options: ["Motion", "Color only", "Temperature only", "Name"], answer: "Motion", explanation: "A push or pull can start, stop, or change direction." },  
+          { question: "Which simple machine is a ramp?", options: ["Inclined plane", "Wedge", "Pulley", "Screw"], answer: "Inclined plane", explanation: "A ramp is an inclined plane." },  
+          { question: "What is the fulcrum of a lever?", options: ["The pivot point", "The effort", "The load", "The arm"], answer: "The pivot point", explanation: "The fulcrum is where the lever pivots." },  
+          { question: "Which simple machine is found in a doorknob?", options: ["Wheel and axle", "Wedge", "Screw", "Pulley"], answer: "Wheel and axle", explanation: "Doorknobs are wheel and axle systems." },  
+          { question: "What is work in physics terms?", options: ["Force x distance", "Force + distance", "Force / distance", "Force - distance"], answer: "Force x distance", explanation: "Work = force applied over a distance." },  
+          { question: "Which reduces friction?", options: ["Lubricant", "Rough surface", "Heavy load", "High speed"], answer: "Lubricant", explanation: "Lubricants reduce friction between surfaces." },  
           { question: "What is the mechanical advantage of a lever with effort arm 4m and load arm 1m?", options: ["1", "2", "4", "8"], answer: "4", explanation: "MA = Effort arm / Load arm = 4/1 = 4." }
         ]
-      }, 
+      },  
       science5: {
-        title: "Science Unit 5 - Freshwater and Saltwater Systems", 
-        description: "May to June", 
-        subject: "Science", 
-        accent: "green", 
-        icon: "Wave", 
-        notes: ["Water ecosystems", "Human impacts", "Conservation", "Habitats"], 
+        title: "Science Unit 5 - Freshwater and Saltwater Systems",  
+        description: "May to June",  
+        subject: "Science",  
+        accent: "green",  
+        icon: "Wave",  
+        notes: ["Water ecosystems", "Human impacts", "Conservation", "Habitats"],  
         questions: [
-          { question: "An ecosystem is: ", options: ["Living things and their environment", "Only fish", "A machine", "A planet"], answer: "Living things and their environment", explanation: "Ecosystems include organisms and the places they live." }, 
-          { question: "Why should we conserve water?", options: ["It is limited and important", "To make it disappear", "So rivers stop", "No reason"], answer: "It is limited and important", explanation: "People and ecosystems depend on clean water." }, 
-          { question: "Pollution can harm water habitats.", options: ["True", "False", "Only saltwater", "Only snow"], answer: "True", explanation: "Pollution damages plants, animals, and water quality." }, 
-          { question: "Which is a freshwater habitat?", options: ["Lake", "Ocean", "Coral reef", "Tide pool"], answer: "Lake", explanation: "Lakes and rivers are freshwater systems." }, 
-          { question: "Runoff from roads and farms can: ", options: ["Carry pollution into water", "Create new fish instantly", "Turn lakes into deserts", "Remove all plants"], answer: "Carry pollution into water", explanation: "Runoff often carries harmful substances into waterways." }, 
-          { question: "What is the water cycle?", options: ["Continuous movement of water", "Water freezing", "Water evaporation only", "Water purification"], answer: "Continuous movement of water", explanation: "The water cycle continuously moves water between Earth and atmosphere." }, 
-          { question: "Which is the largest freshwater ecosystem?", options: ["Lake", "River", "Wetland", "Ocean"], answer: "Lake", explanation: "Lakes are large bodies of freshwater." }, 
-          { question: "What causes eutrophication?", options: ["Excess nutrients", "Low temperature", "High oxygen", "Acid rain"], answer: "Excess nutrients", explanation: "Nutrient overload causes algae blooms." }, 
-          { question: "Which human activity most affects water systems?", options: ["Agriculture", "Fishing", "Swimming", "Boating"], answer: "Agriculture", explanation: "Agriculture uses most freshwater and adds pollutants." }, 
+          { question: "An ecosystem is: ", options: ["Living things and their environment", "Only fish", "A machine", "A planet"], answer: "Living things and their environment", explanation: "Ecosystems include organisms and the places they live." },  
+          { question: "Why should we conserve water?", options: ["It is limited and important", "To make it disappear", "So rivers stop", "No reason"], answer: "It is limited and important", explanation: "People and ecosystems depend on clean water." },  
+          { question: "Pollution can harm water habitats.", options: ["True", "False", "Only saltwater", "Only snow"], answer: "True", explanation: "Pollution damages plants, animals, and water quality." },  
+          { question: "Which is a freshwater habitat?", options: ["Lake", "Ocean", "Coral reef", "Tide pool"], answer: "Lake", explanation: "Lakes and rivers are freshwater systems." },  
+          { question: "Runoff from roads and farms can: ", options: ["Carry pollution into water", "Create new fish instantly", "Turn lakes into deserts", "Remove all plants"], answer: "Carry pollution into water", explanation: "Runoff often carries harmful substances into waterways." },  
+          { question: "What is the water cycle?", options: ["Continuous movement of water", "Water freezing", "Water evaporation only", "Water purification"], answer: "Continuous movement of water", explanation: "The water cycle continuously moves water between Earth and atmosphere." },  
+          { question: "Which is the largest freshwater ecosystem?", options: ["Lake", "River", "Wetland", "Ocean"], answer: "Lake", explanation: "Lakes are large bodies of freshwater." },  
+          { question: "What causes eutrophication?", options: ["Excess nutrients", "Low temperature", "High oxygen", "Acid rain"], answer: "Excess nutrients", explanation: "Nutrient overload causes algae blooms." },  
+          { question: "Which human activity most affects water systems?", options: ["Agriculture", "Fishing", "Swimming", "Boating"], answer: "Agriculture", explanation: "Agriculture uses most freshwater and adds pollutants." },  
           { question: "What is a watershed?", options: ["Area that drains to a water body", "Underground water", "Ocean current", "Water treatment plant"], answer: "Area that drains to a water body", explanation: "A watershed collects and drains water to a common outlet." }
         ]
-      }, 
+      },  
       socialvocab: {
-        title: "Social Studies Vocabulary", 
-        description: "Medieval and Renaissance terms", 
-        subject: "Social Studies", 
-        accent: "pink", 
-        icon: "Globe", 
-        notes: ["Byzantine Empire", "Middle Ages", "Feudal system", "Guilds", "Urbanization", "Republic", "Oligarchy"], 
+        title: "Social Studies Vocabulary",  
+        description: "Medieval and Renaissance terms",  
+        subject: "Social Studies",  
+        accent: "pink",  
+        icon: "Globe",  
+        notes: ["Byzantine Empire", "Middle Ages", "Feudal system", "Guilds", "Urbanization", "Republic", "Oligarchy"],  
         questions: [
-          { question: "What was the Byzantine Empire?", options: ["The eastern part of the Roman Empire", "A guild", "A trade route only", "A pyramid kingdom"], answer: "The eastern part of the Roman Empire", explanation: "It continued Roman traditions in the east." }, 
-          { question: "What is a guild?", options: ["A group of skilled workers", "A castle wall", "A king's crown", "A farming tool"], answer: "A group of skilled workers", explanation: "Guilds organized craftspeople and merchants." }, 
-          { question: "Urbanization means: ", options: ["Growth of towns and cities", "Moving to farms", "Trading spices", "Writing laws"], answer: "Growth of towns and cities", explanation: "Urbanization happens when more people live in towns and cities." }, 
-          { question: "The feudal system was based on: ", options: ["Land, loyalty, and service", "Factory jobs", "Democracy votes only", "Modern banking"], answer: "Land, loyalty, and service", explanation: "Feudal relationships were built on land and protection." }, 
-          { question: "An oligarchy is a government ruled by: ", options: ["A few powerful people", "One emperor only", "All citizens directly", "Skilled workers"], answer: "A few powerful people", explanation: "Oligarchy means rule by a small group." }, 
-          { question: "What was the Renaissance?", options: ["Rebirth of learning", "Dark Ages", "Religious wars", "Plague period"], answer: "Rebirth of learning", explanation: "The Renaissance was a cultural rebirth." }, 
-          { question: "What was the main language of the Byzantine Empire?", options: ["Latin", "Greek", "Arabic", "French"], answer: "Greek", explanation: "Greek was the primary language." }, 
-          { question: "What was the purpose of medieval castles?", options: ["Defense and residence", "Trading posts", "Schools", "Hospitals"], answer: "Defense and residence", explanation: "Castles provided protection and housing." }, 
-          { question: "What was the Black Death?", options: ["A plague pandemic", "A war", "A famine", "A religious movement"], answer: "A plague pandemic", explanation: "The Black Death was a devastating plague." }, 
+          { question: "What was the Byzantine Empire?", options: ["The eastern part of the Roman Empire", "A guild", "A trade route only", "A pyramid kingdom"], answer: "The eastern part of the Roman Empire", explanation: "It continued Roman traditions in the east." },  
+          { question: "What is a guild?", options: ["A group of skilled workers", "A castle wall", "A king's crown", "A farming tool"], answer: "A group of skilled workers", explanation: "Guilds organized craftspeople and merchants." },  
+          { question: "Urbanization means: ", options: ["Growth of towns and cities", "Moving to farms", "Trading spices", "Writing laws"], answer: "Growth of towns and cities", explanation: "Urbanization happens when more people live in towns and cities." },  
+          { question: "The feudal system was based on: ", options: ["Land, loyalty, and service", "Factory jobs", "Democracy votes only", "Modern banking"], answer: "Land, loyalty, and service", explanation: "Feudal relationships were built on land and protection." },  
+          { question: "An oligarchy is a government ruled by: ", options: ["A few powerful people", "One emperor only", "All citizens directly", "Skilled workers"], answer: "A few powerful people", explanation: "Oligarchy means rule by a small group." },  
+          { question: "What was the Renaissance?", options: ["Rebirth of learning", "Dark Ages", "Religious wars", "Plague period"], answer: "Rebirth of learning", explanation: "The Renaissance was a cultural rebirth." },  
+          { question: "What was the main language of the Byzantine Empire?", options: ["Latin", "Greek", "Arabic", "French"], answer: "Greek", explanation: "Greek was the primary language." },  
+          { question: "What was the purpose of medieval castles?", options: ["Defense and residence", "Trading posts", "Schools", "Hospitals"], answer: "Defense and residence", explanation: "Castles provided protection and housing." },  
+          { question: "What was the Black Death?", options: ["A plague pandemic", "A war", "A famine", "A religious movement"], answer: "A plague pandemic", explanation: "The Black Death was a devastating plague." },  
           { question: "What was the role of a serf?", options: ["Worked lord's land", "Knight", "Merchant", "Priest"], answer: "Worked lord's land", explanation: "Serfs were peasants bound to the land." }
         ]
       }
@@ -1200,16 +1319,16 @@
 
     // Storage keys
     const storageKeys = {
-      streak: "examBank.studyStreak", 
-      xp: "examBank.xpPoints", 
-      history: "examBank.quizHistory", 
-      best: "examBank.bestScores", 
-      theme: "examBank.theme", 
-      sectionOrder: "examBank.sectionOrder", 
-      accent: "examBank.accent", 
-      surface: "examBank.surface", 
-      leaderboard: "examBank.leaderboard", 
-      currentPlayer: "examBank.currentPlayer", 
+      streak: "examBank.studyStreak",  
+      xp: "examBank.xpPoints",  
+      history: "examBank.quizHistory",  
+      best: "examBank.bestScores",  
+      theme: "examBank.theme",  
+      sectionOrder: "examBank.sectionOrder",  
+      accent: "examBank.accent",  
+      surface: "examBank.surface",  
+      leaderboard: "examBank.leaderboard",  
+      currentPlayer: "examBank.currentPlayer",  
       authUser: "examBank.authUser"
     };
 
@@ -1261,9 +1380,9 @@
           // User is signed in
           currentPlayer = user.displayName || user.email || "User";
           currentUserProfile = {
-            uid: user.uid, 
-            displayName: user.displayName, 
-            email: user.email, 
+            uid: user.uid,  
+            displayName: user.displayName,  
+            email: user.email,  
             photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`
           };
           
@@ -1294,14 +1413,14 @@
     // Render sidebar units
     function renderSidebar() {
       const groups = {
-        Math: unitKeys.filter((key) => units[key].subject === "Math"), 
-        Science: unitKeys.filter((key) => units[key].subject === "Science"), 
+        Math: unitKeys.filter((key) => units[key].subject === "Math"),  
+        Science: unitKeys.filter((key) => units[key].subject === "Science"),  
         "Social Studies": unitKeys.filter((key) => units[key].subject === "Social Studies")
       };
 
       const icons = {
-        Math: "Math", 
-        Science: "Science", 
+        Math: "Math",  
+        Science: "Science",  
         "Social Studies": "Social"
       };
 
@@ -1383,18 +1502,18 @@
     function getAccentClasses(subject) {
       const map = {
         Math: {
-          border: "hover: border-blue-300", 
-          button: "from-blue-500 to-cyan-400", 
+          border: "hover: border-blue-300",  
+          button: "from-blue-500 to-cyan-400",  
           badge: "text-blue-200 bg-blue-400/10"
-        }, 
+        },  
         Science: {
-          border: "hover: border-emerald-300", 
-          button: "from-emerald-500 to-teal-400", 
+          border: "hover: border-emerald-300",  
+          button: "from-emerald-500 to-teal-400",  
           badge: "text-emerald-200 bg-emerald-400/10"
-        }, 
+        },  
         "Social Studies": {
-          border: "hover: border-pink-300", 
-          button: "from-pink-500 to-rose-400", 
+          border: "hover: border-pink-300",  
+          button: "from-pink-500 to-rose-400",  
           badge: "text-pink-200 bg-pink-400/10"
         }
       };
@@ -1554,7 +1673,7 @@
               <div class="flex flex-wrap gap-3">
                 <div class="glass rounded-[24px] px-6 py-4 text-center">
                   <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Timer</p>
-                  <p id="timer" class="display-font mt-2 text-4xl font-black">00:00</p>
+                  <p id="timer" class="display-font mt-2 text-4xl font-black">00: 00</p>
                 </div>
                 <button id="restartQuizBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover: bg-amber-300">Restart</button>
                 <button id="exitQuizBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover: bg-white/15">Exit</button>
@@ -1644,7 +1763,7 @@
               <div class="flex flex-wrap gap-3">
                 <div class="glass rounded-[24px] px-6 py-4 text-center">
                   <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Timer</p>
-                  <p id="timer" class="display-font mt-2 text-4xl font-black">00:00</p>
+                  <p id="timer" class="display-font mt-2 text-4xl font-black">00: 00</p>
                 </div>
                 <button id="restartQuizBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover: bg-amber-300">Restart</button>
                 <button id="exitQuizBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover: bg-white/15">Exit</button>
@@ -1720,7 +1839,7 @@
         seconds++;
         const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
         const secs = String(seconds % 60).padStart(2, "0");
-        document.getElementById("timer").textContent = `${mins}:${secs}`;
+        document.getElementById("timer").textContent = `${mins}: ${secs}`;
       }, 1000);
     }
 
@@ -1781,12 +1900,12 @@
         
         // Add to review
         lastQuizReview.push({
-          number: index + 1, 
-          question: question.question, 
-          options: question.options, 
-          selected: selectedValue, 
-          answer: question.answer, 
-          explanation: question.explanation, 
+          number: index + 1,  
+          question: question.question,  
+          options: question.options,  
+          selected: selectedValue,  
+          answer: question.answer,  
+          explanation: question.explanation,  
           correct: selectedValue === question.answer
         });
       });
@@ -1808,12 +1927,12 @@
       
       // Add to history
       history.unshift({
-        unit: currentQuizTitle, 
-        unitKey: currentQuizUnitKey, 
-        time: new Date().toLocaleString(), 
-        xpEarned: earnedXp, 
-        score: `${score}/${currentQuizQuestions.length}`, 
-        accuracy: accuracy, 
+        unit: currentQuizTitle,  
+        unitKey: currentQuizUnitKey,  
+        time: new Date().toLocaleString(),  
+        xpEarned: earnedXp,  
+        score: `${score}/${currentQuizQuestions.length}`,  
+        accuracy: accuracy,  
         seconds: seconds
       });
       
@@ -1840,9 +1959,9 @@
       
       // Show results
       showResults({
-        score: `${score}/${currentQuizQuestions.length}`, 
-        accuracy: accuracy, 
-        xpEarned: earnedXp, 
+        score: `${score}/${currentQuizQuestions.length}`,  
+        accuracy: accuracy,  
+        xpEarned: earnedXp,  
         time: seconds
       });
       
@@ -2023,9 +2142,29 @@
     function showLeaderboard() {
       const leaderboardModal = document.getElementById("leaderboardModal");
       const leaderboardContent = document.getElementById("leaderboardContent");
+      const userRankElement = document.getElementById("userRank");
       
       // Show loading state
       leaderboardContent.innerHTML = `<div class="text-center py-8 soft-text">Loading leaderboard...</div>`;
+      userRankElement.innerHTML = `
+        <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
+          <span class="font-bold">#-</span>
+        </div>
+        <div class="flex-1">
+          <div class="flex justify-between">
+            <span class="font-bold">Loading...</span>
+            <span class="font-bold">0 XP</span>
+          </div>
+          <div class="flex items-center mt-1">
+            <div class="league-badge league-bronze">
+              <svg class="league-icon" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              Bronze
+            </div>
+          </div>
+        </div>
+      `;
       
       // Fetch leaderboard from Firebase
       database.ref("leaderboard").once("value").then(snapshot => {
@@ -2039,18 +2178,56 @@
           .sort((a, b) => b[1].points - a[1].points)
           .slice(0, 10); // Top 10 players
         
+        // Find user rank
+        const userIndex = Object.entries(mergedLeaderboard)
+          .sort((a, b) => b[1].points - a[1].points)
+          .findIndex(([name]) => name === currentPlayer);
+        
+        const userRank = userIndex !== -1 ? userIndex + 1 : "-";
+        const userData = mergedLeaderboard[currentPlayer] || { points: 0, quizzes: 0 };
+        
+        // Update user rank display
+        const league = getLeague(userData.points);
+        userRankElement.innerHTML = `
+          <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
+            <span class="font-bold">#${userRank}</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <span class="font-bold">${currentPlayer}</span>
+              <span class="font-bold">${userData.points} XP</span>
+            </div>
+            <div class="flex items-center mt-1">
+              <div class="league-badge ${league.class}">
+                <svg class="league-icon" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+                </svg>
+                ${league.name}
+              </div>
+            </div>
+          </div>
+        `;
+        
         // Generate leaderboard HTML
         leaderboardContent.innerHTML = sortedLeaderboard.length > 0 
-          ? sortedLeaderboard.map(([name, data], index) => `
-            <div class="leaderboard-entry">
-              <div class="rank">#${index + 1}</div>
-              <div class="player-info">
-                <div class="player-name">${name}</div>
-                <div class="player-stats">${data.quizzes} quizzes</div>
+          ? sortedLeaderboard.map(([name, data], index) => {
+            const league = getLeague(data.points);
+            return `
+              <div class="leaderboard-entry">
+                <div class="rank">#${index + 1}</div>
+                <div class="player-info">
+                  <div class="player-name">${name}</div>
+                  <div class="player-stats">${data.quizzes} quizzes</div>
+                </div>
+                <div class="player-score">${data.points} XP</div>
+                <div class="league-badge ${league.class} ml-2">
+                  <svg class="league-icon" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+                  </svg>
+                </div>
               </div>
-              <div class="player-score">${data.points} XP</div>
-            </div>
-          `).join("")
+            `;
+          }).join("")
           : `<div class="text-center py-8 soft-text">No players yet. Complete quizzes to appear on the leaderboard!</div>`;
       }).catch(error => {
         console.error("Error fetching leaderboard: ", error);
@@ -2061,12 +2238,23 @@
       leaderboardModal.classList.add("flex");
     }
 
+    // Get league based on XP
+    function getLeague(xp) {
+      if (xp >= 16000) return { name: "Grandmaster", class: "league-grandmaster" };
+      if (xp >= 8000) return { name: "Master", class: "league-master" };
+      if (xp >= 4000) return { name: "Diamond", class: "league-diamond" };
+      if (xp >= 2000) return { name: "Platinum", class: "league-platinum" };
+      if (xp >= 1000) return { name: "Gold", class: "league-gold" };
+      if (xp >= 500) return { name: "Silver", class: "league-silver" };
+      return { name: "Bronze", class: "league-bronze" };
+    }
+
     // Update Firebase leaderboard
     function updateFirebaseLeaderboard() {
       if (auth.currentUser) {
         const userRef = database.ref(`leaderboard/${currentPlayer}`);
         userRef.set({
-          points: leaderboard[currentPlayer].points,
+          points: leaderboard[currentPlayer].points, 
           quizzes: leaderboard[currentPlayer].quizzes
         }).catch(error => {
           console.error("Error updating Firebase leaderboard: ", error);
@@ -2099,7 +2287,7 @@
     function formatTime(totalSeconds) {
       const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
       const secs = String(totalSeconds % 60).padStart(2, "0");
-      return `${mins}:${secs}`;
+      return `${mins}: ${secs}`;
     }
 
     // Close quiz overlay
@@ -2162,9 +2350,9 @@
           const user = result.user;
           currentPlayer = user.displayName || user.email || "User";
           currentUserProfile = {
-            uid: user.uid, 
-            displayName: user.displayName, 
-            email: user.email, 
+            uid: user.uid,  
+            displayName: user.displayName,  
+            email: user.email,  
             photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`
           };
           
@@ -2233,9 +2421,9 @@
           const user = userCredential.user;
           currentPlayer = user.displayName || user.email || "User";
           currentUserProfile = {
-            uid: user.uid, 
-            displayName: user.displayName, 
-            email: user.email, 
+            uid: user.uid,  
+            displayName: user.displayName,  
+            email: user.email,  
             photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`
           };
           
@@ -2282,9 +2470,9 @@
           const user = userCredential.user;
           currentPlayer = user.email || "User";
           currentUserProfile = {
-            uid: user.uid, 
-            displayName: user.email, 
-            email: user.email, 
+            uid: user.uid,  
+            displayName: user.email,  
+            email: user.email,  
             photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`
           };
           
@@ -2337,7 +2525,7 @@
           <option value="2">Option 3</option>
           <option value="3">Option 4</option>
         </select>
-        <button class="remove-question-btn mt-2 text-red-400 hover:text-red-300">Remove Question</button>
+        <button class="remove-question-btn mt-2 text-red-400 hover: text-red-300">Remove Question</button>
       `;
       
       questionsContainer.appendChild(questionBlock);
@@ -2373,9 +2561,9 @@
         }
         
         questions.push({
-          question: questionText,
-          options: options,
-          answer: options[parseInt(correctAnswerIndex)],
+          question: questionText, 
+          options: options, 
+          answer: options[parseInt(correctAnswerIndex)], 
           explanation: "Custom question explanation"
         });
       });
@@ -2386,8 +2574,8 @@
       }
       
       const newQuiz = {
-        title: title,
-        description: description,
+        title: title, 
+        description: description, 
         questions: questions
       };
       
@@ -2431,7 +2619,7 @@
               <div class="flex flex-wrap gap-3">
                 <div class="glass rounded-[24px] px-6 py-4 text-center">
                   <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Timer</p>
-                  <p id="timer" class="display-font mt-2 text-4xl font-black">00:00</p>
+                  <p id="timer" class="display-font mt-2 text-4xl font-black">00: 00</p>
                 </div>
                 <button id="restartQuizBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover: bg-amber-300">Restart</button>
                 <button id="exitQuizBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover: bg-white/15">Exit</button>
@@ -2527,7 +2715,7 @@
               <div class="flex flex-wrap gap-3">
                 <div class="glass rounded-[24px] px-6 py-4 text-center">
                   <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Timer</p>
-                  <p id="timer" class="display-font mt-2 text-4xl font-black">00:00</p>
+                  <p id="timer" class="display-font mt-2 text-4xl font-black">00: 00</p>
                 </div>
                 <button id="restartQuizBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover: bg-amber-300">Restart</button>
                 <button id="exitQuizBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover: bg-white/15">Exit</button>
@@ -2706,30 +2894,30 @@
         const quizIndex = actionBtn.dataset.quizIndex;
         
         switch (action) {
-          case "preview-unit":    
+          case "preview-unit":     
             showUnit(unitKey);
             closeDrawer();
             break;
-          case "launch-unit":    
+          case "launch-unit":     
             startQuiz(unitKey);
             closeDrawer();
             break;
-          case "preview-custom-quiz":
+          case "preview-custom-quiz": 
             // Preview custom quiz
             const quiz = customQuizzes[quizIndex];
             alert(`Custom Quiz: ${quiz.title}\n${quiz.description}\n${quiz.questions.length} questions`);
             break;
-          case "launch-custom-quiz":
+          case "launch-custom-quiz": 
             startCustomQuiz(quizIndex);
             closeDrawer();
             break;
-          case "open-question":    
+          case "open-question":     
             // Show question preview
             const unit = units[currentUnitKey];
             const question = unit.questions[questionIndex];
             alert(`${question.question}\n\nOptions: \n${question.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join("\n")}\n\nAnswer: ${question.answer}\n\nExplanation: ${question.explanation}`);
             break;
-          case "study-flash":    
+          case "study-flash":     
             // Flash review
             const randomNote = unit.notes[Math.floor(Math.random() * unit.notes.length)];
             const randomQuestion = unit.questions[Math.floor(Math.random() * unit.questions.length)];
