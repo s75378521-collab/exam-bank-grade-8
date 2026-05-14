@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,  initial-scale=1.0" />
   <title>Exam Bank Portal X</title>
   
   <!-- Tailwind CSS CDN -->
@@ -17,6 +17,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   
   <style>
     :root {
@@ -873,6 +874,47 @@
     </div>
   </div>
 
+  <!-- Create Quiz Modal -->
+  <div id="createQuizModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-70">
+    <div class="glass rounded-3xl p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold">Create Custom Quiz</h3>
+        <button id="closeCreateQuizModal" class="text-2xl">×</button>
+      </div>
+      
+      <div class="space-y-4">
+        <input id="quizTitleInput" type="text" placeholder="Quiz Title" class="quiz-field">
+        <textarea id="quizDescriptionInput" placeholder="Quiz Description" class="quiz-field" rows="3"></textarea>
+        
+        <div id="questionsContainer" class="space-y-4">
+          <div class="question-block glass rounded-2xl p-4">
+            <input type="text" placeholder="Question" class="quiz-field mb-3 question-text">
+            <div class="options-container space-y-2">
+              <input type="text" placeholder="Option 1" class="quiz-field option-input">
+              <input type="text" placeholder="Option 2" class="quiz-field option-input">
+              <input type="text" placeholder="Option 3" class="quiz-field option-input">
+              <input type="text" placeholder="Option 4" class="quiz-field option-input">
+            </div>
+            <select class="quiz-select mt-3 correct-answer-select">
+              <option value="">Select correct answer</option>
+              <option value="0">Option 1</option>
+              <option value="1">Option 2</option>
+              <option value="2">Option 3</option>
+              <option value="3">Option 4</option>
+            </select>
+          </div>
+        </div>
+        
+        <button id="addQuestionBtn" class="rounded-2xl bg-white/10 px-4 py-2 font-bold transition hover: bg-white/15">Add Question</button>
+        
+        <div class="flex justify-end gap-3 mt-6">
+          <button id="saveQuizBtn" class="rounded-2xl bg-emerald-500 px-5 py-3 font-bold transition hover: bg-emerald-400">Save Quiz</button>
+          <button id="cancelCreateQuizBtn" class="rounded-2xl bg-white/10 px-5 py-3 font-bold transition hover: bg-white/15">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Firebase configuration
     const firebaseConfig = {
@@ -882,13 +924,15 @@
       storageBucket: "exam-bank-grade-8.appspot.com", 
       messagingSenderId: "429310662726", 
       appId: "1:429310662726:web:33932a1b13bda4e5efd247", 
-      measurementId: "G-0NM09ZRS5G"
+      measurementId: "G-0NM09ZRS5G",
+      databaseURL: "https://exam-bank-grade-8-default-rtdb.firebaseio.com/"
     };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const storage = firebase.storage();
+    const database = firebase.database();
 
     // Extended units with more questions
     const rawUnits = {
@@ -903,8 +947,8 @@
           { question: "What is 7 squared?", options: ["14", "49", "21", "56"], answer: "49", explanation: "Seven squared means 7 x 7." }, 
           { question: "Solve 15 + 8 x 2.", options: ["46", "31", "23", "16"], answer: "31", explanation: "Multiply first, then add: 8 x 2 = 16 and 15 + 16 = 31." }, 
           { question: "Which number is prime?", options: ["21", "29", "35", "39"], answer: "29", explanation: "A prime number has exactly two factors: 1 and itself." }, 
-          { question: "Round 4,783 to the nearest hundred.", options: ["4,700", "4,800", "5,000", "4,750"], answer: "4,800", explanation: "The tens digit is 8, so round the hundreds digit up." }, 
-          { question: "Which shows the correct place value of the 6 in 4,682?", options: ["6 ones", "6 tens", "6 hundreds", "6 thousands"], answer: "6 hundreds", explanation: "In 4,682 the 6 is in the hundreds place." }, 
+          { question: "Round 4, 783 to the nearest hundred.", options: ["4, 700", "4, 800", "5, 000", "4, 750"], answer: "4, 800", explanation: "The tens digit is 8, so round the hundreds digit up." }, 
+          { question: "Which shows the correct place value of the 6 in 4, 682?", options: ["6 ones", "6 tens", "6 hundreds", "6 thousands"], answer: "6 hundreds", explanation: "In 4, 682 the 6 is in the hundreds place." }, 
           { question: "What is the absolute value of -15?", options: ["-15", "0", "15", "30"], answer: "15", explanation: "Absolute value is the distance from zero, always positive." }, 
           { question: "Which is the largest integer?", options: ["-5", "0", "3", "-1"], answer: "3", explanation: "Positive numbers are greater than negative numbers." }, 
           { question: "What is 3 to the power of 4?", options: ["12", "27", "81", "64"], answer: "81", explanation: "3⁴ = 3 x 3 x 3 x 3 = 81." }, 
@@ -1192,6 +1236,7 @@
     let sectionOrder = JSON.parse(localStorage.getItem(storageKeys.sectionOrder) || JSON.stringify(defaultSectionOrder));
     let timerInterval = null;
     let seconds = 0;
+    let customQuizzes = JSON.parse(localStorage.getItem("customQuizzes") || "[]");
 
     // Initialize the app
     function init() {
@@ -1230,6 +1275,9 @@
           if (!leaderboard[currentPlayer]) {
             leaderboard[currentPlayer] = { points: 0, quizzes: 0 };
           }
+          
+          // Sync leaderboard with Firebase
+          syncLeaderboardWithFirebase();
         } else {
           // User is signed out
           currentPlayer = "Guest";
@@ -1275,6 +1323,33 @@
     function loadTests() {
       const unitGrid = document.getElementById("unitGrid");
       unitGrid.innerHTML = unitKeys.map((key) => createTestCard(key, units[key])).join("");
+      
+      // Add custom quizzes to the grid
+      customQuizzes.forEach((quiz, index) => {
+        const customCard = `
+          <article class="glass panel-enter card-hover flex h-full flex-col justify-between rounded-[28px] border border-white/10 p-5">
+            <div>
+              <div class="mb-4 flex items-start justify-between gap-4">
+                <div>
+                  <p class="mb-2 inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-pink-200 bg-pink-400/10">Custom Quiz</p>
+                  <h5 class="text-2xl font-black leading-tight">${quiz.title}</h5>
+                  <p class="mt-2 soft-text">${quiz.description}</p>
+                </div>
+                <div class="display-font rounded-2xl bg-white/6 px-4 py-3 text-xl font-black">CQ</div>
+              </div>
+              <p class="soft-text text-sm">${quiz.questions.length} questions</p>
+            </div>
+            <div class="mt-6 flex items-center justify-between gap-4">
+              <span class="rounded-full bg-white/6 px-4 py-2 text-sm font-semibold text-slate-200">${quiz.questions.length} Questions</span>
+              <div class="flex gap-2">
+                <button data-action="preview-custom-quiz" data-quiz-index="${index}" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover: bg-white/15">Preview</button>
+                <button data-action="launch-custom-quiz" data-quiz-index="${index}" class="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-400 px-4 py-3 font-black text-slate-950 transition hover: scale-[1.03]">Start Quiz</button>
+              </div>
+            </div>
+          </article>
+        `;
+        unitGrid.innerHTML += customCard;
+      });
     }
 
     // Create test card
@@ -1547,6 +1622,96 @@
       updateQuizCompletion();
     }
 
+    // Start custom quiz
+    function startCustomQuiz(quizIndex) {
+      const quiz = customQuizzes[quizIndex];
+      currentQuizUnitKey = null; // Custom quiz
+      currentQuizTitle = quiz.title;
+      currentQuizQuestions = [...quiz.questions].sort(() => Math.random() - 0.5);
+      
+      const overlay = document.getElementById("quizOverlay");
+      const shell = document.getElementById("quizShell");
+      
+      shell.innerHTML = `
+        <section class="h-full overflow-y-auto p-3 lg: p-6">
+          <div class="glass-strong mx-auto max-w-6xl rounded-[36px] p-5 lg: p-8">
+            <div class="mb-8 flex flex-col gap-4 lg: flex-row lg: items-center lg: justify-between">
+              <div>
+                <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-pink-200">Custom Quiz</p>
+                <h3 class="mt-2 text-4xl font-black">${currentQuizTitle}</h3>
+                <p class="mt-2 soft-text">${quiz.description}</p>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <div class="glass rounded-[24px] px-6 py-4 text-center">
+                  <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Timer</p>
+                  <p id="timer" class="display-font mt-2 text-4xl font-black">00:00</p>
+                </div>
+                <button id="restartQuizBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover: bg-amber-300">Restart</button>
+                <button id="exitQuizBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover: bg-white/15">Exit</button>
+              </div>
+            </div>
+
+            <div class="mb-6 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
+              <div>
+                <p class="text-sm font-bold uppercase tracking-[0.2em] text-slate-300">Goal</p>
+                <p class="soft-text">Answer each question and submit when you're ready.</p>
+              </div>
+              <div class="min-w-[220px]">
+                <div class="progress-bar">
+                  <div id="quizCompletionFill" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <p id="quizCompletionText" class="mt-2 text-sm soft-text">0 of ${currentQuizQuestions.length} answered</p>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              ${currentQuizQuestions.map((q, index) => `
+                <article class="glass rounded-[30px] border border-white/10 p-6" data-question-card="${index}">
+                  <div class="mb-4 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
+                    <div>
+                      <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Question ${index + 1}</p>
+                      <p class="mt-2 text-xl font-bold">${q.question}</p>
+                    </div>
+                    <span class="rounded-full bg-white/8 px-4 py-2 text-sm font-bold text-pink-200">10 XP base</span>
+                  </div>
+                  <div class="grid grid-cols-1 gap-4 md: grid-cols-2">
+                    ${q.options.map((option, optionIndex) => `
+                      <label class="question-option glass flex min-h-[88px] cursor-pointer items-center gap-4 rounded-[24px] border border-white/10 p-5 transition hover: border-pink-300 hover: bg-white/10">
+                        <input type="radio" name="question-${index}" value="${option}" data-question-index="${index}">
+                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${option}</span>
+                      </label>
+                    `).join("")}
+                  </div>
+                </article>
+              `).join("")}
+            </div>
+
+            <div class="mt-8">
+              <button id="submitQuizBtn" class="w-full rounded-[24px] bg-gradient-to-r from-pink-500 to-rose-400 px-6 py-5 text-xl font-black text-slate-950 transition hover: scale-[1.01]">Submit Quiz</button>
+            </div>
+          </div>
+        </section>
+      `;
+      
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      
+      // Start timer
+      startTimer();
+      
+      // Bind quiz actions
+      document.getElementById("submitQuizBtn").addEventListener("click", submitQuiz);
+      document.getElementById("restartQuizBtn").addEventListener("click", () => startCustomQuiz(quizIndex));
+      document.getElementById("exitQuizBtn").addEventListener("click", closeQuizOverlay);
+      
+      // Bind radio button changes
+      document.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener("change", updateQuizCompletion);
+      });
+      
+      updateQuizCompletion();
+    }
+
     // Start timer
     function startTimer() {
       clearInterval(timerInterval);
@@ -1635,8 +1800,10 @@
       xp += earnedXp;
       
       // Update best scores
-      if (!bestScores[currentQuizUnitKey] || accuracy > bestScores[currentQuizUnitKey]) {
-        bestScores[currentQuizUnitKey] = accuracy;
+      if (currentQuizUnitKey) {
+        if (!bestScores[currentQuizUnitKey] || accuracy > bestScores[currentQuizUnitKey]) {
+          bestScores[currentQuizUnitKey] = accuracy;
+        }
       }
       
       // Add to history
@@ -1663,6 +1830,9 @@
       localStorage.setItem(storageKeys.history, JSON.stringify(history));
       localStorage.setItem(storageKeys.best, JSON.stringify(bestScores));
       localStorage.setItem(storageKeys.leaderboard, JSON.stringify(leaderboard));
+      
+      // Update Firebase leaderboard
+      updateFirebaseLeaderboard();
       
       // Update UI
       updateStats();
@@ -1721,7 +1891,17 @@
       `;
       
       // Bind result actions
-      document.getElementById("resultRestartBtn").addEventListener("click", () => startQuiz(currentQuizUnitKey));
+      document.getElementById("resultRestartBtn").addEventListener("click", () => {
+        if (currentQuizUnitKey) {
+          startQuiz(currentQuizUnitKey);
+        } else {
+          // For custom quizzes, we need to find the index
+          const customQuizIndex = customQuizzes.findIndex(q => q.title === currentQuizTitle);
+          if (customQuizIndex !== -1) {
+            startCustomQuiz(customQuizIndex);
+          }
+        }
+      });
       document.getElementById("resultExitBtn").addEventListener("click", closeQuizOverlay);
       document.getElementById("reviewAnswersAfterQuiz").addEventListener("click", showAnswerReview);
       document.getElementById("backToReviewAfterQuiz").addEventListener("click", () => {
@@ -1779,7 +1959,17 @@
       `;
       
       // Bind review actions
-      document.getElementById("reviewRestartBtn").addEventListener("click", () => startQuiz(currentQuizUnitKey));
+      document.getElementById("reviewRestartBtn").addEventListener("click", () => {
+        if (currentQuizUnitKey) {
+          startQuiz(currentQuizUnitKey);
+        } else {
+          // For custom quizzes, we need to find the index
+          const customQuizIndex = customQuizzes.findIndex(q => q.title === currentQuizTitle);
+          if (customQuizIndex !== -1) {
+            startCustomQuiz(customQuizIndex);
+          }
+        }
+      });
       document.getElementById("reviewExitBtn").addEventListener("click", closeQuizOverlay);
     }
 
@@ -1834,27 +2024,75 @@
       const leaderboardModal = document.getElementById("leaderboardModal");
       const leaderboardContent = document.getElementById("leaderboardContent");
       
-      // Sort leaderboard by points
-      const sortedLeaderboard = Object.entries(leaderboard)
-        .sort((a, b) => b[1].points - a[1].points)
-        .slice(0, 10); // Top 10 players
+      // Show loading state
+      leaderboardContent.innerHTML = `<div class="text-center py-8 soft-text">Loading leaderboard...</div>`;
       
-      // Generate leaderboard HTML
-      leaderboardContent.innerHTML = sortedLeaderboard.length > 0 
-        ? sortedLeaderboard.map(([name, data], index) => `
-          <div class="leaderboard-entry">
-            <div class="rank">#${index + 1}</div>
-            <div class="player-info">
-              <div class="player-name">${name}</div>
-              <div class="player-stats">${data.quizzes} quizzes</div>
+      // Fetch leaderboard from Firebase
+      database.ref("leaderboard").once("value").then(snapshot => {
+        const firebaseLeaderboard = snapshot.val() || {};
+        
+        // Merge with local leaderboard
+        const mergedLeaderboard = {...leaderboard, ...firebaseLeaderboard};
+        
+        // Sort leaderboard by points
+        const sortedLeaderboard = Object.entries(mergedLeaderboard)
+          .sort((a, b) => b[1].points - a[1].points)
+          .slice(0, 10); // Top 10 players
+        
+        // Generate leaderboard HTML
+        leaderboardContent.innerHTML = sortedLeaderboard.length > 0 
+          ? sortedLeaderboard.map(([name, data], index) => `
+            <div class="leaderboard-entry">
+              <div class="rank">#${index + 1}</div>
+              <div class="player-info">
+                <div class="player-name">${name}</div>
+                <div class="player-stats">${data.quizzes} quizzes</div>
+              </div>
+              <div class="player-score">${data.points} XP</div>
             </div>
-            <div class="player-score">${data.points} XP</div>
-          </div>
-        `).join("")
-        : `<div class="text-center py-8 soft-text">No players yet. Complete quizzes to appear on the leaderboard!</div>`;
+          `).join("")
+          : `<div class="text-center py-8 soft-text">No players yet. Complete quizzes to appear on the leaderboard!</div>`;
+      }).catch(error => {
+        console.error("Error fetching leaderboard: ", error);
+        leaderboardContent.innerHTML = `<div class="text-center py-8 soft-text">Error loading leaderboard. Please try again.</div>`;
+      });
       
       leaderboardModal.classList.remove("hidden");
       leaderboardModal.classList.add("flex");
+    }
+
+    // Update Firebase leaderboard
+    function updateFirebaseLeaderboard() {
+      if (auth.currentUser) {
+        const userRef = database.ref(`leaderboard/${currentPlayer}`);
+        userRef.set({
+          points: leaderboard[currentPlayer].points,
+          quizzes: leaderboard[currentPlayer].quizzes
+        }).catch(error => {
+          console.error("Error updating Firebase leaderboard: ", error);
+        });
+      }
+    }
+
+    // Sync leaderboard with Firebase
+    function syncLeaderboardWithFirebase() {
+      if (auth.currentUser) {
+        database.ref("leaderboard").once("value").then(snapshot => {
+          const firebaseLeaderboard = snapshot.val() || {};
+          
+          // Merge with local leaderboard
+          const mergedLeaderboard = {...leaderboard, ...firebaseLeaderboard};
+          
+          // Update local leaderboard
+          leaderboard = mergedLeaderboard;
+          localStorage.setItem(storageKeys.leaderboard, JSON.stringify(leaderboard));
+          
+          // Update UI
+          updateStats();
+        }).catch(error => {
+          console.error("Error syncing leaderboard: ", error);
+        });
+      }
     }
 
     // Format time
@@ -1874,6 +2112,12 @@
     function closeLeaderboardModal() {
       document.getElementById("leaderboardModal").classList.add("hidden");
       document.getElementById("leaderboardModal").classList.remove("flex");
+    }
+
+    // Close create quiz modal
+    function closeCreateQuizModal() {
+      document.getElementById("createQuizModal").classList.add("hidden");
+      document.getElementById("createQuizModal").classList.remove("flex");
     }
 
     // Handle profile photo upload
@@ -2071,6 +2315,286 @@
         });
     }
 
+    // Add question to create quiz form
+    function addQuestion() {
+      const questionsContainer = document.getElementById("questionsContainer");
+      const questionCount = questionsContainer.children.length + 1;
+      
+      const questionBlock = document.createElement("div");
+      questionBlock.className = "question-block glass rounded-2xl p-4";
+      questionBlock.innerHTML = `
+        <input type="text" placeholder="Question ${questionCount}" class="quiz-field mb-3 question-text">
+        <div class="options-container space-y-2">
+          <input type="text" placeholder="Option 1" class="quiz-field option-input">
+          <input type="text" placeholder="Option 2" class="quiz-field option-input">
+          <input type="text" placeholder="Option 3" class="quiz-field option-input">
+          <input type="text" placeholder="Option 4" class="quiz-field option-input">
+        </div>
+        <select class="quiz-select mt-3 correct-answer-select">
+          <option value="">Select correct answer</option>
+          <option value="0">Option 1</option>
+          <option value="1">Option 2</option>
+          <option value="2">Option 3</option>
+          <option value="3">Option 4</option>
+        </select>
+        <button class="remove-question-btn mt-2 text-red-400 hover:text-red-300">Remove Question</button>
+      `;
+      
+      questionsContainer.appendChild(questionBlock);
+      
+      // Add event listener to remove button
+      questionBlock.querySelector(".remove-question-btn").addEventListener("click", function() {
+        questionsContainer.removeChild(questionBlock);
+      });
+    }
+
+    // Save custom quiz
+    function saveCustomQuiz() {
+      const title = document.getElementById("quizTitleInput").value;
+      const description = document.getElementById("quizDescriptionInput").value;
+      
+      if (!title) {
+        showToast("Please enter a quiz title");
+        return;
+      }
+      
+      const questions = [];
+      const questionBlocks = document.querySelectorAll(".question-block");
+      
+      let valid = true;
+      questionBlocks.forEach(block => {
+        const questionText = block.querySelector(".question-text").value;
+        const options = Array.from(block.querySelectorAll(".option-input")).map(input => input.value);
+        const correctAnswerIndex = block.querySelector(".correct-answer-select").value;
+        
+        if (!questionText || options.some(opt => !opt) || correctAnswerIndex === "") {
+          valid = false;
+          return;
+        }
+        
+        questions.push({
+          question: questionText,
+          options: options,
+          answer: options[parseInt(correctAnswerIndex)],
+          explanation: "Custom question explanation"
+        });
+      });
+      
+      if (!valid) {
+        showToast("Please fill in all question fields");
+        return;
+      }
+      
+      const newQuiz = {
+        title: title,
+        description: description,
+        questions: questions
+      };
+      
+      customQuizzes.push(newQuiz);
+      localStorage.setItem("customQuizzes", JSON.stringify(customQuizzes));
+      
+      closeCreateQuizModal();
+      loadTests(); // Refresh the unit grid
+      showToast("Quiz saved successfully!");
+    }
+
+    // Start quick quiz (random questions from all units)
+    function startQuickQuiz() {
+      // Collect all questions from all units
+      let allQuestions = [];
+      Object.values(units).forEach(unit => {
+        allQuestions = allQuestions.concat(unit.questions);
+      });
+      
+      // Shuffle and take first 10
+      currentQuizQuestions = allQuestions
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+      
+      currentQuizTitle = "Quick Quiz";
+      currentQuizUnitKey = null; // No specific unit
+      
+      // Start quiz
+      const overlay = document.getElementById("quizOverlay");
+      const shell = document.getElementById("quizShell");
+      
+      shell.innerHTML = `
+        <section class="h-full overflow-y-auto p-3 lg: p-6">
+          <div class="glass-strong mx-auto max-w-6xl rounded-[36px] p-5 lg: p-8">
+            <div class="mb-8 flex flex-col gap-4 lg: flex-row lg: items-center lg: justify-between">
+              <div>
+                <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-blue-200">Quick Quiz</p>
+                <h3 class="mt-2 text-4xl font-black">Mixed Questions</h3>
+                <p class="mt-2 soft-text">Random questions from all units. Test your overall knowledge!</p>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <div class="glass rounded-[24px] px-6 py-4 text-center">
+                  <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Timer</p>
+                  <p id="timer" class="display-font mt-2 text-4xl font-black">00:00</p>
+                </div>
+                <button id="restartQuizBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover: bg-amber-300">Restart</button>
+                <button id="exitQuizBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover: bg-white/15">Exit</button>
+              </div>
+            </div>
+
+            <div class="mb-6 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
+              <div>
+                <p class="text-sm font-bold uppercase tracking-[0.2em] text-slate-300">Goal</p>
+                <p class="soft-text">Answer each question and submit when you're ready.</p>
+              </div>
+              <div class="min-w-[220px]">
+                <div class="progress-bar">
+                  <div id="quizCompletionFill" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <p id="quizCompletionText" class="mt-2 text-sm soft-text">0 of ${currentQuizQuestions.length} answered</p>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              ${currentQuizQuestions.map((q, index) => `
+                <article class="glass rounded-[30px] border border-white/10 p-6" data-question-card="${index}">
+                  <div class="mb-4 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
+                    <div>
+                      <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Question ${index + 1}</p>
+                      <p class="mt-2 text-xl font-bold">${q.question}</p>
+                    </div>
+                    <span class="rounded-full bg-white/8 px-4 py-2 text-sm font-bold text-blue-200">10 XP base</span>
+                  </div>
+                  <div class="grid grid-cols-1 gap-4 md: grid-cols-2">
+                    ${q.options.map((option, optionIndex) => `
+                      <label class="question-option glass flex min-h-[88px] cursor-pointer items-center gap-4 rounded-[24px] border border-white/10 p-5 transition hover: border-blue-300 hover: bg-white/10">
+                        <input type="radio" name="question-${index}" value="${option}" data-question-index="${index}">
+                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${option}</span>
+                      </label>
+                    `).join("")}
+                  </div>
+                </article>
+              `).join("")}
+            </div>
+
+            <div class="mt-8">
+              <button id="submitQuizBtn" class="w-full rounded-[24px] bg-gradient-to-r from-blue-500 to-cyan-400 px-6 py-5 text-xl font-black text-slate-950 transition hover: scale-[1.01]">Submit Quiz</button>
+            </div>
+          </div>
+        </section>
+      `;
+      
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      
+      // Start timer
+      startTimer();
+      
+      // Bind quiz actions
+      document.getElementById("submitQuizBtn").addEventListener("click", submitQuiz);
+      document.getElementById("restartQuizBtn").addEventListener("click", startQuickQuiz);
+      document.getElementById("exitQuizBtn").addEventListener("click", closeQuizOverlay);
+      
+      // Bind radio button changes
+      document.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener("change", updateQuizCompletion);
+      });
+      
+      updateQuizCompletion();
+    }
+
+    // Shuffle questions in current unit
+    function shuffleQuestions() {
+      if (!currentUnitKey) {
+        showToast("Please select a unit first");
+        return;
+      }
+      
+      const unit = units[currentUnitKey];
+      currentQuizQuestions = [...unit.questions].sort(() => Math.random() - 0.5);
+      currentQuizTitle = unit.title;
+      currentQuizUnitKey = currentUnitKey;
+      
+      // Start quiz
+      const overlay = document.getElementById("quizOverlay");
+      const shell = document.getElementById("quizShell");
+      
+      shell.innerHTML = `
+        <section class="h-full overflow-y-auto p-3 lg: p-6">
+          <div class="glass-strong mx-auto max-w-6xl rounded-[36px] p-5 lg: p-8">
+            <div class="mb-8 flex flex-col gap-4 lg: flex-row lg: items-center lg: justify-between">
+              <div>
+                <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-blue-200">Shuffled Quiz</p>
+                <h3 class="mt-2 text-4xl font-black">${currentQuizTitle}</h3>
+                <p class="mt-2 soft-text">Questions in random order. Test your knowledge!</p>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <div class="glass rounded-[24px] px-6 py-4 text-center">
+                  <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Timer</p>
+                  <p id="timer" class="display-font mt-2 text-4xl font-black">00:00</p>
+                </div>
+                <button id="restartQuizBtn" class="rounded-2xl bg-amber-400 px-5 py-4 font-black text-slate-950 transition hover: bg-amber-300">Restart</button>
+                <button id="exitQuizBtn" class="rounded-2xl bg-white/10 px-5 py-4 font-bold transition hover: bg-white/15">Exit</button>
+              </div>
+            </div>
+
+            <div class="mb-6 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
+              <div>
+                <p class="text-sm font-bold uppercase tracking-[0.2em] text-slate-300">Goal</p>
+                <p class="soft-text">Answer each question and submit when you're ready.</p>
+              </div>
+              <div class="min-w-[220px]">
+                <div class="progress-bar">
+                  <div id="quizCompletionFill" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <p id="quizCompletionText" class="mt-2 text-sm soft-text">0 of ${currentQuizQuestions.length} answered</p>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              ${currentQuizQuestions.map((q, index) => `
+                <article class="glass rounded-[30px] border border-white/10 p-6" data-question-card="${index}">
+                  <div class="mb-4 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
+                    <div>
+                      <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Question ${index + 1}</p>
+                      <p class="mt-2 text-xl font-bold">${q.question}</p>
+                    </div>
+                    <span class="rounded-full bg-white/8 px-4 py-2 text-sm font-bold text-blue-200">10 XP base</span>
+                  </div>
+                  <div class="grid grid-cols-1 gap-4 md: grid-cols-2">
+                    ${q.options.map((option, optionIndex) => `
+                      <label class="question-option glass flex min-h-[88px] cursor-pointer items-center gap-4 rounded-[24px] border border-white/10 p-5 transition hover: border-blue-300 hover: bg-white/10">
+                        <input type="radio" name="question-${index}" value="${option}" data-question-index="${index}">
+                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${option}</span>
+                      </label>
+                    `).join("")}
+                  </div>
+                </article>
+              `).join("")}
+            </div>
+
+            <div class="mt-8">
+              <button id="submitQuizBtn" class="w-full rounded-[24px] bg-gradient-to-r from-blue-500 to-cyan-400 px-6 py-5 text-xl font-black text-slate-950 transition hover: scale-[1.01]">Submit Quiz</button>
+            </div>
+          </div>
+        </section>
+      `;
+      
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      
+      // Start timer
+      startTimer();
+      
+      // Bind quiz actions
+      document.getElementById("submitQuizBtn").addEventListener("click", submitQuiz);
+      document.getElementById("restartQuizBtn").addEventListener("click", shuffleQuestions);
+      document.getElementById("exitQuizBtn").addEventListener("click", closeQuizOverlay);
+      
+      // Bind radio button changes
+      document.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener("change", updateQuizCompletion);
+      });
+      
+      updateQuizCompletion();
+    }
+
     // Bind global actions
     function bindGlobalActions() {
       // Event listeners for UI interactions
@@ -2151,6 +2675,26 @@
         document.getElementById("settingsPanel").classList.add("open");
       });
       
+      // Create Quiz Modal
+      document.getElementById("createTestBtn").addEventListener("click", () => {
+        document.getElementById("createQuizModal").classList.remove("hidden");
+        document.getElementById("createQuizModal").classList.add("flex");
+      });
+      
+      document.getElementById("closeCreateQuizModal").addEventListener("click", closeCreateQuizModal);
+      document.getElementById("cancelCreateQuizBtn").addEventListener("click", closeCreateQuizModal);
+      document.getElementById("addQuestionBtn").addEventListener("click", addQuestion);
+      document.getElementById("saveQuizBtn").addEventListener("click", saveCustomQuiz);
+      
+      // Quick Quiz Button
+      document.getElementById("quickQuizBtn").addEventListener("click", startQuickQuiz);
+      
+      // Shuffle Button
+      document.getElementById("shuffleBtn").addEventListener("click", shuffleQuestions);
+      
+      // History Button
+      document.getElementById("historyBtn").addEventListener("click", showHistory);
+      
       // Quiz actions
       document.body.addEventListener("click", (e) => {
         const actionBtn = e.target.closest("[data-action]");
@@ -2159,23 +2703,33 @@
         const action = actionBtn.dataset.action;
         const unitKey = actionBtn.dataset.unitKey;
         const questionIndex = actionBtn.dataset.questionIndex;
+        const quizIndex = actionBtn.dataset.quizIndex;
         
         switch (action) {
-          case "preview-unit":  
+          case "preview-unit":    
             showUnit(unitKey);
             closeDrawer();
             break;
-          case "launch-unit":  
+          case "launch-unit":    
             startQuiz(unitKey);
             closeDrawer();
             break;
-          case "open-question":  
+          case "preview-custom-quiz":
+            // Preview custom quiz
+            const quiz = customQuizzes[quizIndex];
+            alert(`Custom Quiz: ${quiz.title}\n${quiz.description}\n${quiz.questions.length} questions`);
+            break;
+          case "launch-custom-quiz":
+            startCustomQuiz(quizIndex);
+            closeDrawer();
+            break;
+          case "open-question":    
             // Show question preview
             const unit = units[currentUnitKey];
             const question = unit.questions[questionIndex];
             alert(`${question.question}\n\nOptions: \n${question.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join("\n")}\n\nAnswer: ${question.answer}\n\nExplanation: ${question.explanation}`);
             break;
-          case "study-flash":  
+          case "study-flash":    
             // Flash review
             const randomNote = unit.notes[Math.floor(Math.random() * unit.notes.length)];
             const randomQuestion = unit.questions[Math.floor(Math.random() * unit.questions.length)];
@@ -2183,8 +2737,6 @@
             break;
         }
       });
-      
-      // Add more event listeners as needed
     }
 
     // Show toast message
