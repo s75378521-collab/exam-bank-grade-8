@@ -2062,17 +2062,15 @@
     }
 
     // Update Firebase leaderboard
-    function updateFirebaseLeaderboard() {
-      if (auth.currentUser) {
-        const userRef = database.ref(`leaderboard/${currentPlayer}`);
-        userRef.set({
-          points: leaderboard[currentPlayer].points,
-          quizzes: leaderboard[currentPlayer].quizzes
-        }).catch(error => {
-          console.error("Error updating Firebase leaderboard: ", error);
-        });
-      }
-    }
+   database.ref("leaderboard").once("value").then(snapshot => {
+  const firebaseLeaderboard = snapshot.val() || {};
+  
+  // Sort leaderboard by points
+  const sortedLeaderboard = Object.entries(firebaseLeaderboard)
+    .sort((a, b) => b[1].points - a[1].points)
+    .slice(0, 10); // Top 10 players
+  // ... rest of display logic
+});
 
     // Sync leaderboard with Firebase
     function syncLeaderboardWithFirebase() {
