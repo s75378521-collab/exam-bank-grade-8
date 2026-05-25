@@ -2332,20 +2332,22 @@
     let currentQuizTitle = "";
     let currentQuizUnitKey = null;
     let lastQuizReview = [];
-    let currentPlayer = localStorage.getItem(storageKeys.currentPlayer) || "Guest";
-    let currentUserProfile = JSON.parse(localStorage.getItem(storageKeys.authUser) || "null");
-    let leaderboard = JSON.parse(localStorage.getItem(storageKeys.leaderboard) || "{}");
-    let streak = Number(localStorage.getItem(storageKeys.streak)) || 0;
-    let xp = Number(localStorage.getItem(storageKeys.xp)) || 0;
-    let history = JSON.parse(localStorage.getItem(storageKeys.history) || "[]");
-    let bestScores = JSON.parse(localStorage.getItem(storageKeys.best) || "{}");
-    let currentTheme = localStorage.getItem(storageKeys.theme) || "aurora";
-    let currentAccent = localStorage.getItem(storageKeys.accent) || "ice";
-    let currentSurface = localStorage.getItem(storageKeys.surface) || "soft";
-    let sectionOrder = JSON.parse(localStorage.getItem(storageKeys.sectionOrder) || JSON.stringify(defaultSectionOrder));
+    // Firebase-first app state. Persistent account data is loaded from / saved to Firebase.
+    // localStorage is intentionally not used as a global save source so progress follows the account everywhere.
+    let currentPlayer = "Guest";
+    let currentUserProfile = null;
+    let leaderboard = {};
+    let streak = 0;
+    let xp = 0;
+    let history = [];
+    let bestScores = {};
+    let currentTheme = "aurora";
+    let currentAccent = "ice";
+    let currentSurface = "soft";
+    let sectionOrder = [...defaultSectionOrder];
     let timerInterval = null;
     let seconds = 0;
-    let customQuizzes = JSON.parse(localStorage.getItem("customQuizzes") || "[]");
+    let customQuizzes = [];
     let userQuizzes = [];
     let publicQuizzes = [];
 
@@ -4454,6 +4456,663 @@
         updateDashboard();
       };
     }
+
+
+    /*************************************************************************
+     * Firebase Cloud Save + Public Sets Layer
+     * -----------------------------------------------------------------------
+     * This layer makes Firebase the source of truth for accounts, account
+     * files, progress, XP, personalization, made-by-you sets, and public sets.
+     * The page may still keep temporary in-memory variables while open, but it
+     * does not rely on localStorage for persistent global saves.
+     *************************************************************************/
+    const CLOUD_COLLECTIONS = {
+      users: "users",
+      publicProfiles: "publicProfiles",
+      publicQuizzes: "publicQuizzes",
+      activity: "activity",
+      accountFiles: "accountFiles"
+    };
+
+    let cloudReady = false;
+    let authBootstrapped = false;
+    let activeProfileUnsubscribe = null;
+    let activeQuizUnsubscribe = null;
+    let publicQuizUnsubscribe = null;
+    let leaderboardUnsubscribe = null;
+
+    try {
+      auth.useDeviceLanguage();
+      firestore.enablePersistence({ synchronizeTabs: true }).catch(error => {
+        console.info("Firestore offline persistence unavailable; cloud sync still works:", error.code || error.message);
+      });
+      Object.keys(localStorage || {}).forEach(key => {
+        if (key.startsWith("examBank") || key === "customQuizzes") localStorage.removeItem(key);
+      });
+
+      // Legacy UI code still calls localStorage in a few places. Block this app's
+      // keys so nothing important is saved locally; Firebase is the global store.
+      const rawLocalStorage = {
+        getItem: localStorage.getItem.bind(localStorage),
+        setItem: localStorage.setItem.bind(localStorage),
+        removeItem: localStorage.removeItem.bind(localStorage)
+      };
+      const isExamBankLocalKey = key => String(key || "").startsWith("examBank") || String(key || "") === "customQuizzes";
+      localStorage.getItem = function(key) {
+        return isExamBankLocalKey(key) ? null : rawLocalStorage.getItem(key);
+      };
+      localStorage.setItem = function(key, value) {
+        if (isExamBankLocalKey(key)) return undefined;
+        return rawLocalStorage.setItem(key, value);
+      };
+      localStorage.removeItem = function(key) {
+        if (isExamBankLocalKey(key)) return undefined;
+        return rawLocalStorage.removeItem(key);
+      };
+    } catch (error) {
+      console.info("Local cleanup / persistence setup skipped:", error.message);
+    }
+
+    function serverTime() {
+      return firebase.firestore.FieldValue.serverTimestamp();
+    }
+
+    function currentUid() {
+      return auth.currentUser ? auth.currentUser.uid : null;
+    }
+
+    function safeArray(value) {
+      return Array.isArray(value) ? value : [];
+    }
+
+    function safeObject(value) {
+      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    }
+
+    function buildDefaultProfile(user) {
+      const name = user?.displayName || user?.email || "Guest";
+      return {
+        uid: user?.uid || null,
+        username: name,
+        displayName: name,
+        email: user?.email || null,
+        avatar: user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
+        photoURL: user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
+        xp: 0,
+        weeklyXp: 0,
+        streak: 0,
+        league: getLeague(0).name,
+        settings: {
+          theme: "aurora",
+          accent: "ice",
+          surface: "soft",
+          sectionOrder: [...defaultSectionOrder],
+          sound: true,
+          animations: true
+        },
+        progress: {
+          history: [],
+          bestScores: {},
+          completedSets: [],
+          lastCompletedAt: null
+        },
+        accountFiles: [],
+        public: true,
+        madeBy: "you",
+        app: "Exam Bank Platform",
+        updatedAt: serverTime(),
+        createdAt: serverTime()
+      };
+    }
+
+    function applyCloudProfile(data = {}) {
+      const settings = safeObject(data.settings);
+      const progress = safeObject(data.progress);
+      currentPlayer = data.username || data.displayName || currentPlayer || "User";
+      currentUserProfile = {
+        uid: data.uid || currentUid(),
+        displayName: data.displayName || currentPlayer,
+        email: data.email || auth.currentUser?.email || null,
+        photoURL: data.photoURL || data.avatar || auth.currentUser?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
+        league: data.league || getLeague(Number(data.xp || 0)).name
+      };
+      xp = Number(data.xp || 0);
+      streak = Number(data.streak || 0);
+      history = safeArray(progress.history || data.history);
+      bestScores = safeObject(progress.bestScores || data.bestScores);
+      currentTheme = settings.theme || currentTheme || "aurora";
+      currentAccent = settings.accent || currentAccent || "ice";
+      currentSurface = settings.surface || currentSurface || "soft";
+      sectionOrder = safeArray(settings.sectionOrder).length ? settings.sectionOrder : [...defaultSectionOrder];
+      applyTheme(currentTheme);
+      applyAccent(currentAccent);
+      applySurface(currentSurface);
+      applySectionOrder();
+      updateStats();
+      updateUnitProgress(currentUnitKey);
+      updateDashboard();
+    }
+
+    async function upsertCloudAccount(user) {
+      if (!user) return null;
+      const uid = user.uid;
+      const ref = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid);
+      const snap = await ref.get();
+      const base = buildDefaultProfile(user);
+      if (!snap.exists) {
+        await ref.set(base, { merge: true });
+        await firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(uid).set({
+          uid,
+          username: base.username,
+          displayName: base.displayName,
+          avatar: base.avatar,
+          xp: 0,
+          weeklyXp: 0,
+          league: base.league,
+          public: true,
+          madeBy: "you",
+          createdAt: serverTime(),
+          updatedAt: serverTime()
+        }, { merge: true });
+        await database.ref(`accounts/${uid}`).set({ ...base, updatedAt: Date.now(), createdAt: Date.now() });
+        return base;
+      }
+      const existing = snap.data() || {};
+      const merged = {
+        ...base,
+        ...existing,
+        uid,
+        email: user.email || existing.email || null,
+        username: existing.username || user.displayName || user.email || "User",
+        displayName: existing.displayName || user.displayName || user.email || "User",
+        photoURL: existing.photoURL || user.photoURL || base.photoURL,
+        avatar: existing.avatar || user.photoURL || base.avatar,
+        settings: { ...base.settings, ...safeObject(existing.settings) },
+        progress: { ...base.progress, ...safeObject(existing.progress) },
+        public: true,
+        madeBy: "you",
+        updatedAt: serverTime()
+      };
+      await ref.set(merged, { merge: true });
+      return merged;
+    }
+
+    function cloudAccountPayload(extra = {}) {
+      const leagueName = getLeague(xp).name;
+      return {
+        uid: currentUid(),
+        username: currentPlayer,
+        displayName: currentUserProfile?.displayName || currentPlayer,
+        email: currentUserProfile?.email || auth.currentUser?.email || null,
+        avatar: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
+        photoURL: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
+        xp,
+        weeklyXp: xp,
+        streak,
+        league: leagueName,
+        settings: {
+          theme: currentTheme,
+          accent: currentAccent,
+          surface: currentSurface,
+          sectionOrder,
+          sound: true,
+          animations: true
+        },
+        progress: {
+          history: history.slice(0, 100),
+          bestScores,
+          completedSets: history.map(item => item.unit || item.title || "Completed Quiz").slice(0, 100),
+          lastCompletedAt: history[0]?.isoTime || history[0]?.time || null
+        },
+        accountFiles: safeArray(extra.accountFiles),
+        public: true,
+        madeBy: "you",
+        app: "Exam Bank Platform",
+        updatedAt: serverTime(),
+        ...extra
+      };
+    }
+
+    async function pushCloudState(extra = {}) {
+      const uid = currentUid();
+      if (!uid) {
+        showToast("Sign in with Google to save globally to Firebase.");
+        return;
+      }
+      const payload = cloudAccountPayload(extra);
+      const publicProfile = {
+        uid,
+        username: payload.username,
+        displayName: payload.displayName,
+        avatar: payload.avatar,
+        xp: payload.xp,
+        weeklyXp: payload.weeklyXp,
+        streak: payload.streak,
+        league: payload.league,
+        public: true,
+        madeBy: "you",
+        updatedAt: serverTime()
+      };
+      try {
+        await Promise.all([
+          firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).set(payload, { merge: true }),
+          firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(uid).set(publicProfile, { merge: true }),
+          database.ref(`accounts/${uid}`).update({
+            username: payload.username,
+            avatar: payload.avatar,
+            xp: payload.xp,
+            weeklyXp: payload.weeklyXp,
+            streak: payload.streak,
+            league: payload.league,
+            settings: payload.settings,
+            completedSets: payload.progress.completedSets,
+            public: true,
+            madeBy: "you",
+            updatedAt: Date.now()
+          }),
+          database.ref(`leaderboard/${uid}`).update({
+            uid,
+            name: payload.username,
+            points: payload.xp,
+            weeklyXp: payload.weeklyXp,
+            quizzes: history.length,
+            league: payload.league,
+            avatar: payload.avatar,
+            public: true,
+            updatedAt: Date.now()
+          })
+        ]);
+      } catch (error) {
+        console.error("Cloud save failed:", error);
+        showToast(`Firebase save failed: ${error.message}`);
+      }
+    }
+
+    function attachCloudListeners(uid) {
+      if (activeProfileUnsubscribe) activeProfileUnsubscribe();
+      if (activeQuizUnsubscribe) activeQuizUnsubscribe();
+      if (publicQuizUnsubscribe) publicQuizUnsubscribe();
+      if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+
+      activeProfileUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).onSnapshot(snapshot => {
+        if (snapshot.exists) applyCloudProfile(snapshot.data());
+      }, error => console.error("Profile listener error:", error));
+
+      activeQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).collection("quizzes")
+        .orderBy("createdAt", "desc")
+        .onSnapshot(snapshot => {
+          userQuizzes = snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
+          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => q.authorId !== uid)];
+          updateDashboard();
+        }, error => console.error("User quiz listener error:", error));
+
+      publicQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes)
+        .orderBy("createdAt", "desc")
+        .onSnapshot(snapshot => {
+          publicQuizzes = snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
+          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
+          updateDashboard();
+        }, error => console.error("Public quiz listener error:", error));
+
+      leaderboardUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicProfiles)
+        .orderBy("xp", "desc")
+        .limit(100)
+        .onSnapshot(snapshot => {
+          leaderboard = {};
+          snapshot.docs.forEach(doc => {
+            const row = doc.data();
+            leaderboard[row.username || row.displayName || doc.id] = {
+              uid: doc.id,
+              name: row.username || row.displayName || "Player",
+              points: Number(row.xp || 0),
+              weeklyXp: Number(row.weeklyXp || row.xp || 0),
+              quizzes: Number(row.quizzes || 0),
+              league: row.league || getLeague(Number(row.xp || 0)).name,
+              avatar: row.avatar,
+              public: true
+            };
+          });
+          updateDashboard();
+        }, error => console.error("Leaderboard listener error:", error));
+    }
+
+    function detachCloudListeners() {
+      [activeProfileUnsubscribe, activeQuizUnsubscribe, publicQuizUnsubscribe, leaderboardUnsubscribe].forEach(unsub => {
+        if (typeof unsub === "function") unsub();
+      });
+      activeProfileUnsubscribe = activeQuizUnsubscribe = publicQuizUnsubscribe = leaderboardUnsubscribe = null;
+    }
+
+    async function handleCloudAuthUser(user) {
+      if (!user) {
+        detachCloudListeners();
+        cloudReady = false;
+        currentPlayer = "Guest";
+        currentUserProfile = null;
+        xp = 0;
+        streak = 0;
+        history = [];
+        bestScores = {};
+        userQuizzes = [];
+        customQuizzes = publicQuizzes.slice();
+        updateStats();
+        updateUnitProgress(currentUnitKey);
+        updateDashboard();
+        return;
+      }
+
+      try {
+        showToast("Loading your Firebase account...");
+        const profile = await upsertCloudAccount(user);
+        applyCloudProfile(profile);
+        attachCloudListeners(user.uid);
+        await pushCloudState({ lastLoginAt: serverTime() });
+        cloudReady = true;
+        const authModal = document.getElementById("authModal");
+        if (authModal) {
+          authModal.classList.add("hidden");
+          authModal.classList.remove("flex");
+        }
+        showToast(`Welcome, ${currentPlayer}! Firebase cloud saves are on.`);
+      } catch (error) {
+        console.error("Cloud auth setup failed:", error);
+        showToast(`Firebase account setup failed: ${error.message}`);
+      }
+    }
+
+    async function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+      provider.addScope("profile");
+      provider.addScope("email");
+      try {
+        await auth.signInWithPopup(provider);
+      } catch (error) {
+        console.error("Google popup sign-in error:", error);
+        if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
+          showToast("Popup blocked/closed. Trying Google redirect sign-in...");
+          await auth.signInWithRedirect(provider);
+        } else {
+          showToast(`Google sign-in failed: ${error.message}`);
+        }
+      }
+    }
+
+    async function signInWithEmail() {
+      const email = document.getElementById("authEmailInput").value.trim();
+      const password = document.getElementById("authPasswordInput").value;
+      if (!email || !password) return showToast("Please enter both email and password");
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+      } catch (error) {
+        console.error("Email sign-in error:", error);
+        showToast(`Sign-in failed: ${error.message}`);
+      }
+    }
+
+    async function signUpWithEmail() {
+      const email = document.getElementById("authEmailInput").value.trim();
+      const password = document.getElementById("authPasswordInput").value;
+      if (!email || !password) return showToast("Please enter both email and password");
+      try {
+        const credential = await auth.createUserWithEmailAndPassword(email, password);
+        await credential.user.updateProfile({ displayName: email.split("@")[0] });
+      } catch (error) {
+        console.error("Email sign-up error:", error);
+        showToast(`Sign-up failed: ${error.message}`);
+      }
+    }
+
+    async function signOut() {
+      try {
+        await pushCloudState({ lastLogoutAt: serverTime() });
+        await auth.signOut();
+        showToast("Signed out. Your progress remains saved in Firebase.");
+      } catch (error) {
+        console.error("Sign-out error:", error);
+        showToast(`Sign-out failed: ${error.message}`);
+      }
+    }
+
+    async function handleProfilePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (!file || !currentUid()) return showToast("Sign in before uploading a profile photo.");
+      try {
+        showToast("Uploading profile photo to Firebase Storage...");
+        const safeName = file.name.replace(/[^a-z0-9_.-]/gi, "_");
+        const fileRef = storage.ref().child(`accountFiles/${currentUid()}/profile/${Date.now()}-${safeName}`);
+        const snapshot = await fileRef.put(file, { customMetadata: { public: "true", madeBy: "you", type: "profile-photo" } });
+        const url = await snapshot.ref.getDownloadURL();
+        currentUserProfile.photoURL = url;
+        ["headerProfileImage", "headerProfileImageHeader", "profileDropdownImage", "dashboardProfileImage"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.src = url;
+        });
+        await firestore.collection(CLOUD_COLLECTIONS.users).doc(currentUid()).collection(CLOUD_COLLECTIONS.accountFiles).add({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          url,
+          storagePath: snapshot.ref.fullPath,
+          public: true,
+          madeBy: "you",
+          createdAt: serverTime()
+        });
+        await pushCloudState({ avatar: url, photoURL: url });
+        showToast("Profile photo saved globally!");
+      } catch (error) {
+        console.error("Profile upload failed:", error);
+        showToast(`Upload failed: ${error.message}`);
+      }
+    }
+
+    async function saveCustomQuiz() {
+      if (!currentUid()) return showToast("Sign in first so your public set can save to Firebase.");
+      const title = document.getElementById("quizTitleInput").value.trim();
+      const description = document.getElementById("quizDescriptionInput").value.trim();
+      if (!title) return showToast("Please enter a quiz title");
+
+      const questions = [];
+      let valid = true;
+      document.querySelectorAll(".question-block").forEach(block => {
+        const questionText = block.querySelector(".question-text").value.trim();
+        const options = Array.from(block.querySelectorAll(".option-input")).map(input => input.value.trim());
+        const correctAnswerIndex = block.querySelector(".correct-answer-select").value;
+        if (!questionText || options.some(opt => !opt) || correctAnswerIndex === "") valid = false;
+        questions.push({
+          question: questionText,
+          options,
+          choices: options,
+          answer: options[Number(correctAnswerIndex)],
+          correctIndex: Number(correctAnswerIndex),
+          explanation: "Custom question explanation"
+        });
+      });
+      if (!valid || !questions.length) return showToast("Please fill in all question fields");
+
+      const quizId = `set-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const newQuiz = {
+        id: quizId,
+        title,
+        description,
+        tags: ["exam-bank", "public", "student-created", "made-by-you"],
+        questions,
+        author: currentPlayer,
+        authorId: currentUid(),
+        authorPhoto: currentUserProfile?.photoURL || null,
+        visibility: "public",
+        public: true,
+        madeBy: "you",
+        playCount: 0,
+        createdAt: serverTime(),
+        updatedAt: serverTime()
+      };
+
+      try {
+        const userRef = firestore.collection(CLOUD_COLLECTIONS.users).doc(currentUid()).collection("quizzes").doc(quizId);
+        const publicRef = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes).doc(quizId);
+        await Promise.all([
+          userRef.set(newQuiz, { merge: true }),
+          publicRef.set(newQuiz, { merge: true }),
+          database.ref(`publicQuizzes/${quizId}`).set({ ...newQuiz, createdAt: Date.now(), updatedAt: Date.now() })
+        ]);
+        closeCreateQuizModal();
+        document.getElementById("quizTitleInput").value = "";
+        document.getElementById("quizDescriptionInput").value = "";
+        await pushCloudState({ lastCreatedSetId: quizId });
+        loadTests();
+        updateDashboard();
+        showToast("Public set saved to Firebase and marked Made by You!");
+      } catch (error) {
+        console.error("Saving public set failed:", error);
+        showToast(`Could not save set: ${error.message}`);
+      }
+    }
+
+    async function submitQuiz() {
+      clearInterval(timerInterval);
+      let score = 0;
+      lastQuizReview = [];
+
+      currentQuizQuestions.forEach((question, index) => {
+        const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+        const selectedValue = selected ? selected.value : null;
+        document.querySelectorAll(`input[name="question-${index}"]`).forEach(input => {
+          const optionWrapper = input.closest(".question-option");
+          const isCorrect = input.value === question.answer;
+          optionWrapper.classList.remove("correct", "wrong", "selected");
+          if (input.checked) optionWrapper.classList.add("selected");
+          if (isCorrect) optionWrapper.classList.add("correct");
+          else if (input.checked) optionWrapper.classList.add("wrong");
+        });
+        if (selectedValue === question.answer) score++;
+        lastQuizReview.push({
+          number: index + 1,
+          question: question.question,
+          options: question.options,
+          selected: selectedValue,
+          answer: question.answer,
+          explanation: question.explanation,
+          correct: selectedValue === question.answer
+        });
+      });
+
+      const accuracy = Math.round((score / currentQuizQuestions.length) * 100);
+      const earnedXp = score * 10;
+      streak += 1;
+      xp += earnedXp;
+      if (currentQuizUnitKey && (!bestScores[currentQuizUnitKey] || accuracy > bestScores[currentQuizUnitKey])) {
+        bestScores[currentQuizUnitKey] = accuracy;
+      }
+      const historyItem = {
+        id: `attempt-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        unit: currentQuizTitle,
+        unitKey: currentQuizUnitKey,
+        time: new Date().toLocaleString(),
+        isoTime: new Date().toISOString(),
+        xpEarned: earnedXp,
+        score: `${score}/${currentQuizQuestions.length}`,
+        accuracy,
+        seconds,
+        public: true
+      };
+      history.unshift(historyItem);
+      if (!leaderboard[currentPlayer]) leaderboard[currentPlayer] = { points: 0, quizzes: 0, weeklyXp: 0, league: getLeague(xp).name };
+      leaderboard[currentPlayer].points = xp;
+      leaderboard[currentPlayer].weeklyXp = xp;
+      leaderboard[currentPlayer].quizzes = history.length;
+      leaderboard[currentPlayer].league = getLeague(xp).name;
+
+      updateStats();
+      updateUnitProgress(currentQuizUnitKey);
+      showResults({ score: `${score}/${currentQuizQuestions.length}`, accuracy, xpEarned: earnedXp, time: seconds });
+      showToast(`Quiz completed! Score: ${accuracy}% | XP: ${earnedXp}. Saving to Firebase...`);
+
+      if (currentUid()) {
+        try {
+          await Promise.all([
+            firestore.collection(CLOUD_COLLECTIONS.users).doc(currentUid()).collection(CLOUD_COLLECTIONS.activity).doc(historyItem.id).set({
+              ...historyItem,
+              userId: currentUid(),
+              username: currentPlayer,
+              createdAt: serverTime()
+            }),
+            pushCloudState({ lastQuizAt: serverTime() })
+          ]);
+          showToast("Progress, XP, streak, and leaderboard saved globally.");
+        } catch (error) {
+          console.error("Quiz cloud save failed:", error);
+          showToast(`Progress save failed: ${error.message}`);
+        }
+      } else {
+        showToast("Sign in with Google to save this progress globally.");
+      }
+    }
+
+    const originalApplyThemeCloud = applyTheme;
+    applyTheme = function(themeName) {
+      originalApplyThemeCloud(themeName);
+      currentTheme = themeName;
+      if (currentUid() && cloudReady) pushCloudState();
+    };
+
+    const originalApplyAccentCloud = applyAccent;
+    applyAccent = function(accentName) {
+      originalApplyAccentCloud(accentName);
+      currentAccent = accentName;
+      if (currentUid() && cloudReady) pushCloudState();
+    };
+
+    const originalApplySurfaceCloud = applySurface;
+    applySurface = function(surfaceName) {
+      originalApplySurfaceCloud(surfaceName);
+      currentSurface = surfaceName;
+      if (currentUid() && cloudReady) pushCloudState();
+    };
+
+    saveExpandedAccountData = function() {
+      const payload = cloudAccountPayload();
+      if (currentUid() && cloudReady) pushCloudState();
+      return {
+        username: payload.username,
+        avatar: payload.avatar,
+        xp: payload.xp,
+        streak: payload.streak,
+        league: payload.league,
+        settings: payload.settings,
+        completedSets: payload.progress.completedSets,
+        public: true,
+        madeBy: "you"
+      };
+    };
+
+    updateFirebaseLeaderboard = function() {
+      return pushCloudState();
+    };
+
+    syncLeaderboardWithFirebase = function() {
+      if (!leaderboardUnsubscribe && currentUid()) attachCloudListeners(currentUid());
+    };
+
+    loadUserQuizzes = function() {
+      if (currentUid() && !activeQuizUnsubscribe) attachCloudListeners(currentUid());
+    };
+
+    loadPublicQuizzes = function() {
+      if (!publicQuizUnsubscribe && currentUid()) attachCloudListeners(currentUid());
+    };
+
+    const originalInitCloud = init;
+    init = function() {
+      originalInitCloud();
+      if (!authBootstrapped) {
+        authBootstrapped = true;
+        auth.getRedirectResult().catch(error => {
+          if (error && error.code) showToast(`Google redirect sign-in failed: ${error.message}`);
+        });
+        auth.onAuthStateChanged(handleCloudAuthUser);
+      }
+    };
 
 
     document.addEventListener("DOMContentLoaded", init);
