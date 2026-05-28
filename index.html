@@ -5606,30 +5606,40 @@ What is 7 x 8?
       let liveLeaderboardListener = null;
 
       function attachLiveLeaderboard() {
-        if (liveLeaderboardRef && liveLeaderboardListener) return; // already attached
+        // Always detach first so reopening leaderboard gets fresh data
+        if (liveLeaderboardRef && liveLeaderboardListener) {
+          liveLeaderboardRef.off("value", liveLeaderboardListener);
+          liveLeaderboardListener = null;
+        }
         liveLeaderboardRef = database.ref("leaderboard");
         liveLeaderboardListener = liveLeaderboardRef.on("value", function(snapshot) {
           const rows = snapshot.val() || {};
-          // Rebuild leaderboard object
-          const allEntries = Object.entries(rows).map(([key, data]) => {
-            const name = data.name || data.username || data.displayName || key;
+
+          // Keys are UIDs; use data.name/username for display
+          const allEntries = Object.entries(rows).map(([uid, data]) => {
+            const name = data.name || data.username || data.displayName || "Player";
+            const pts  = Number(data.points || data.weeklyXp || data.xp || 0);
             return {
+              uid,
               name,
-              points: Number(data.points || data.xp || 0),
-              weeklyXp: Number(data.weeklyXp || data.points || data.xp || 0),
-              quizzes: Number(data.quizzes || 0),
-              avatar: data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
-              league: data.league || getLeague(Number(data.points || data.xp || 0)).name
+              points:   pts,
+              weeklyXp: Number(data.weeklyXp || pts),
+              quizzes:  Number(data.quizzes || 0),
+              avatar:   data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
+              league:   data.league || getLeague(pts).name
             };
           }).sort((a, b) => b.points - a.points);
 
           const top20 = allEntries.slice(0, 20);
           const leaderboardContent = document.getElementById("leaderboardContent");
           const userRankEl = document.getElementById("userRank");
-
           if (!leaderboardContent) return;
 
-          const myIdx = allEntries.findIndex(e => e.name === currentPlayer);
+          // Find current user by UID (most reliable) then fall back to name
+          const myUid = currentUid ? currentUid() : null;
+          const myIdx = allEntries.findIndex(e => (myUid && e.uid === myUid) || e.name === currentPlayer);
+          const myEntry = myIdx >= 0 ? allEntries[myIdx] : null;
+
           if (userRankEl) {
             userRankEl.innerHTML = `
               <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
@@ -5637,8 +5647,8 @@ What is 7 x 8?
               </div>
               <div class="flex-1">
                 <div class="flex justify-between gap-3">
-                  <span class="font-bold">${currentPlayer}</span>
-                  <span class="font-bold">${xp} XP</span>
+                  <span class="font-bold">${myEntry ? myEntry.name : currentPlayer}</span>
+                  <span class="font-bold">${myEntry ? myEntry.points : xp} XP</span>
                 </div>
               </div>`;
           }
@@ -5647,13 +5657,14 @@ What is 7 x 8?
             const highestXp = Math.max(1, top20[0].points);
             leaderboardContent.innerHTML = `<div class="duo-league-board">${top20.map((entry, index) => {
               const fill = Math.min(100, Math.round((entry.points / highestXp) * 100));
+              const isMe = (myUid && entry.uid === myUid) || entry.name === currentPlayer;
               return `
-                <div class="duo-league-row stay-zone">
-                  <div class="duo-rank-bubble">#${index + 1}</div>
+                <div class="duo-league-row stay-zone" style="${isMe ? "border-color:rgba(88,204,2,0.6);background:rgba(88,204,2,0.08);" : ""}">
+                  <div class="duo-rank-bubble">${index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "#" + (index + 1)}</div>
                   <div>
                     <div class="flex items-center gap-3">
-                      <img src="${entry.avatar}" style="width:36px;height:36px;border-radius:14px;object-fit:cover;">
-                      <strong>${entry.name}${entry.name === currentPlayer ? " ⭐" : ""}</strong>
+                      <img src="${entry.avatar}" style="width:36px;height:36px;border-radius:14px;object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(entry.name)}&background=111827&color=fff'">
+                      <strong>${entry.name}${isMe ? " ⭐" : ""}</strong>
                     </div>
                     <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width:${fill}%;"></div></div>
                     <p class="mt-1 text-xs soft-text">${entry.quizzes} quizzes • ${entry.league}</p>
