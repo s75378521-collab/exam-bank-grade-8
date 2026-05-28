@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data:;
+  " />
   <title>Exam Bank - Learn Smarter</title>
   <style>
     * {
@@ -1465,6 +1471,16 @@
     const XP_PER_QUESTION = 10;
     const CORRECT_ANSWER_XP = 15;
 
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     // ==================== STATE MANAGEMENT ====================
 
     let currentUser = null;
@@ -1785,19 +1801,19 @@
       container.innerHTML = sets.map(set => `
         <div class="set-card">
           <div class="set-info">
-            <h3 class="set-title">${set.title}</h3>
-            <p class="set-description">${set.description}</p>
+            <h3 class="set-title">${escapeHtml(set.title)}</h3>
+            <p class="set-description">${escapeHtml(set.description)}</p>
             <div class="set-meta">
-              <span>By ${set.creator}</span>
+              <span>By ${escapeHtml(set.creator)}</span>
               <span>${set.questions.length} questions</span>
               <span>Played ${set.playCount} times</span>
             </div>
           </div>
           <div class="set-actions">
-            <button class="btn btn-secondary btn-small" onclick="openSetDetails('${set.id}')">Details</button>
-            <button class="btn btn-primary btn-small" onclick="selectSetAndStartQuiz('${set.id}')">Play</button>
-            ${set.creator === currentUser.username ? `<button class="btn btn-secondary btn-small" onclick="editSet('${set.id}')">Edit</button>
-            <button class="btn btn-error btn-small" onclick="deleteSet('${set.id}')">Delete</button>` : ''}
+            <button class="btn btn-secondary btn-small" onclick="openSetDetails('${escapeHtml(set.id)}')">Details</button>
+            <button class="btn btn-primary btn-small" onclick="selectSetAndStartQuiz('${escapeHtml(set.id)}')">Play</button>
+            ${set.creator === currentUser.username ? `<button class="btn btn-secondary btn-small" onclick="editSet('${escapeHtml(set.id)}')">Edit</button>
+            <button class="btn btn-error btn-small" onclick="deleteSet('${escapeHtml(set.id)}')">Delete</button>` : ''}
           </div>
         </div>
       `).join('');
@@ -1821,19 +1837,19 @@
       container.innerHTML = filtered.map(set => `
         <div class="set-card">
           <div class="set-info">
-            <h3 class="set-title">${set.title}</h3>
-            <p class="set-description">${set.description}</p>
+            <h3 class="set-title">${escapeHtml(set.title)}</h3>
+            <p class="set-description">${escapeHtml(set.description)}</p>
             <div class="set-meta">
-              <span>By ${set.creator}</span>
+              <span>By ${escapeHtml(set.creator)}</span>
               <span>${set.questions.length} questions</span>
               <span>Played ${set.playCount} times</span>
             </div>
           </div>
           <div class="set-actions">
-            <button class="btn btn-secondary btn-small" onclick="openSetDetails('${set.id}')">Details</button>
-            <button class="btn btn-primary btn-small" onclick="selectSetAndStartQuiz('${set.id}')">Play</button>
-            ${set.creator === currentUser.username ? `<button class="btn btn-secondary btn-small" onclick="editSet('${set.id}')">Edit</button>
-            <button class="btn btn-error btn-small" onclick="deleteSet('${set.id}')">Delete</button>` : ''}
+            <button class="btn btn-secondary btn-small" onclick="openSetDetails('${escapeHtml(set.id)}')">Details</button>
+            <button class="btn btn-primary btn-small" onclick="selectSetAndStartQuiz('${escapeHtml(set.id)}')">Play</button>
+            ${set.creator === currentUser.username ? `<button class="btn btn-secondary btn-small" onclick="editSet('${escapeHtml(set.id)}')">Edit</button>
+            <button class="btn btn-error btn-small" onclick="deleteSet('${escapeHtml(set.id)}')">Delete</button>` : ''}
           </div>
         </div>
       `).join('');
@@ -1847,16 +1863,16 @@
 
       const body = document.getElementById('modalSetBody');
       body.innerHTML = `
-        <h3>${set.title}</h3>
-        <p style="color: var(--text-tertiary); margin-bottom: 1rem;">${set.description}</p>
+        <h3>${escapeHtml(set.title)}</h3>
+        <p style="color: var(--text-tertiary); margin-bottom: 1rem;">${escapeHtml(set.description)}</p>
         <div class="form-group">
           <strong>Questions:</strong> ${set.questions.length}
         </div>
         <div class="form-group">
-          <strong>Tags:</strong> ${set.tags.join(', ')}
+          <strong>Tags:</strong> ${escapeHtml(set.tags.join(', '))}
         </div>
         <div class="form-group">
-          <strong>Creator:</strong> ${set.creator}
+          <strong>Creator:</strong> ${escapeHtml(set.creator)}
         </div>
         <div class="form-group">
           <strong>Played:</strong> ${set.playCount} times
@@ -1970,11 +1986,11 @@
 
       content.innerHTML = `
         <div class="quiz-question">
-          <div class="quiz-question-text">${question.text}</div>
+          <div class="quiz-question-text">${escapeHtml(question.text)}</div>
           <div class="quiz-options">
             ${question.options.map((option, idx) => `
               <button class="quiz-option" onclick="answerQuestion(${idx})">
-                ${option}
+                ${escapeHtml(option)}
               </button>
             `).join('')}
           </div>
@@ -2115,8 +2131,8 @@
               ${rankStr}
             </div>
             <div class="player-info">
-              <div class="player-name">${member.avatar} ${member.username}</div>
-              <div class="player-xp">${member.leagueXP} XP</div>
+              <div class="player-name">${escapeHtml(member.avatar)} ${escapeHtml(member.username)}</div>
+              <div class="player-xp">${escapeHtml(member.leagueXP)} XP</div>
             </div>
             <div class="player-score">${member.leagueXP}</div>
           </div>
@@ -2190,16 +2206,16 @@
       container.innerHTML = userSets.map(set => `
         <div class="set-card">
           <div class="set-info">
-            <h3 class="set-title">${set.title}</h3>
-            <p class="set-description">${set.description}</p>
+            <h3 class="set-title">${escapeHtml(set.title)}</h3>
+            <p class="set-description">${escapeHtml(set.description)}</p>
             <div class="set-meta">
               <span>${set.questions.length} questions</span>
               <span>Played ${set.playCount} times</span>
             </div>
           </div>
           <div class="set-actions">
-            <button class="btn btn-primary btn-small" onclick="selectSetAndStartQuiz('${set.id}')">Play</button>
-            <button class="btn btn-secondary btn-small" onclick="editSet('${set.id}')">Edit</button>
+            <button class="btn btn-primary btn-small" onclick="selectSetAndStartQuiz('${escapeHtml(set.id)}')">Play</button>
+            <button class="btn btn-secondary btn-small" onclick="editSet('${escapeHtml(set.id)}')">Edit</button>
           </div>
         </div>
       `).join('');

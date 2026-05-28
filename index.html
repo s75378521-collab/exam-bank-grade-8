@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com/firebasejs/ https://apis.google.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com;
+    font-src 'self' https://fonts.gstatic.com;
+    img-src 'self' data: https: blob:;
+    connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com wss://*.firebaseio.com;
+    frame-src 'self' https://*.firebaseapp.com https://accounts.google.com;
+  " />
   <title>Exam Bank Portal X</title>
   
   <!-- Tailwind CSS CDN -->
@@ -2043,6 +2052,19 @@
     const database = firebase.database();
     const firestore = firebase.firestore();
 
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    const ALLOWED_UPLOAD_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
+
     // Extended units with more questions
     const rawUnits = {
       math1: {
@@ -2457,15 +2479,15 @@
               <div class="mb-4 flex items-start justify-between gap-4">
                 <div>
                   <p class="mb-2 inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-pink-200 bg-pink-400/10">Custom Quiz</p>
-                  <h5 class="text-2xl font-black leading-tight">${quiz.title}</h5>
-                  <p class="mt-2 soft-text">${quiz.description}</p>
+                  <h5 class="text-2xl font-black leading-tight">${escapeHtml(quiz.title)}</h5>
+                  <p class="mt-2 soft-text">${escapeHtml(quiz.description)}</p>
                 </div>
                 <div class="display-font rounded-2xl bg-white/6 px-4 py-3 text-xl font-black">CQ</div>
               </div>
-              <p class="soft-text text-sm">${quiz.questions.length} questions</p>
+              <p class="soft-text text-sm">${escapeHtml(quiz.questions.length)} questions</p>
             </div>
             <div class="mt-6 flex items-center justify-between gap-4">
-              <span class="rounded-full bg-white/6 px-4 py-2 text-sm font-semibold text-slate-200">${quiz.questions.length} Questions</span>
+              <span class="rounded-full bg-white/6 px-4 py-2 text-sm font-semibold text-slate-200">${escapeHtml(quiz.questions.length)} Questions</span>
               <div class="flex gap-2">
                 <button data-action="preview-custom-quiz" data-quiz-index="${index}" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover: bg-white/15">Preview</button>
                 <button data-action="launch-custom-quiz" data-quiz-index="${index}" class="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-400 px-4 py-3 font-black text-slate-950 transition hover: scale-[1.03]">Start Quiz</button>
@@ -2673,7 +2695,7 @@
             <div class="mb-8 flex flex-col gap-4 lg: flex-row lg: items-center lg: justify-between">
               <div>
                 <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-blue-200">Full Screen Quiz</p>
-                <h3 class="mt-2 text-4xl font-black">${currentQuizTitle}</h3>
+                <h3 class="mt-2 text-4xl font-black">${escapeHtml(currentQuizTitle)}</h3>
                 <p class="mt-2 soft-text">Focused mode is on. Use exit anytime or restart for a fresh shuffle.</p>
               </div>
               <div class="flex flex-wrap gap-3">
@@ -2705,15 +2727,15 @@
                   <div class="mb-4 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
                     <div>
                       <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Question ${index + 1}</p>
-                      <p class="mt-2 text-xl font-bold">${q.question}</p>
+                      <p class="mt-2 text-xl font-bold">${escapeHtml(q.question)}</p>
                     </div>
                     <span class="rounded-full bg-white/8 px-4 py-2 text-sm font-bold text-blue-200">10 XP base</span>
                   </div>
                   <div class="grid grid-cols-1 gap-4 md: grid-cols-2">
                     ${q.options.map((option, optionIndex) => `
                       <label class="question-option glass flex min-h-[88px] cursor-pointer items-center gap-4 rounded-[24px] border border-white/10 p-5 transition hover: border-blue-300 hover: bg-white/10">
-                        <input type="radio" name="question-${index}" value="${option}" data-question-index="${index}">
-                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${option}</span>
+                        <input type="radio" name="question-${index}" value="${escapeHtml(option)}" data-question-index="${index}">
+                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${escapeHtml(option)}</span>
                       </label>
                     `).join("")}
                   </div>
@@ -2763,7 +2785,7 @@
             <div class="mb-8 flex flex-col gap-4 lg: flex-row lg: items-center lg: justify-between">
               <div>
                 <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-pink-200">Custom Quiz</p>
-                <h3 class="mt-2 text-4xl font-black">${currentQuizTitle}</h3>
+                <h3 class="mt-2 text-4xl font-black">${escapeHtml(currentQuizTitle)}</h3>
                 <p class="mt-2 soft-text">${quiz.description}</p>
               </div>
               <div class="flex flex-wrap gap-3">
@@ -2795,15 +2817,15 @@
                   <div class="mb-4 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
                     <div>
                       <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Question ${index + 1}</p>
-                      <p class="mt-2 text-xl font-bold">${q.question}</p>
+                      <p class="mt-2 text-xl font-bold">${escapeHtml(q.question)}</p>
                     </div>
                     <span class="rounded-full bg-white/8 px-4 py-2 text-sm font-bold text-pink-200">10 XP base</span>
                   </div>
                   <div class="grid grid-cols-1 gap-4 md: grid-cols-2">
                     ${q.options.map((option, optionIndex) => `
                       <label class="question-option glass flex min-h-[88px] cursor-pointer items-center gap-4 rounded-[24px] border border-white/10 p-5 transition hover: border-pink-300 hover: bg-white/10">
-                        <input type="radio" name="question-${index}" value="${option}" data-question-index="${index}">
-                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${option}</span>
+                        <input type="radio" name="question-${index}" value="${escapeHtml(option)}" data-question-index="${index}">
+                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${escapeHtml(option)}</span>
                       </label>
                     `).join("")}
                   </div>
@@ -3050,7 +3072,7 @@
             <div class="mb-8 flex flex-col gap-4 lg: flex-row lg: items-center lg: justify-between">
               <div>
                 <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-emerald-200">Answer Review</p>
-                <h3 class="mt-2 text-4xl font-black">${currentQuizTitle}</h3>
+                <h3 class="mt-2 text-4xl font-black">${escapeHtml(currentQuizTitle)}</h3>
                 <p class="mt-2 soft-text">See what you got right, what you missed, and why.</p>
               </div>
               <div class="flex gap-3">
@@ -3200,8 +3222,8 @@
           </div>
           <div class="flex-1">
             <div class="flex justify-between">
-              <span class="font-bold">${currentPlayer}</span>
-              <span class="font-bold">${userData.points} XP</span>
+              <span class="font-bold">${escapeHtml(currentPlayer)}</span>
+              <span class="font-bold">${escapeHtml(userData.points)} XP</span>
             </div>
             <div class="flex items-center mt-1">
               <div class="league-badge ${league.class}">
@@ -3222,10 +3244,10 @@
               <div class="leaderboard-entry">
                 <div class="rank">#${index + 1}</div>
                 <div class="player-info">
-                  <div class="player-name">${name}</div>
-                  <div class="player-stats">${data.quizzes} quizzes</div>
+                  <div class="player-name">${escapeHtml(name)}</div>
+                  <div class="player-stats">${escapeHtml(data.quizzes)} quizzes</div>
                 </div>
-                <div class="player-score">${data.points} XP</div>
+                <div class="player-score">${escapeHtml(data.points)} XP</div>
                 <div class="league-badge ${league.class} ml-2">
                   <svg class="league-icon" viewBox="0 0 24 24" fill="white">
                     <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
@@ -3318,6 +3340,17 @@
     function handleProfilePhotoUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
+
+      if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
+        showToast("Only JPEG, PNG, GIF, and WebP images are allowed.");
+        event.target.value = "";
+        return;
+      }
+      if (file.size > MAX_UPLOAD_SIZE) {
+        showToast("File too large. Maximum size is 5 MB.");
+        event.target.value = "";
+        return;
+      }
       
       // Show loading state
       showToast("Uploading profile photo...");
@@ -3672,15 +3705,15 @@
                   <div class="mb-4 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
                     <div>
                       <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Question ${index + 1}</p>
-                      <p class="mt-2 text-xl font-bold">${q.question}</p>
+                      <p class="mt-2 text-xl font-bold">${escapeHtml(q.question)}</p>
                     </div>
                     <span class="rounded-full bg-white/8 px-4 py-2 text-sm font-bold text-blue-200">10 XP base</span>
                   </div>
                   <div class="grid grid-cols-1 gap-4 md: grid-cols-2">
                     ${q.options.map((option, optionIndex) => `
                       <label class="question-option glass flex min-h-[88px] cursor-pointer items-center gap-4 rounded-[24px] border border-white/10 p-5 transition hover: border-blue-300 hover: bg-white/10">
-                        <input type="radio" name="question-${index}" value="${option}" data-question-index="${index}">
-                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${option}</span>
+                        <input type="radio" name="question-${index}" value="${escapeHtml(option)}" data-question-index="${index}">
+                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${escapeHtml(option)}</span>
                       </label>
                     `).join("")}
                   </div>
@@ -3736,7 +3769,7 @@
             <div class="mb-8 flex flex-col gap-4 lg: flex-row lg: items-center lg: justify-between">
               <div>
                 <p class="display-font text-sm font-bold uppercase tracking-[0.24em] text-blue-200">Shuffled Quiz</p>
-                <h3 class="mt-2 text-4xl font-black">${currentQuizTitle}</h3>
+                <h3 class="mt-2 text-4xl font-black">${escapeHtml(currentQuizTitle)}</h3>
                 <p class="mt-2 soft-text">Questions in random order. Test your knowledge!</p>
               </div>
               <div class="flex flex-wrap gap-3">
@@ -3768,15 +3801,15 @@
                   <div class="mb-4 flex flex-col gap-3 lg: flex-row lg: items-center lg: justify-between">
                     <div>
                       <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Question ${index + 1}</p>
-                      <p class="mt-2 text-xl font-bold">${q.question}</p>
+                      <p class="mt-2 text-xl font-bold">${escapeHtml(q.question)}</p>
                     </div>
                     <span class="rounded-full bg-white/8 px-4 py-2 text-sm font-bold text-blue-200">10 XP base</span>
                   </div>
                   <div class="grid grid-cols-1 gap-4 md: grid-cols-2">
                     ${q.options.map((option, optionIndex) => `
                       <label class="question-option glass flex min-h-[88px] cursor-pointer items-center gap-4 rounded-[24px] border border-white/10 p-5 transition hover: border-blue-300 hover: bg-white/10">
-                        <input type="radio" name="question-${index}" value="${option}" data-question-index="${index}">
-                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${option}</span>
+                        <input type="radio" name="question-${index}" value="${escapeHtml(option)}" data-question-index="${index}">
+                        <span class="font-semibold">${String.fromCharCode(65 + optionIndex)}. ${escapeHtml(option)}</span>
                       </label>
                     `).join("")}
                   </div>
@@ -3865,11 +3898,11 @@
         recentActivity.innerHTML = history.slice(0, 5).map(item => `
           <div class="glass rounded-2xl p-4">
             <div class="flex justify-between">
-              <span class="font-bold">${item.unit}</span>
-              <span class="text-emerald-300">+${item.xpEarned} XP</span>
+              <span class="font-bold">${escapeHtml(item.unit)}</span>
+              <span class="text-emerald-300">+${escapeHtml(item.xpEarned)} XP</span>
             </div>
-            <div class="text-sm text-gray-400 mt-1">${item.time}</div>
-            <div class="text-sm mt-2">${item.score} | ${item.accuracy}% | ${formatTime(item.seconds)}</div>
+            <div class="text-sm text-gray-400 mt-1">${escapeHtml(item.time)}</div>
+            <div class="text-sm mt-2">${escapeHtml(item.score)} | ${escapeHtml(item.accuracy)}% | ${formatTime(item.seconds)}</div>
           </div>
         `).join("");
       } else {
@@ -3881,13 +3914,13 @@
       if (userQuizzes.length > 0) {
         userQuizzesList.innerHTML = userQuizzes.map((quiz, index) => `
           <div class="dashboard-card">
-            <h3>${quiz.title}</h3>
-            <p>${quiz.description || "No description"}</p>
-            <p class="text-sm text-gray-400">${quiz.questions.length} questions</p>
+            <h3>${escapeHtml(quiz.title)}</h3>
+            <p>${escapeHtml(quiz.description || "No description")}</p>
+            <p class="text-sm text-gray-400">${escapeHtml(quiz.questions.length)} questions</p>
             <div class="dashboard-actions">
-              <button class="edit-btn" data-quiz-id="${quiz.id}">Edit</button>
-              <button class="share-btn" data-quiz-id="${quiz.id}">Share</button>
-              <button class="delete-btn" data-quiz-id="${quiz.id}">Delete</button>
+              <button class="edit-btn" data-quiz-id="${escapeHtml(quiz.id)}">Edit</button>
+              <button class="share-btn" data-quiz-id="${escapeHtml(quiz.id)}">Share</button>
+              <button class="delete-btn" data-quiz-id="${escapeHtml(quiz.id)}">Delete</button>
             </div>
           </div>
         `).join("");
@@ -3900,11 +3933,11 @@
       if (publicQuizzes.length > 0) {
         publicQuizzesList.innerHTML = publicQuizzes.map(quiz => `
           <div class="public-quiz-card">
-            <h3>${quiz.title}</h3>
-            <p>${quiz.description || "No description"}</p>
-            <div class="author">By ${quiz.author}</div>
+            <h3>${escapeHtml(quiz.title)}</h3>
+            <p>${escapeHtml(quiz.description || "No description")}</p>
+            <div class="author">By ${escapeHtml(quiz.author)}</div>
             <div class="actions">
-              <button class="play-btn" data-quiz-id="${quiz.id}">Play Quiz</button>
+              <button class="play-btn" data-quiz-id="${escapeHtml(quiz.id)}">Play Quiz</button>
             </div>
           </div>
         `).join("");
@@ -4281,8 +4314,8 @@
             <div class="duo-rank-bubble">#${index + 1}</div>
             <div>
               <div class="flex items-center gap-3">
-                <img src="${entry.avatar}" alt="${entry.name}" style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover;">
-                <strong>${entry.name}${entry.name === currentPlayer ? " ⭐" : ""}</strong>
+                <img src="${escapeHtml(entry.avatar)}" alt="${escapeHtml(entry.name)}" style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover;">
+                <strong>${escapeHtml(entry.name)}${entry.name === currentPlayer ? " ⭐" : ""}</strong>
               </div>
               <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width: ${fillWidth}%;"></div></div>
               <p class="mt-1 text-xs soft-text">${zoneText} zone • ${entry.quizzes} quizzes</p>
@@ -4344,11 +4377,11 @@
         recentActivity.innerHTML = history.slice(0, 8).map(item => `
           <div class="duo-result-pop">
             <div class="flex justify-between gap-3">
-              <span class="font-bold">${item.unit}</span>
-              <span class="text-emerald-300 font-black">+${item.xpEarned} XP</span>
+              <span class="font-bold">${escapeHtml(item.unit)}</span>
+              <span class="text-emerald-300 font-black">+${escapeHtml(item.xpEarned)} XP</span>
             </div>
-            <div class="text-sm text-gray-400 mt-1">${item.time}</div>
-            <div class="text-sm mt-2">${item.score} • ${item.accuracy}% accuracy • ${formatTime(item.seconds)}</div>
+            <div class="text-sm text-gray-400 mt-1">${escapeHtml(item.time)}</div>
+            <div class="text-sm mt-2">${escapeHtml(item.score)} • ${escapeHtml(item.accuracy)}% accuracy • ${formatTime(item.seconds)}</div>
           </div>
         `).join("");
       } else {
@@ -4361,9 +4394,9 @@
       if (combinedUserQuizzes.length > 0) {
         userQuizzesList.innerHTML = combinedUserQuizzes.map((quiz, index) => `
           <div class="dashboard-card duo-result-pop">
-            <h3>🧠 ${quiz.title}</h3>
-            <p>${quiz.description || "No description"}</p>
-            <p class="text-sm text-gray-400">${quiz.questions.length} questions • ${quiz.tags ? quiz.tags.join(", ") : "Exam Bank Set"}</p>
+            <h3>🧠 ${escapeHtml(quiz.title)}</h3>
+            <p>${escapeHtml(quiz.description || "No description")}</p>
+            <p class="text-sm text-gray-400">${escapeHtml(quiz.questions.length)} questions • ${quiz.tags ? escapeHtml(quiz.tags.join(", ")) : "Exam Bank Set"}</p>
             <div class="dashboard-actions">
               <button class="edit-btn" data-quiz-id="${quiz.id || index}" data-local-index="${index}">Edit</button>
               <button class="share-btn" data-quiz-id="${quiz.id || index}" data-local-index="${index}">Share</button>
@@ -4381,9 +4414,9 @@
       if (allPublicQuizzes.length > 0) {
         publicQuizzesList.innerHTML = allPublicQuizzes.map((quiz, index) => `
           <div class="public-quiz-card duo-result-pop">
-            <h3>🌎 ${quiz.title}</h3>
-            <p>${quiz.description || "No description"}</p>
-            <div class="author">By ${quiz.author || "Community"} • ${quiz.questions?.length || 0} questions</div>
+            <h3>🌎 ${escapeHtml(quiz.title)}</h3>
+            <p>${escapeHtml(quiz.description || "No description")}</p>
+            <div class="author">By ${escapeHtml(quiz.author || "Community")} • ${escapeHtml(quiz.questions?.length || 0)} questions</div>
             <div class="actions">
               <button class="play-btn" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play Set</button>
             </div>
@@ -4410,11 +4443,11 @@
         </div>
         <div class="flex-1">
           <div class="flex justify-between gap-3">
-            <span class="font-bold">${currentPlayer}</span>
-            <span class="font-bold">${xp} XP</span>
+            <span class="font-bold">${escapeHtml(currentPlayer)}</span>
+            <span class="font-bold">${escapeHtml(xp)} XP</span>
           </div>
           <div class="flex items-center mt-1">
-            <div class="league-badge ${league.class}">${league.icon} ${league.name}</div>
+            <div class="league-badge ${escapeHtml(league.class)}">${escapeHtml(league.icon)} ${escapeHtml(league.name)}</div>
           </div>
           <p class="mt-2 text-sm soft-text">Weekly reset in ${getWeeklyCountdownText()}. You only see the ${league.name} League.</p>
         </div>
@@ -4729,7 +4762,7 @@
         ]);
       } catch (error) {
         console.error("Cloud save failed:", error);
-        showToast(`Firebase save failed: ${error.message}`);
+        showToast("Firebase save failed. Please try again.");
       }
     }
 
@@ -4821,7 +4854,7 @@
         showToast(`Welcome, ${currentPlayer}! Firebase cloud saves are on.`);
       } catch (error) {
         console.error("Cloud auth setup failed:", error);
-        showToast(`Firebase account setup failed: ${error.message}`);
+        showToast("Firebase account setup failed. Please try again.");
       }
     }
 
@@ -4838,7 +4871,7 @@
           showToast("Popup blocked/closed. Trying Google redirect sign-in...");
           await auth.signInWithRedirect(provider);
         } else {
-          showToast(`Google sign-in failed: ${error.message}`);
+          showToast("Google sign-in failed. Please try again.");
         }
       }
     }
@@ -4851,7 +4884,7 @@
         await auth.signInWithEmailAndPassword(email, password);
       } catch (error) {
         console.error("Email sign-in error:", error);
-        showToast(`Sign-in failed: ${error.message}`);
+        showToast("Sign-in failed. Please check your credentials.");
       }
     }
 
@@ -4864,7 +4897,7 @@
         await credential.user.updateProfile({ displayName: email.split("@")[0] });
       } catch (error) {
         console.error("Email sign-up error:", error);
-        showToast(`Sign-up failed: ${error.message}`);
+        showToast("Sign-up failed. Please try again.");
       }
     }
 
@@ -4875,13 +4908,23 @@
         showToast("Signed out. Your progress remains saved in Firebase.");
       } catch (error) {
         console.error("Sign-out error:", error);
-        showToast(`Sign-out failed: ${error.message}`);
+        showToast("Sign-out failed. Please try again.");
       }
     }
 
     async function handleProfilePhotoUpload(event) {
       const file = event.target.files[0];
       if (!file || !currentUid()) return showToast("Sign in before uploading a profile photo.");
+      if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
+        showToast("Only JPEG, PNG, GIF, and WebP images are allowed.");
+        event.target.value = "";
+        return;
+      }
+      if (file.size > MAX_UPLOAD_SIZE) {
+        showToast("File too large. Maximum size is 5 MB.");
+        event.target.value = "";
+        return;
+      }
       try {
         showToast("Uploading profile photo to Firebase Storage...");
         const safeName = file.name.replace(/[^a-z0-9_.-]/gi, "_");
@@ -4907,7 +4950,7 @@
         showToast("Profile photo saved globally!");
       } catch (error) {
         console.error("Profile upload failed:", error);
-        showToast(`Upload failed: ${error.message}`);
+        showToast("Upload failed. Please try again.");
       }
     }
 
@@ -4970,7 +5013,7 @@
         showToast("Public set saved to Firebase and marked Made by You!");
       } catch (error) {
         console.error("Saving public set failed:", error);
-        showToast(`Could not save set: ${error.message}`);
+        showToast("Could not save set. Please try again.");
       }
     }
 
@@ -5047,7 +5090,7 @@
           showToast("Progress, XP, streak, and leaderboard saved globally.");
         } catch (error) {
           console.error("Quiz cloud save failed:", error);
-          showToast(`Progress save failed: ${error.message}`);
+          showToast("Progress save failed. Please try again.");
         }
       } else {
         showToast("Sign in with Google to save this progress globally.");
@@ -5113,7 +5156,7 @@
       if (!authBootstrapped) {
         authBootstrapped = true;
         auth.getRedirectResult().catch(error => {
-          if (error && error.code) showToast(`Google redirect sign-in failed: ${error.message}`);
+          if (error && error.code) showToast("Google redirect sign-in failed. Please try again.");
         });
         auth.onAuthStateChanged(handleCloudAuthUser);
       }
