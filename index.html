@@ -1587,7 +1587,7 @@
             <div class="max-w-3xl">
               <p class="display-font text-sm font-bold uppercase tracking-[0.3em] text-slate-300">Study Command Center</p>
               <h2 class="mt-3 text-4xl font-black leading-tight lg: text-5xl">Grade 8 exam bank</h2>
-              <p class="mt-3 max-w-2xl text-lg soft-text">Portal X the perfect place to grow and adapt your grade 8 knowledge made by spencer</p>
+              <p class="mt-3 max-w-2xl text-lg soft-text">Portal X the perfect place to grow and adapt your grade 8 knowledge</p>
               
               <!-- Google Sign In Button on Main Page -->
               <div class="mt-6">
@@ -3920,22 +3920,9 @@ What is 7 x 8?
         userQuizzesList.innerHTML = `<div class="text-center py-8 soft-text">No quizzes found. Create your first quiz!</div>`;
       }
       
-      // Update public quizzes list
-      const publicQuizzesList = document.getElementById("publicQuizzesList");
-      if (publicQuizzes.length > 0) {
-        publicQuizzesList.innerHTML = publicQuizzes.map(quiz => `
-          <div class="public-quiz-card">
-            <h3>${quiz.title}</h3>
-            <p>${quiz.description || "No description"}</p>
-            <div class="author">By ${quiz.author}</div>
-            <div class="actions">
-              <button class="play-btn" data-quiz-id="${quiz.id}">Play Quiz</button>
-            </div>
-          </div>
-        `).join("");
-      } else {
-        publicQuizzesList.innerHTML = `<div class="text-center py-8 soft-text">No public quizzes available. Create and share your own!</div>`;
-      }
+      // Public quizzes list is rendered by the Global Sync Engine (_renderPublicQuizzesList)
+      // which is driven by live Firestore + RTDB listeners. Just trigger a re-render here.
+      if (typeof _renderPublicQuizzesList === "function") _renderPublicQuizzesList();
     }
 
     // Bind global actions
@@ -4059,6 +4046,11 @@ What is 7 x 8?
           document.getElementById("quizDetailView").style.display = "none";
           const tabId = tab.getAttribute("data-tab");
           document.getElementById(`${tabId}Tab`).style.display = "block";
+          // When Public tab opened, ensure sync is running and render fresh list
+          if (tabId === "public") {
+            if (typeof _startGlobalPublicSync === "function") _startGlobalPublicSync();
+            if (typeof _renderPublicQuizzesList === "function") _renderPublicQuizzesList();
+          }
         });
       });
       
@@ -4645,22 +4637,8 @@ What is 7 x 8?
         userQuizzesList.innerHTML = `<div class="empty-state">No quizzes found. Create your first Blooket-style public set!</div>`;
       }
 
-      const allPublicQuizzes = [...publicQuizzes, ...customQuizzes];
-      const publicQuizzesList = document.getElementById("publicQuizzesList");
-      if (allPublicQuizzes.length > 0) {
-        publicQuizzesList.innerHTML = allPublicQuizzes.map((quiz, index) => `
-          <div class="public-quiz-card duo-result-pop" style="cursor:pointer;" data-quiz-id="${quiz.id || index}">
-            <h3>🌎 ${quiz.title}</h3>
-            <p>${quiz.description || "No description"}</p>
-            <div class="author">By ${quiz.author || "Community"} • ${quiz.questions?.length || 0} questions</div>
-            <div class="actions">
-              <button class="play-btn" data-quiz-id="${quiz.id || index}" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play Set</button>
-            </div>
-          </div>
-        `).join("");
-      } else {
-        publicQuizzesList.innerHTML = `<div class="empty-state">No public quizzes available. Create and share your own!</div>`;
-      }
+      // Public quizzes list rendered by Global Sync Engine
+      if (typeof _renderPublicQuizzesList === "function") _renderPublicQuizzesList();
     }
 
     function showLeaderboard() {
@@ -5593,89 +5571,335 @@ What is 7 x 8?
     document.addEventListener("DOMContentLoaded", init);
 
     /* ================================================================
-       FINAL FIX — Leaderboard live sync + Public quizzes
+       GLOBAL SYNC ENGINE — Public Quizzes + Leaderboard
+       All public quizzes sync in real-time across every user globally.
+       Primary source: Firestore (with RTDB as hot fallback).
+       Leaderboard uses live RTDB .on() for instant cross-user updates.
     ================================================================ */
-    document.addEventListener("DOMContentLoaded", function() {
 
-      // ── 1. LEADERBOARD: live real-time sync across ALL users ─────────
-      showLeaderboard = function() {
-        var modal = document.getElementById("leaderboardModal");
-        var leaderboardContent = document.getElementById("leaderboardContent");
-        var userRankEl = document.getElementById("userRank");
-        if (!modal) return;
-        modal.classList.remove("hidden");
-        modal.classList.add("flex");
-        if (leaderboardContent) leaderboardContent.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;">Loading live leaderboard...</div>';
+    // ── STATE ──────────────────────────────────────────────────────────
+    var _globalPublicQuizMap = {};          // id → quiz (merged from both DBs)
+    var _globalPublicRTDBUnsub = null;      // RTDB listener off-handle
+    var _globalPublicFSUnsub = null;        // Firestore listener unsubscribe
+    var _globalLeaderboardRTDBRef = null;   // RTDB leaderboard ref
+    var _publicSearchQuery = "";
 
-        database.ref("leaderboard").off("value");
-        database.ref("leaderboard").on("value", function(snapshot) {
-          var rows = snapshot.val() || {};
-          var entries = [];
-          Object.keys(rows).forEach(function(uid) {
-            var d = rows[uid];
-            var name = d.name || d.username || d.displayName || "Player";
-            var pts  = Number(d.points || d.weeklyXp || d.xp || 0);
-            entries.push({
-              uid: uid, name: name, points: pts,
-              quizzes: Number(d.quizzes || 0),
-              avatar: d.avatar || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff"),
-              league: d.league || "Bronze"
-            });
-          });
-          entries.sort(function(a,b){ return b.points - a.points; });
-          var top20 = entries.slice(0, 20);
-          var myUid = auth.currentUser ? auth.currentUser.uid : null;
-          var myIdx = entries.findIndex(function(e){ return myUid ? e.uid === myUid : e.name === currentPlayer; });
-          var myEntry = myIdx >= 0 ? entries[myIdx] : null;
+    // ── HELPERS ────────────────────────────────────────────────────────
+    function _escHtml(str) {
+      return String(str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function _safeQuizId(id) {
+      return String(id || "").replace(/['"<>]/g, "");
+    }
+    function _mergePublicQuiz(id, data) {
+      if (!data || !data.questions || !data.questions.length) return;
+      _globalPublicQuizMap[id] = { ...(_globalPublicQuizMap[id] || {}), ...data, id: id };
+    }
+    function _removePublicQuiz(id) {
+      delete _globalPublicQuizMap[id];
+    }
 
-          if (userRankEl) {
-            userRankEl.innerHTML =
-              '<div style="width:48px;height:48px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;margin-right:1rem;">' +
-                '<span style="font-weight:bold;">#' + (myIdx >= 0 ? myIdx + 1 : "-") + '</span>' +
-              '</div>' +
-              '<div style="flex:1;display:flex;justify-content:space-between;align-items:center;">' +
-                '<span style="font-weight:bold;">' + (myEntry ? myEntry.name : currentPlayer) + '</span>' +
-                '<span style="font-weight:bold;">' + (myEntry ? myEntry.points : xp) + ' XP</span>' +
-              '</div>';
-          }
-          if (!leaderboardContent) return;
-          if (top20.length === 0) {
-            leaderboardContent.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;">No players yet. Complete a quiz to appear!</div>';
-            return;
-          }
-          var highest = Math.max(1, top20[0].points);
-          var medals = ["\uD83E\uDD47","\uD83E\uDD48","\uD83E\uDD49"];
-          var html = '<div style="display:flex;flex-direction:column;gap:0.6rem;">';
-          top20.forEach(function(entry, i) {
-            var isMe = myUid ? entry.uid === myUid : entry.name === currentPlayer;
-            var fill = Math.min(100, Math.round((entry.points / highest) * 100));
-            var border = isMe ? "2px solid rgba(88,204,2,0.7)" : "2px solid rgba(255,255,255,0.1)";
-            var bg = isMe ? "rgba(88,204,2,0.1)" : "rgba(255,255,255,0.05)";
-            var rank = i < 3 ? medals[i] : "#" + (i+1);
-            html += '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.85rem;border-radius:16px;border:' + border + ';background:' + bg + ';">' +
-              '<div style="width:38px;text-align:center;font-weight:900;">' + rank + '</div>' +
-              '<img src="' + entry.avatar + '" style="width:36px;height:36px;border-radius:12px;object-fit:cover;">' +
-              '<div style="flex:1;min-width:0;">' +
-                '<div style="font-weight:bold;">' + entry.name + (isMe ? " \u2B50" : "") + '</div>' +
-                '<div style="height:6px;border-radius:99px;background:rgba(0,0,0,0.3);margin-top:3px;">' +
-                  '<div style="height:100%;width:' + fill + '%;border-radius:99px;background:linear-gradient(90deg,#58cc02,#1cb0f6);"></div>' +
-                '</div>' +
-                '<div style="font-size:0.72rem;color:#888;margin-top:2px;">' + entry.quizzes + ' quizzes</div>' +
-              '</div>' +
-              '<strong>' + entry.points + ' XP</strong>' +
-            '</div>';
-          });
-          html += '</div>';
-          leaderboardContent.innerHTML = html;
-        });
-      };
-
-      document.getElementById("closeLeaderboardModal").addEventListener("click", function() {
-        database.ref("leaderboard").off("value");
-        var modal = document.getElementById("leaderboardModal");
-        if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+    // ── RENDER PUBLIC QUIZZES LIST ──────────────────────────────────────
+    function _renderPublicQuizzesList() {
+      var list = document.getElementById("publicQuizzesList");
+      if (!list) return;
+      var quizzes = Object.values(_globalPublicQuizMap);
+      // Sort newest first
+      quizzes.sort(function(a, b) {
+        return (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0);
       });
+      // Apply search filter
+      var q = _publicSearchQuery.trim().toLowerCase();
+      if (q) {
+        quizzes = quizzes.filter(function(quiz) {
+          return (quiz.title || "").toLowerCase().includes(q) ||
+                 (quiz.description || "").toLowerCase().includes(q) ||
+                 (quiz.author || "").toLowerCase().includes(q);
+        });
+      }
+      if (quizzes.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:2.5rem;color:#aaa;font-size:1rem;">' +
+          (q ? '🔍 No quizzes match "' + _escHtml(q) + '"' : '🌐 No public quizzes yet — be the first to create one!') +
+          '</div>';
+        return;
+      }
+      var myUid = auth.currentUser ? auth.currentUser.uid : null;
+      list.innerHTML = quizzes.map(function(quiz) {
+        var id = _safeQuizId(quiz.id);
+        var isMine = myUid && quiz.authorId === myUid;
+        var qCount = Array.isArray(quiz.questions) ? quiz.questions.length : 0;
+        var playCount = Number(quiz.playCount || 0);
+        var authorAvatar = quiz.authorPhoto
+          ? 'src="' + _escHtml(quiz.authorPhoto) + '"'
+          : 'src="https://ui-avatars.com/api/?name=' + encodeURIComponent(quiz.author || "?") + '&background=111827&color=fff"';
+        return '<div class="dashboard-card" style="display:flex;flex-direction:column;gap:0.6rem;position:relative;">' +
+          (isMine ? '<span style="position:absolute;top:1rem;right:1rem;font-size:0.7rem;background:rgba(96,165,250,0.2);color:#93c5fd;padding:2px 8px;border-radius:999px;font-weight:700;">YOURS</span>' : '') +
+          '<div style="display:flex;align-items:center;gap:0.6rem;">' +
+            '<img ' + authorAvatar + ' style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;">' +
+            '<span style="font-size:0.82rem;color:#9ca3af;">' + _escHtml(quiz.author || "Unknown") + '</span>' +
+          '</div>' +
+          '<h3 style="margin:0;font-size:1.05rem;font-weight:800;line-height:1.3;">🌐 ' + _escHtml(quiz.title || "Untitled Quiz") + '</h3>' +
+          (quiz.description ? '<p style="margin:0;color:#9ca3af;font-size:0.85rem;line-height:1.4;">' + _escHtml(quiz.description) + '</p>' : '') +
+          '<div style="display:flex;gap:1rem;font-size:0.78rem;color:#6b7280;">' +
+            '<span>📝 ' + qCount + ' question' + (qCount !== 1 ? 's' : '') + '</span>' +
+            (playCount > 0 ? '<span>▶ ' + playCount + ' play' + (playCount !== 1 ? 's' : '') + '</span>' : '') +
+          '</div>' +
+          '<div class="dashboard-actions" style="margin-top:0.25rem;flex-wrap:wrap;gap:0.5rem;">' +
+            '<button class="play-btn" data-quiz-id="' + id + '" data-action="launch-custom-quiz" style="background:#3b82f6;color:white;border:none;padding:0.45rem 1.1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">▶ Play</button>' +
+            (isMine
+              ? '<button class="edit-btn" data-quiz-id="' + id + '" style="background:#6366f1;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">✏ Edit</button>' +
+                '<button class="delete-btn" data-quiz-id="' + id + '" style="background:#ef4444;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">🗑 Delete</button>'
+              : '') +
+            '<button class="share-btn" data-quiz-id="' + id + '" style="background:#10b981;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">🔗 Share</button>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
 
+    // ── ATTACH GLOBAL PUBLIC QUIZ LISTENERS ────────────────────────────
+    function _startGlobalPublicSync() {
+      // 1. Firestore real-time listener (authoritative)
+      if (!_globalPublicFSUnsub) {
+        try {
+          _globalPublicFSUnsub = firestore.collection("publicQuizzes")
+            .orderBy("createdAt", "desc")
+            .onSnapshot(function(snapshot) {
+              snapshot.docChanges().forEach(function(change) {
+                var id = change.doc.id;
+                var data = change.doc.data();
+                if (change.type === "removed") {
+                  _removePublicQuiz(id);
+                } else {
+                  _mergePublicQuiz(id, { id: id, ...data });
+                }
+              });
+              // Keep shared publicQuizzes array in sync for rest of app
+              publicQuizzes = Object.values(_globalPublicQuizMap);
+              _renderPublicQuizzesList();
+              updateDashboard();
+            }, function(err) {
+              console.warn("Firestore public quiz listener error, RTDB covers:", err.message || err);
+            });
+        } catch(e) {
+          console.warn("Firestore public quiz setup failed:", e.message || e);
+        }
+      }
+
+      // 2. RTDB real-time listener (hot fallback + cross-user instant writes)
+      if (!_globalPublicRTDBUnsub) {
+        var rtdbRef = database.ref("publicQuizzes");
+        _globalPublicRTDBUnsub = rtdbRef;
+
+        rtdbRef.on("child_added", function(snap) {
+          var id = snap.key;
+          var data = snap.val();
+          if (data && data.questions && data.questions.length) {
+            _mergePublicQuiz(id, { id: id, ...data });
+            publicQuizzes = Object.values(_globalPublicQuizMap);
+            _renderPublicQuizzesList();
+          }
+        });
+
+        rtdbRef.on("child_changed", function(snap) {
+          var id = snap.key;
+          var data = snap.val();
+          if (data && data.questions && data.questions.length) {
+            _mergePublicQuiz(id, { id: id, ...data });
+          } else {
+            _removePublicQuiz(id);
+          }
+          publicQuizzes = Object.values(_globalPublicQuizMap);
+          _renderPublicQuizzesList();
+        });
+
+        rtdbRef.on("child_removed", function(snap) {
+          _removePublicQuiz(snap.key);
+          publicQuizzes = Object.values(_globalPublicQuizMap);
+          _renderPublicQuizzesList();
+          updateDashboard();
+        });
+      }
+    }
+
+    function _stopGlobalPublicSync() {
+      if (_globalPublicFSUnsub) { try { _globalPublicFSUnsub(); } catch(e){} _globalPublicFSUnsub = null; }
+      if (_globalPublicRTDBUnsub) { try { _globalPublicRTDBUnsub.off(); } catch(e){} _globalPublicRTDBUnsub = null; }
+    }
+
+    // ── PLAY PUBLIC QUIZ (globally available) ──────────────────────────
+    window.playPublicQuiz = function(quizId) {
+      // First check in-memory map (instant)
+      var quiz = _globalPublicQuizMap[quizId];
+      if (quiz && quiz.questions && quiz.questions.length) {
+        _launchPublicQuiz(quiz);
+        return;
+      }
+      // Fallback: fetch from RTDB then Firestore
+      database.ref("publicQuizzes/" + quizId).once("value").then(function(snap) {
+        var q = snap.val();
+        if (q && q.questions && q.questions.length) {
+          _mergePublicQuiz(quizId, { ...q, id: quizId });
+          _launchPublicQuiz(q);
+        } else {
+          return firestore.collection("publicQuizzes").doc(quizId).get().then(function(doc) {
+            if (doc.exists) {
+              var fq = { id: doc.id, ...doc.data() };
+              _mergePublicQuiz(quizId, fq);
+              _launchPublicQuiz(fq);
+            } else {
+              showToast("Quiz not found or was deleted.");
+            }
+          });
+        }
+      }).catch(function(err) { showToast("Could not load quiz: " + (err.message || err)); });
+
+      // Increment play count (fire-and-forget)
+      try {
+        database.ref("publicQuizzes/" + quizId + "/playCount").transaction(function(v) { return (v || 0) + 1; });
+        firestore.collection("publicQuizzes").doc(quizId).update({ playCount: firebase.firestore.FieldValue.increment(1) }).catch(function(){});
+      } catch(e) {}
+    };
+
+    function _launchPublicQuiz(quiz) {
+      // Upsert into customQuizzes without duplicates
+      var idx = customQuizzes.findIndex(function(q) { return q.id === quiz.id; });
+      if (idx >= 0) {
+        customQuizzes[idx] = quiz;
+      } else {
+        customQuizzes.push(quiz);
+        idx = customQuizzes.length - 1;
+      }
+      startCustomQuiz(idx);
+      var dash = document.getElementById("dashboardModal");
+      if (dash) dash.classList.remove("open");
+    }
+
+    // ── PUBLIC QUIZ SEARCH ─────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", function() {
+      var searchEl = document.getElementById("publicQuizSearch");
+      if (searchEl) {
+        searchEl.addEventListener("input", function() {
+          _publicSearchQuery = this.value;
+          _renderPublicQuizzesList();
+        });
+      }
+
+      // Wire up "Play" buttons inside publicQuizzesList via delegation
+      var pubList = document.getElementById("publicQuizzesList");
+      if (pubList) {
+        pubList.addEventListener("click", function(e) {
+          var playBtn = e.target.closest(".play-btn[data-action='launch-custom-quiz']");
+          if (playBtn) {
+            var qid = playBtn.dataset.quizId;
+            if (qid) playPublicQuiz(qid);
+          }
+        });
+      }
+    });
+
+    // ── LEADERBOARD: live real-time sync ───────────────────────────────
+    showLeaderboard = function() {
+      var modal = document.getElementById("leaderboardModal");
+      var leaderboardContent = document.getElementById("leaderboardContent");
+      var userRankEl = document.getElementById("userRank");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      if (leaderboardContent) leaderboardContent.innerHTML =
+        '<div style="text-align:center;padding:2rem;color:#aaa;display:flex;align-items:center;justify-content:center;gap:0.75rem;">' +
+        '<div class="spinner"></div> Loading live leaderboard...</div>';
+
+      // Remove any previous listener
+      if (_globalLeaderboardRTDBRef) {
+        try { _globalLeaderboardRTDBRef.off("value"); } catch(e){}
+      }
+      _globalLeaderboardRTDBRef = database.ref("leaderboard");
+
+      _globalLeaderboardRTDBRef.on("value", function(snapshot) {
+        var rows = snapshot.val() || {};
+        var entries = [];
+        Object.keys(rows).forEach(function(uid) {
+          var d = rows[uid];
+          var name = d.name || d.username || d.displayName || "Player";
+          var pts = Number(d.points || d.weeklyXp || d.xp || 0);
+          entries.push({
+            uid: uid, name: name, points: pts,
+            quizzes: Number(d.quizzes || 0),
+            avatar: d.avatar || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff"),
+            league: d.league || "Bronze"
+          });
+        });
+        entries.sort(function(a, b) { return b.points - a.points; });
+        var top20 = entries.slice(0, 20);
+        var myUid = auth.currentUser ? auth.currentUser.uid : null;
+        var myIdx = entries.findIndex(function(e) {
+          return myUid ? e.uid === myUid : e.name === currentPlayer;
+        });
+        var myEntry = myIdx >= 0 ? entries[myIdx] : null;
+
+        if (userRankEl) {
+          var rankLabel = myIdx >= 0 ? "#" + (myIdx + 1) : "-";
+          var leagueForMe = myEntry ? myEntry.league : getLeague(xp).name;
+          userRankEl.innerHTML =
+            '<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#374151,#1f2937);display:flex;align-items:center;justify-content:center;margin-right:1rem;font-size:0.9rem;font-weight:900;">' + rankLabel + '</div>' +
+            '<div style="flex:1;display:flex;justify-content:space-between;align-items:center;">' +
+              '<div>' +
+                '<div style="font-weight:800;">' + _escHtml((myEntry ? myEntry.name : currentPlayer) || "You") + '</div>' +
+                '<div style="font-size:0.78rem;color:#9ca3af;margin-top:2px;">' + leagueForMe + ' League</div>' +
+              '</div>' +
+              '<div style="font-weight:900;font-size:1.1rem;color:#34d399;">' + (myEntry ? myEntry.points : xp) + ' XP</div>' +
+            '</div>';
+        }
+
+        if (!leaderboardContent) return;
+        if (top20.length === 0) {
+          leaderboardContent.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;">No players yet. Complete a quiz to appear! 🏆</div>';
+          return;
+        }
+        var highest = Math.max(1, top20[0].points);
+        var medals = ["🥇","🥈","🥉"];
+        var html = '<div style="display:flex;flex-direction:column;gap:0.55rem;">';
+        top20.forEach(function(entry, i) {
+          var isMe = myUid ? entry.uid === myUid : entry.name === currentPlayer;
+          var fill = Math.min(100, Math.round((entry.points / highest) * 100));
+          var border = isMe ? "2px solid rgba(52,211,153,0.7)" : "2px solid rgba(255,255,255,0.08)";
+          var bg = isMe ? "rgba(52,211,153,0.08)" : "rgba(255,255,255,0.04)";
+          var rank = i < 3 ? medals[i] : "#" + (i + 1);
+          html += '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.8rem;border-radius:14px;border:' + border + ';background:' + bg + ';transition:background 0.2s;">' +
+            '<div style="width:36px;text-align:center;font-weight:900;font-size:1rem;">' + rank + '</div>' +
+            '<img src="' + _escHtml(entry.avatar) + '" style="width:36px;height:36px;border-radius:10px;object-fit:cover;flex-shrink:0;" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(entry.name) + '&background=111827&color=fff\'">' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _escHtml(entry.name) + (isMe ? " ⭐" : "") + '</div>' +
+              '<div style="height:5px;border-radius:99px;background:rgba(0,0,0,0.35);margin-top:4px;">' +
+                '<div style="height:100%;width:' + fill + '%;border-radius:99px;background:linear-gradient(90deg,#34d399,#60a5fa);transition:width 0.4s ease;"></div>' +
+              '</div>' +
+              '<div style="font-size:0.7rem;color:#6b7280;margin-top:2px;">' + entry.quizzes + ' quiz' + (entry.quizzes !== 1 ? 'zes' : '') + ' · ' + _escHtml(entry.league) + '</div>' +
+            '</div>' +
+            '<strong style="font-size:1rem;white-space:nowrap;">' + entry.points + ' XP</strong>' +
+          '</div>';
+        });
+        html += '</div>';
+        leaderboardContent.innerHTML = html;
+      });
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Close leaderboard modal — stop live listener
+      var closeBtn = document.getElementById("closeLeaderboardModal");
+      if (closeBtn) {
+        var cloneClose = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(cloneClose, closeBtn);
+        cloneClose.addEventListener("click", function() {
+          if (_globalLeaderboardRTDBRef) {
+            try { _globalLeaderboardRTDBRef.off("value"); } catch(e){}
+            _globalLeaderboardRTDBRef = null;
+          }
+          var modal = document.getElementById("leaderboardModal");
+          if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+        });
+      }
+
+      // Wire leaderboard open buttons
       ["openLeaderboardBtn","headerLeaderboardBtn"].forEach(function(id) {
         var btn = document.getElementById(id);
         if (!btn) return;
@@ -5683,110 +5907,62 @@ What is 7 x 8?
         btn.parentNode.replaceChild(clone, btn);
         clone.addEventListener("click", showLeaderboard);
       });
+    });
 
-
-      // ── 2. XP WRITE TO FIREBASE after every quiz ─────────────────────
+    // ── XP WRITE TO LEADERBOARD after every quiz ───────────────────────
+    (function() {
       var _origSubmit = submitQuiz;
       submitQuiz = function() {
         var result = _origSubmit.apply(this, arguments);
+        // Push updated XP to both RTDB leaderboard + Firestore publicProfiles
         setTimeout(function() {
           var user = auth.currentUser;
           if (!user) return;
           var name   = user.displayName || user.email || "Player";
           var avatar = user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff");
-          database.ref("leaderboard/" + user.uid).set({
+          var leagueVal = (typeof getLeague === "function" ? getLeague(xp).name : "Bronze");
+          var payload = {
             uid: user.uid, name: name, points: xp, weeklyXp: xp,
-            quizzes: history.length,
-            league: (typeof getLeague === "function" ? getLeague(xp).name : "Bronze"),
-            avatar: avatar, updatedAt: Date.now()
-          }).then(function(){ console.log("Leaderboard written:", name, xp); })
-            .catch(function(e){ console.error("Leaderboard write failed:", e); });
-        }, 400);
+            quizzes: history.length, league: leagueVal,
+            avatar: avatar, public: true, updatedAt: Date.now()
+          };
+          database.ref("leaderboard/" + user.uid).set(payload)
+            .catch(function(e){ console.error("RTDB leaderboard write failed:", e); });
+          firestore.collection("publicProfiles").doc(user.uid).set({
+            uid: user.uid, username: name, displayName: name, avatar: avatar,
+            xp: xp, weeklyXp: xp, quizzes: history.length,
+            league: leagueVal, public: true, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true }).catch(function(e){ console.error("Firestore profile write failed:", e); });
+        }, 300);
         return result;
       };
+    })();
 
-
-      // ── 3. PUBLIC QUIZZES ─────────────────────────────────────────────
+    // ── SAVE QUIZ (replaces saveBtn click) ─────────────────────────────
+    document.addEventListener("DOMContentLoaded", function() {
       var saveBtn = document.getElementById("saveQuizBtn");
       if (saveBtn) {
         var newBtn = saveBtn.cloneNode(true);
         saveBtn.parentNode.replaceChild(newBtn, saveBtn);
-        newBtn.addEventListener("click", async function() {
-          var user = auth.currentUser;
-          if (!user) { showToast("Sign in first to save a quiz."); return; }
-          var title = (document.getElementById("quizTitleInput").value || "").trim();
-          var desc  = (document.getElementById("quizDescriptionInput").value || "").trim();
-          if (!title) { showToast("Please enter a quiz title."); return; }
-          var visEl = document.querySelector('input[name="quizVisibility"]:checked');
-          var isPublic = visEl ? visEl.value === "public" : true;
-          var questions = [];
-          var valid = true;
-          document.querySelectorAll("#questionsContainer .question-block").forEach(function(block) {
-            var qText = (block.querySelector(".question-text").value || "").trim();
-            var opts  = Array.from(block.querySelectorAll(".option-input")).map(function(i){ return (i.value||"").trim(); });
-            var cidx  = block.querySelector(".correct-answer-select").value;
-            if (!qText || opts.some(function(o){ return !o; }) || cidx === "") valid = false;
-            questions.push({ question:qText, options:opts, choices:opts, answer:opts[Number(cidx)], correctIndex:Number(cidx) });
-          });
-          if (!valid || !questions.length) { showToast("Fill in all question fields first."); return; }
-          var quizId = "quiz-" + Date.now() + "-" + Math.random().toString(36).slice(2);
-          var quiz = {
-            id: quizId, title: title, description: desc, questions: questions,
-            author: user.displayName || user.email || "User",
-            authorId: user.uid, visibility: isPublic ? "public" : "private",
-            public: isPublic, createdAt: Date.now()
-          };
-          try {
-            await firestore.collection("users").doc(user.uid).collection("quizzes").doc(quizId).set(quiz);
-            await database.ref("userQuizzes/" + user.uid + "/" + quizId).set(quiz);
-            if (isPublic) {
-              await firestore.collection("publicQuizzes").doc(quizId).set(quiz);
-              await database.ref("publicQuizzes/" + quizId).set(quiz);
-            }
-            document.getElementById("createQuizModal").classList.add("hidden");
-            document.getElementById("createQuizModal").classList.remove("flex");
-            showToast(isPublic ? "Quiz saved and is now PUBLIC for everyone!" : "Quiz saved privately.");
-          } catch(err) {
-            showToast("Error saving quiz: " + err.message);
+        newBtn.addEventListener("click", function() {
+          // Delegate to the main saveCustomQuiz which already dual-writes
+          // to Firestore + RTDB and then our listeners auto-update the UI
+          if (typeof saveCustomQuiz === "function") {
+            saveCustomQuiz();
           }
         });
       }
+    });
 
-      // Live public quizzes tab from RTDB
-      database.ref("publicQuizzes").on("value", function(snapshot) {
-        var data = snapshot.val() || {};
-        var quizzes = Object.values(data);
-        var list = document.getElementById("publicQuizzesList");
-        if (!list) return;
-        if (quizzes.length === 0) {
-          list.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;">No public quizzes yet.</div>';
-          return;
-        }
-        list.innerHTML = quizzes.reverse().map(function(quiz) {
-          var safeId = (quiz.id || "").replace(/"/g,"");
-          return '<div class="public-quiz-card">' +
-            '<h3 style="margin:0 0 0.4rem;font-size:1.1rem;">\uD83C\uDF0E ' + (quiz.title || "Untitled") + '</h3>' +
-            '<p style="color:#aaa;margin:0 0 0.5rem;font-size:0.9rem;">' + (quiz.description || "") + '</p>' +
-            '<div style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">By ' + (quiz.author || "Unknown") + ' \u00B7 ' + (quiz.questions ? quiz.questions.length : 0) + ' questions</div>' +
-            '<button onclick="playPublicQuiz(' + "'" + safeId + "'" + ')" ' +
-              'style="background:#3b82f6;color:white;border:none;padding:0.5rem 1.25rem;border-radius:8px;font-weight:700;cursor:pointer;">\u25B6 Play</button>' +
-          '</div>';
-        }).join("");
-      });
+    // ── BOOT: start global sync immediately ────────────────────────────
+    document.addEventListener("DOMContentLoaded", function() {
+      _startGlobalPublicSync();
+    });
 
-      // Global helper to play a public quiz by ID
-      window.playPublicQuiz = function(quizId) {
-        database.ref("publicQuizzes/" + quizId).once("value", function(snap) {
-          var quiz = snap.val();
-          if (!quiz || !quiz.questions) { showToast("Quiz not found."); return; }
-          customQuizzes.push(quiz);
-          startCustomQuiz(customQuizzes.length - 1);
-          var dash = document.getElementById("dashboardModal");
-          if (dash) dash.classList.remove("open");
-        });
-      };
-
-    }); // end FINAL FIX
+    // Expose for manual refresh (e.g. after tab switch)
+    window.refreshPublicQuizzes = function() {
+      _renderPublicQuizzesList();
+    };
 
   </script>
 </body>
