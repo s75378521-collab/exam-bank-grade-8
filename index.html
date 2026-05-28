@@ -5593,318 +5593,201 @@ What is 7 x 8?
     document.addEventListener("DOMContentLoaded", init);
 
     /* ================================================================
-       PATCH BLOCK — All requested fixes applied here after DOM + init
-       ================================================================ */
+       FINAL FIX — Leaderboard live sync + Public quizzes
+    ================================================================ */
     document.addEventListener("DOMContentLoaded", function() {
 
-      /* ---------------------------------------------------------------
-         1. LIVE LEADERBOARD — real-time top-20 via Firebase RTDB
-         Replaces the showLeaderboard function entirely to use on("value")
-         so all users see live updates without refreshing.
-      --------------------------------------------------------------- */
-      let liveLeaderboardRef = null;
-      let liveLeaderboardListener = null;
+      // ── 1. LEADERBOARD: live real-time sync across ALL users ─────────
+      showLeaderboard = function() {
+        var modal = document.getElementById("leaderboardModal");
+        var leaderboardContent = document.getElementById("leaderboardContent");
+        var userRankEl = document.getElementById("userRank");
+        if (!modal) return;
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        if (leaderboardContent) leaderboardContent.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;">Loading live leaderboard...</div>';
 
-      function attachLiveLeaderboard() {
-        // Always detach first so reopening leaderboard gets fresh data
-        if (liveLeaderboardRef && liveLeaderboardListener) {
-          liveLeaderboardRef.off("value", liveLeaderboardListener);
-          liveLeaderboardListener = null;
-        }
-        liveLeaderboardRef = database.ref("leaderboard");
-        liveLeaderboardListener = liveLeaderboardRef.on("value", function(snapshot) {
-          const rows = snapshot.val() || {};
-
-          // Keys are UIDs; use data.name/username for display
-          const allEntries = Object.entries(rows).map(([uid, data]) => {
-            const name = data.name || data.username || data.displayName || "Player";
-            const pts  = Number(data.points || data.weeklyXp || data.xp || 0);
-            return {
-              uid,
-              name,
-              points:   pts,
-              weeklyXp: Number(data.weeklyXp || pts),
-              quizzes:  Number(data.quizzes || 0),
-              avatar:   data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
-              league:   data.league || getLeague(pts).name
-            };
-          }).sort((a, b) => b.points - a.points);
-
-          const top20 = allEntries.slice(0, 20);
-          const leaderboardContent = document.getElementById("leaderboardContent");
-          const userRankEl = document.getElementById("userRank");
-          if (!leaderboardContent) return;
-
-          // Find current user by UID (most reliable) then fall back to name
-          const myUid = currentUid ? currentUid() : null;
-          const myIdx = allEntries.findIndex(e => (myUid && e.uid === myUid) || e.name === currentPlayer);
-          const myEntry = myIdx >= 0 ? allEntries[myIdx] : null;
+        database.ref("leaderboard").off("value");
+        database.ref("leaderboard").on("value", function(snapshot) {
+          var rows = snapshot.val() || {};
+          var entries = [];
+          Object.keys(rows).forEach(function(uid) {
+            var d = rows[uid];
+            var name = d.name || d.username || d.displayName || "Player";
+            var pts  = Number(d.points || d.weeklyXp || d.xp || 0);
+            entries.push({
+              uid: uid, name: name, points: pts,
+              quizzes: Number(d.quizzes || 0),
+              avatar: d.avatar || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff"),
+              league: d.league || "Bronze"
+            });
+          });
+          entries.sort(function(a,b){ return b.points - a.points; });
+          var top20 = entries.slice(0, 20);
+          var myUid = auth.currentUser ? auth.currentUser.uid : null;
+          var myIdx = entries.findIndex(function(e){ return myUid ? e.uid === myUid : e.name === currentPlayer; });
+          var myEntry = myIdx >= 0 ? entries[myIdx] : null;
 
           if (userRankEl) {
-            userRankEl.innerHTML = `
-              <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
-                <span class="font-bold">#${myIdx >= 0 ? myIdx + 1 : "-"}</span>
-              </div>
-              <div class="flex-1">
-                <div class="flex justify-between gap-3">
-                  <span class="font-bold">${myEntry ? myEntry.name : currentPlayer}</span>
-                  <span class="font-bold">${myEntry ? myEntry.points : xp} XP</span>
-                </div>
-              </div>`;
+            userRankEl.innerHTML =
+              '<div style="width:48px;height:48px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;margin-right:1rem;">' +
+                '<span style="font-weight:bold;">#' + (myIdx >= 0 ? myIdx + 1 : "-") + '</span>' +
+              '</div>' +
+              '<div style="flex:1;display:flex;justify-content:space-between;align-items:center;">' +
+                '<span style="font-weight:bold;">' + (myEntry ? myEntry.name : currentPlayer) + '</span>' +
+                '<span style="font-weight:bold;">' + (myEntry ? myEntry.points : xp) + ' XP</span>' +
+              '</div>';
           }
-
-          if (top20.length > 0) {
-            const highestXp = Math.max(1, top20[0].points);
-            leaderboardContent.innerHTML = `<div class="duo-league-board">${top20.map((entry, index) => {
-              const fill = Math.min(100, Math.round((entry.points / highestXp) * 100));
-              const isMe = (myUid && entry.uid === myUid) || entry.name === currentPlayer;
-              return `
-                <div class="duo-league-row stay-zone" style="${isMe ? "border-color:rgba(88,204,2,0.6);background:rgba(88,204,2,0.08);" : ""}">
-                  <div class="duo-rank-bubble">${index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "#" + (index + 1)}</div>
-                  <div>
-                    <div class="flex items-center gap-3">
-                      <img src="${entry.avatar}" style="width:36px;height:36px;border-radius:14px;object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(entry.name)}&background=111827&color=fff'">
-                      <strong>${entry.name}${isMe ? " ⭐" : ""}</strong>
-                    </div>
-                    <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width:${fill}%;"></div></div>
-                    <p class="mt-1 text-xs soft-text">${entry.quizzes} quizzes • ${entry.league}</p>
-                  </div>
-                  <strong>${entry.points} XP</strong>
-                </div>`;
-            }).join("")}</div>`;
-          } else {
-            leaderboardContent.innerHTML = `<div class="empty-state">No players yet. Complete a quiz to appear here!</div>`;
+          if (!leaderboardContent) return;
+          if (top20.length === 0) {
+            leaderboardContent.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;">No players yet. Complete a quiz to appear!</div>';
+            return;
           }
+          var highest = Math.max(1, top20[0].points);
+          var medals = ["\uD83E\uDD47","\uD83E\uDD48","\uD83E\uDD49"];
+          var html = '<div style="display:flex;flex-direction:column;gap:0.6rem;">';
+          top20.forEach(function(entry, i) {
+            var isMe = myUid ? entry.uid === myUid : entry.name === currentPlayer;
+            var fill = Math.min(100, Math.round((entry.points / highest) * 100));
+            var border = isMe ? "2px solid rgba(88,204,2,0.7)" : "2px solid rgba(255,255,255,0.1)";
+            var bg = isMe ? "rgba(88,204,2,0.1)" : "rgba(255,255,255,0.05)";
+            var rank = i < 3 ? medals[i] : "#" + (i+1);
+            html += '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.85rem;border-radius:16px;border:' + border + ';background:' + bg + ';">' +
+              '<div style="width:38px;text-align:center;font-weight:900;">' + rank + '</div>' +
+              '<img src="' + entry.avatar + '" style="width:36px;height:36px;border-radius:12px;object-fit:cover;">' +
+              '<div style="flex:1;min-width:0;">' +
+                '<div style="font-weight:bold;">' + entry.name + (isMe ? " \u2B50" : "") + '</div>' +
+                '<div style="height:6px;border-radius:99px;background:rgba(0,0,0,0.3);margin-top:3px;">' +
+                  '<div style="height:100%;width:' + fill + '%;border-radius:99px;background:linear-gradient(90deg,#58cc02,#1cb0f6);"></div>' +
+                '</div>' +
+                '<div style="font-size:0.72rem;color:#888;margin-top:2px;">' + entry.quizzes + ' quizzes</div>' +
+              '</div>' +
+              '<strong>' + entry.points + ' XP</strong>' +
+            '</div>';
+          });
+          html += '</div>';
+          leaderboardContent.innerHTML = html;
         });
-      }
-
-      // Patch showLeaderboard to also open modal and start live listener
-      const _origShowLeaderboard = typeof showLeaderboard === "function" ? showLeaderboard : null;
-      showLeaderboard = function() {
-        const modal = document.getElementById("leaderboardModal");
-        if (modal) { modal.classList.remove("hidden"); modal.classList.add("flex"); }
-        // Set loading state
-        const lc = document.getElementById("leaderboardContent");
-        if (lc) lc.innerHTML = `<div class="text-center py-8 soft-text">Loading live leaderboard...</div>`;
-        attachLiveLeaderboard();
       };
 
-      // Detach listener when modal closes
-      const closeBtn = document.getElementById("closeLeaderboardModal");
-      if (closeBtn) {
-        closeBtn.addEventListener("click", function() {
-          const modal = document.getElementById("leaderboardModal");
-          if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
-          if (liveLeaderboardRef && liveLeaderboardListener) {
-            liveLeaderboardRef.off("value", liveLeaderboardListener);
-            liveLeaderboardRef = null;
-            liveLeaderboardListener = null;
-          }
-        }, { capture: true });
-      }
+      document.getElementById("closeLeaderboardModal").addEventListener("click", function() {
+        database.ref("leaderboard").off("value");
+        var modal = document.getElementById("leaderboardModal");
+        if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+      });
 
-      /* ---------------------------------------------------------------
-         2. XP SAVED TO ACCOUNT — push to Firebase after every quiz
-         Patch submitQuiz so XP/streak/history always sync to Firebase.
-      --------------------------------------------------------------- */
-      const _origSubmitQuiz = typeof submitQuiz === "function" ? submitQuiz : null;
-      if (_origSubmitQuiz) {
-        submitQuiz = async function() {
-          await _origSubmitQuiz.apply(this, arguments);
-          if (currentUid && currentUid()) {
-            try {
-              await pushCloudState({ lastQuizAt: typeof serverTime === "function" ? serverTime() : Date.now() });
-              // Also push to RTDB leaderboard so others see update live
-              await database.ref(`leaderboard/${currentUid()}`).update({
-                name: currentPlayer,
-                points: xp,
-                weeklyXp: xp,
-                quizzes: history.length,
-                league: getLeague(xp).name,
-                avatar: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
-                public: true,
-                updatedAt: Date.now()
-              });
-            } catch (e) { console.warn("XP sync after quiz:", e); }
-          }
-        };
-      }
+      ["openLeaderboardBtn","headerLeaderboardBtn"].forEach(function(id) {
+        var btn = document.getElementById(id);
+        if (!btn) return;
+        var clone = btn.cloneNode(true);
+        btn.parentNode.replaceChild(clone, btn);
+        clone.addEventListener("click", showLeaderboard);
+      });
 
-      /* ---------------------------------------------------------------
-         3. PUBLIC QUIZZES — ensure saving sets to publicQuizzes in both
-         Firestore and RTDB so any user can see them in the Public tab.
-         Also: Public tab now loads from Firestore listener.
-      --------------------------------------------------------------- */
-      // Already handled by cloud saveCustomQuiz; re-wire the Save Quiz button
-      // to make sure it always calls the cloud version (last defined wins).
-      const saveQuizBtn = document.getElementById("saveQuizBtn");
-      if (saveQuizBtn) {
-        // Remove all old listeners by replacing with a fresh clone
-        const newSaveBtn = saveQuizBtn.cloneNode(true);
-        saveQuizBtn.parentNode.replaceChild(newSaveBtn, saveQuizBtn);
-        newSaveBtn.addEventListener("click", function() {
-          if (typeof saveCustomQuiz === "function") saveCustomQuiz();
-        });
-      }
 
-      /* ---------------------------------------------------------------
-         4. DASHBOARD — "Edit" button works, quiz/play covers dashboard
-      --------------------------------------------------------------- */
+      // ── 2. XP WRITE TO FIREBASE after every quiz ─────────────────────
+      var _origSubmit = submitQuiz;
+      submitQuiz = function() {
+        var result = _origSubmit.apply(this, arguments);
+        setTimeout(function() {
+          var user = auth.currentUser;
+          if (!user) return;
+          var name   = user.displayName || user.email || "Player";
+          var avatar = user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff");
+          database.ref("leaderboard/" + user.uid).set({
+            uid: user.uid, name: name, points: xp, weeklyXp: xp,
+            quizzes: history.length,
+            league: (typeof getLeague === "function" ? getLeague(xp).name : "Bronze"),
+            avatar: avatar, updatedAt: Date.now()
+          }).then(function(){ console.log("Leaderboard written:", name, xp); })
+            .catch(function(e){ console.error("Leaderboard write failed:", e); });
+        }, 400);
+        return result;
+      };
 
-      // Patch: When a quiz starts from inside the dashboard, keep dashboard
-      // open behind the quiz overlay (which is z-index 70, dashboard is modal at z-index fixed).
-      // Actually quiz overlay is z:70, dashboard modal is fixed z:50 (modal class).
-      // We need quiz overlay (quizOverlay) to be above dashboard.
-      const quizOverlayEl = document.getElementById("quizOverlay");
-      if (quizOverlayEl) {
-        quizOverlayEl.style.zIndex = "200"; // above dashboard modal
-      }
-      const quizShellEl = document.getElementById("quizShell");
-      if (quizShellEl) {
-        quizShellEl.style.zIndex = "201";
-      }
 
-      // Re-wire delegated click on dashboardContent to fix edit/play
-      const dashContent = document.getElementById("dashboardContent");
-      if (dashContent) {
-        dashContent.addEventListener("click", function(e) {
-          // Edit button
-          const editBtn = e.target.closest(".edit-btn[data-quiz-id]");
-          if (editBtn) {
-            e.stopPropagation();
-            const qid = editBtn.dataset.quizId;
-            const allQ = [...(userQuizzes || []), ...(customQuizzes || []), ...(publicQuizzes || [])];
-            const quiz = allQ.find(q => String(q.id) === String(qid) || String(q.firestoreId) === String(qid));
-            if (quiz && typeof openEditQuizModal === "function") openEditQuizModal(quiz);
-            return;
-          }
-          // Delete button
-          const deleteBtn = e.target.closest(".delete-btn[data-quiz-id]");
-          if (deleteBtn) {
-            e.stopPropagation();
-            const qid = deleteBtn.dataset.quizId;
-            const allQ = [...(userQuizzes || []), ...(customQuizzes || []), ...(publicQuizzes || [])];
-            const quiz = allQ.find(q => String(q.id) === String(qid) || String(q.firestoreId) === String(qid));
-            if (quiz && typeof confirmDeleteQuiz === "function") confirmDeleteQuiz(quiz);
-            return;
-          }
-          // Share button
-          const shareBtn = e.target.closest(".share-btn[data-quiz-id]");
-          if (shareBtn) {
-            e.stopPropagation();
-            const qid = shareBtn.dataset.quizId;
-            const allQ = [...(userQuizzes || []), ...(customQuizzes || []), ...(publicQuizzes || [])];
-            const quiz = allQ.find(q => String(q.id) === String(qid) || String(q.firestoreId) === String(qid));
-            if (quiz && typeof shareQuiz === "function") shareQuiz(quiz);
-            return;
-          }
-          // Play button (covers dashboard)
-          const playBtn = e.target.closest(".play-btn[data-quiz-id], .duo-action-button[data-action='launch-custom-quiz']");
-          if (playBtn) {
-            e.stopPropagation();
-            const qid = playBtn.dataset.quizId || playBtn.dataset.quizIndex;
-            const allQ = [...(customQuizzes || []), ...(userQuizzes || []), ...(publicQuizzes || [])];
-            let quiz = allQ.find(q => String(q.id) === String(qid) || String(q.firestoreId) === String(qid));
-            if (!quiz && !isNaN(parseInt(qid))) quiz = allQ[parseInt(qid)];
-            if (quiz) {
-              // Ensure quiz is in customQuizzes
-              let idx = customQuizzes.findIndex(q => q.id === quiz.id);
-              if (idx < 0) { customQuizzes.push(quiz); idx = customQuizzes.length - 1; }
-              // DON'T close dashboard — quiz overlay will cover it
-              if (typeof startCustomQuiz === "function") startCustomQuiz(idx);
+      // ── 3. PUBLIC QUIZZES ─────────────────────────────────────────────
+      var saveBtn = document.getElementById("saveQuizBtn");
+      if (saveBtn) {
+        var newBtn = saveBtn.cloneNode(true);
+        saveBtn.parentNode.replaceChild(newBtn, saveBtn);
+        newBtn.addEventListener("click", async function() {
+          var user = auth.currentUser;
+          if (!user) { showToast("Sign in first to save a quiz."); return; }
+          var title = (document.getElementById("quizTitleInput").value || "").trim();
+          var desc  = (document.getElementById("quizDescriptionInput").value || "").trim();
+          if (!title) { showToast("Please enter a quiz title."); return; }
+          var visEl = document.querySelector('input[name="quizVisibility"]:checked');
+          var isPublic = visEl ? visEl.value === "public" : true;
+          var questions = [];
+          var valid = true;
+          document.querySelectorAll("#questionsContainer .question-block").forEach(function(block) {
+            var qText = (block.querySelector(".question-text").value || "").trim();
+            var opts  = Array.from(block.querySelectorAll(".option-input")).map(function(i){ return (i.value||"").trim(); });
+            var cidx  = block.querySelector(".correct-answer-select").value;
+            if (!qText || opts.some(function(o){ return !o; }) || cidx === "") valid = false;
+            questions.push({ question:qText, options:opts, choices:opts, answer:opts[Number(cidx)], correctIndex:Number(cidx) });
+          });
+          if (!valid || !questions.length) { showToast("Fill in all question fields first."); return; }
+          var quizId = "quiz-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+          var quiz = {
+            id: quizId, title: title, description: desc, questions: questions,
+            author: user.displayName || user.email || "User",
+            authorId: user.uid, visibility: isPublic ? "public" : "private",
+            public: isPublic, createdAt: Date.now()
+          };
+          try {
+            await firestore.collection("users").doc(user.uid).collection("quizzes").doc(quizId).set(quiz);
+            await database.ref("userQuizzes/" + user.uid + "/" + quizId).set(quiz);
+            if (isPublic) {
+              await firestore.collection("publicQuizzes").doc(quizId).set(quiz);
+              await database.ref("publicQuizzes/" + quizId).set(quiz);
             }
-            return;
-          }
-        }, true); // capture phase to fire before other handlers
-      }
-
-      /* ---------------------------------------------------------------
-         5. QUICK SIGN IN / SIGN OUT in profile dropdown
-      --------------------------------------------------------------- */
-      const qSignIn = document.getElementById("quickSignInBtn");
-      const qSignOut = document.getElementById("quickSignOutBtn");
-      if (qSignIn) {
-        qSignIn.addEventListener("click", function() {
-          document.getElementById("profileDropdown").classList.add("hidden");
-          document.getElementById("authModal").classList.remove("hidden");
-          document.getElementById("authModal").classList.add("flex");
-        });
-      }
-      if (qSignOut) {
-        qSignOut.addEventListener("click", function() {
-          document.getElementById("profileDropdown").classList.add("hidden");
-          if (typeof signOut === "function") signOut();
-        });
-      }
-
-      /* ---------------------------------------------------------------
-         6. DASHBOARD OPEN via header leaderboard / dashboard buttons
-            Make sure dashboard button in drawer works correctly
-      --------------------------------------------------------------- */
-      // Wire Save Profile button in settings tab
-      const saveProfileBtn = document.getElementById("saveProfileBtn");
-      if (saveProfileBtn) {
-        saveProfileBtn.addEventListener("click", async function() {
-          const newName = document.getElementById("displayName").value.trim();
-          if (newName && newName !== currentPlayer) {
-            currentPlayer = newName;
-            if (currentUserProfile) currentUserProfile.displayName = newName;
-            updateStats();
-            updateDashboard();
-          }
-          if (currentUid && currentUid() && typeof pushCloudState === "function") {
-            await pushCloudState();
-            showToast("Profile saved to Firebase!");
-          } else {
-            showToast("Profile updated locally.");
+            document.getElementById("createQuizModal").classList.add("hidden");
+            document.getElementById("createQuizModal").classList.remove("flex");
+            showToast(isPublic ? "Quiz saved and is now PUBLIC for everyone!" : "Quiz saved privately.");
+          } catch(err) {
+            showToast("Error saving quiz: " + err.message);
           }
         });
       }
 
-      /* ---------------------------------------------------------------
-         7. PROFILE PICTURE UPLOAD — also wire the dashboard settings tab
-      --------------------------------------------------------------- */
-      const dashPicUpload = document.getElementById("profilePictureUpload");
-      if (dashPicUpload) {
-        dashPicUpload.addEventListener("change", function(e) {
-          if (typeof handleProfilePhotoUpload === "function") handleProfilePhotoUpload(e);
+      // Live public quizzes tab from RTDB
+      database.ref("publicQuizzes").on("value", function(snapshot) {
+        var data = snapshot.val() || {};
+        var quizzes = Object.values(data);
+        var list = document.getElementById("publicQuizzesList");
+        if (!list) return;
+        if (quizzes.length === 0) {
+          list.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;">No public quizzes yet.</div>';
+          return;
+        }
+        list.innerHTML = quizzes.reverse().map(function(quiz) {
+          var safeId = (quiz.id || "").replace(/"/g,"");
+          return '<div class="public-quiz-card">' +
+            '<h3 style="margin:0 0 0.4rem;font-size:1.1rem;">\uD83C\uDF0E ' + (quiz.title || "Untitled") + '</h3>' +
+            '<p style="color:#aaa;margin:0 0 0.5rem;font-size:0.9rem;">' + (quiz.description || "") + '</p>' +
+            '<div style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">By ' + (quiz.author || "Unknown") + ' \u00B7 ' + (quiz.questions ? quiz.questions.length : 0) + ' questions</div>' +
+            '<button onclick="playPublicQuiz(' + "'" + safeId + "'" + ')" ' +
+              'style="background:#3b82f6;color:white;border:none;padding:0.5rem 1.25rem;border-radius:8px;font-weight:700;cursor:pointer;">\u25B6 Play</button>' +
+          '</div>';
+        }).join("");
+      });
+
+      // Global helper to play a public quiz by ID
+      window.playPublicQuiz = function(quizId) {
+        database.ref("publicQuizzes/" + quizId).once("value", function(snap) {
+          var quiz = snap.val();
+          if (!quiz || !quiz.questions) { showToast("Quiz not found."); return; }
+          customQuizzes.push(quiz);
+          startCustomQuiz(customQuizzes.length - 1);
+          var dash = document.getElementById("dashboardModal");
+          if (dash) dash.classList.remove("open");
         });
-      }
+      };
 
-      /* ---------------------------------------------------------------
-         8. PUBLIC QUIZZES in the Public Tab — real-time listener on RTDB
-            so any quiz marked public by any user appears for everyone.
-      --------------------------------------------------------------- */
-      function attachPublicQuizTabListener() {
-        database.ref("publicQuizzes").on("value", function(snapshot) {
-          const data = snapshot.val() || {};
-          const rtdbPublic = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
-          // Merge with Firestore public quizzes
-          const firestoreIds = new Set(publicQuizzes.map(q => q.id));
-          rtdbPublic.forEach(q => { if (!firestoreIds.has(q.id)) publicQuizzes.push(q); });
-          // Update public tab list
-          const publicList = document.getElementById("publicQuizzesList");
-          if (!publicList) return;
-          const allPublic = [...publicQuizzes];
-          if (allPublic.length > 0) {
-            publicList.innerHTML = allPublic.map((quiz, index) => `
-              <div class="public-quiz-card duo-result-pop" style="cursor:pointer;" data-quiz-id="${quiz.id || index}">
-                <h3>🌎 ${quiz.title || "Untitled Quiz"}</h3>
-                <p>${quiz.description || "No description"}</p>
-                <div class="author">By ${quiz.author || "Community"} • ${quiz.questions?.length || 0} questions</div>
-                <div class="actions">
-                  <button class="play-btn" data-quiz-id="${quiz.id || index}">▶ Play</button>
-                </div>
-              </div>
-            `).join("");
-          }
-        });
-      }
-      attachPublicQuizTabListener();
+    }); // end FINAL FIX
 
-    }); // end DOMContentLoaded patch block
-
-    document.addEventListener("DOMContentLoaded", init);
   </script>
 </body>
 </html>
