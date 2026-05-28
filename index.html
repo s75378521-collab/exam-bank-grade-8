@@ -2621,6 +2621,12 @@
       if (currentUserProfile?.email) {
         document.getElementById("profileDropdownEmail").textContent = currentUserProfile.email;
       }
+
+      // Hide Google Sign-In button on main page when signed in
+      const googleMainBtn = document.getElementById("googleSignInMainBtn");
+      if (googleMainBtn) {
+        googleMainBtn.parentElement.style.display = auth.currentUser ? "none" : "";
+      }
     }
 
     // Best accuracy
@@ -4788,6 +4794,40 @@
       activeProfileUnsubscribe = activeQuizUnsubscribe = publicQuizUnsubscribe = leaderboardUnsubscribe = null;
     }
 
+    function attachPublicListeners() {
+      if (publicQuizUnsubscribe) return;
+      publicQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes)
+        .orderBy("createdAt", "desc")
+        .onSnapshot(snapshot => {
+          publicQuizzes = snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
+          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
+          updateDashboard();
+        }, error => console.error("Public quiz listener error:", error));
+
+      if (!leaderboardUnsubscribe) {
+        leaderboardUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicProfiles)
+          .orderBy("xp", "desc")
+          .limit(100)
+          .onSnapshot(snapshot => {
+            leaderboard = {};
+            snapshot.docs.forEach(doc => {
+              const row = doc.data();
+              leaderboard[row.username || row.displayName || doc.id] = {
+                uid: doc.id,
+                name: row.username || row.displayName || "Player",
+                points: Number(row.xp || 0),
+                weeklyXp: Number(row.weeklyXp || row.xp || 0),
+                quizzes: Number(row.quizzes || 0),
+                league: row.league || getLeague(Number(row.xp || 0)).name,
+                avatar: row.avatar,
+                public: true
+              };
+            });
+            updateDashboard();
+          }, error => console.error("Leaderboard listener error:", error));
+      }
+    }
+
     async function handleCloudAuthUser(user) {
       if (!user) {
         detachCloudListeners();
@@ -4803,6 +4843,7 @@
         updateStats();
         updateUnitProgress(currentUnitKey);
         updateDashboard();
+        attachPublicListeners();
         return;
       }
 
@@ -5104,12 +5145,16 @@
     };
 
     loadPublicQuizzes = function() {
-      if (!publicQuizUnsubscribe && currentUid()) attachCloudListeners(currentUid());
+      if (!publicQuizUnsubscribe) {
+        if (currentUid()) attachCloudListeners(currentUid());
+        else attachPublicListeners();
+      }
     };
 
     const originalInitCloud = init;
     init = function() {
       originalInitCloud();
+      attachPublicListeners();
       if (!authBootstrapped) {
         authBootstrapped = true;
         auth.getRedirectResult().catch(error => {
