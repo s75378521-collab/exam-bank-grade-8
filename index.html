@@ -4317,6 +4317,11 @@ What is 7 x 8?
       const shareBtn = e.target.closest(".share-btn");
       const playBtn = e.target.closest("[data-action='launch-custom-quiz']") || e.target.closest(".play-btn");
 
+      // Stop propagation for button clicks to prevent card detail view
+      if (editBtn || deleteBtn || shareBtn || playBtn) {
+        e.stopPropagation();
+      }
+
       const quizId = (editBtn || deleteBtn || shareBtn)?.dataset?.quizId;
       const allQuizzes = [...(userQuizzes || []), ...(customQuizzes || []), ...(publicQuizzes || [])];
 
@@ -4339,10 +4344,13 @@ What is 7 x 8?
         const playQuizId = playBtn.dataset?.quizId || card.dataset?.quizId;
         const quiz = allQuizzes.find(q => q.id === playQuizId || String(q.id) === playQuizId);
         if (quiz) {
-          let idx = customQuizzes.findIndex(q => q.id === quiz.id);
-          if (idx < 0) { customQuizzes.push(quiz); idx = customQuizzes.length - 1; }
-          startCustomQuiz(idx);
+          // Close dashboard first, then open quiz
           document.getElementById("dashboardModal").classList.remove("open");
+          setTimeout(() => {
+            let idx = customQuizzes.findIndex(q => q.id === quiz.id);
+            if (idx < 0) { customQuizzes.push(quiz); idx = customQuizzes.length - 1; }
+            startCustomQuiz(idx);
+          }, 50);
         }
         return;
       }
@@ -4670,53 +4678,113 @@ What is 7 x 8?
       const leaderboardContent = document.getElementById("leaderboardContent");
       const userRankEl = document.getElementById("userRank");
 
-      const allEntries = Object.entries(leaderboard || {}).map(([name, data]) => ({
-        name,
-        points: Number(data.points || data.weeklyXp || 0),
-        quizzes: Number(data.quizzes || 0),
-        avatar: data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`
-      })).sort((a, b) => b.points - a.points);
-
-      const top20 = allEntries.slice(0, 20);
-      const myRankIdx = allEntries.findIndex(e => e.name === currentPlayer);
-
-      userRankEl.innerHTML = `
-        <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
-          <span class="font-bold">#${myRankIdx >= 0 ? myRankIdx + 1 : "-"}</span>
-        </div>
-        <div class="flex-1">
-          <div class="flex justify-between gap-3">
-            <span class="font-bold">${currentPlayer}</span>
-            <span class="font-bold">${xp} XP</span>
-          </div>
-        </div>
-      `;
-
-      if (top20.length > 0) {
-        const highestXp = Math.max(1, top20[0].points);
-        leaderboardContent.innerHTML = `<div class="duo-league-board">${top20.map((entry, index) => {
-          const fillWidth = Math.min(100, Math.round((entry.points / highestXp) * 100));
-          return `
-            <div class="duo-league-row stay-zone">
-              <div class="duo-rank-bubble">#${index + 1}</div>
-              <div>
-                <div class="flex items-center gap-3">
-                  <img src="${entry.avatar}" alt="${entry.name}" style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover;">
-                  <strong>${entry.name}${entry.name === currentPlayer ? " ⭐" : ""}</strong>
-                </div>
-                <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width: ${fillWidth}%;"></div></div>
-                <p class="mt-1 text-xs soft-text">${entry.quizzes} quizzes</p>
-              </div>
-              <strong>${entry.points} XP</strong>
-            </div>
-          `;
-        }).join("")}</div>`;
-      } else {
-        leaderboardContent.innerHTML = `<div class="empty-state">No players yet. Complete a quiz to appear here.</div>`;
-      }
-
       leaderboardModal.classList.remove("hidden");
       leaderboardModal.classList.add("flex");
+      leaderboardContent.innerHTML = `<div class="text-center py-8 soft-text">Loading global leaderboard...</div>`;
+
+      // Fetch TRULY GLOBAL top 20 from Firestore
+      firestore.collection("publicProfiles")
+        .orderBy("xp", "desc")
+        .limit(20)
+        .get()
+        .then(snapshot => {
+          const globalEntries = snapshot.docs.map(doc => {
+            const row = doc.data();
+            return {
+              name: row.username || row.displayName || "Player",
+              uid: doc.id,
+              points: Number(row.xp || 0),
+              quizzes: Number(row.quizzes || 0),
+              avatar: row.avatar || row.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.username || "Player")}&background=111827&color=fff`
+            };
+          });
+
+          const myRankIdx = globalEntries.findIndex(e => e.name === currentPlayer || e.uid === currentUid());
+
+          userRankEl.innerHTML = `
+            <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
+              <span class="font-bold">#${myRankIdx >= 0 ? myRankIdx + 1 : "-"}</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between gap-3">
+                <span class="font-bold">${currentPlayer}</span>
+                <span class="font-bold">${xp} XP</span>
+              </div>
+            </div>
+          `;
+
+          if (globalEntries.length > 0) {
+            const highestXp = Math.max(1, globalEntries[0].points);
+            leaderboardContent.innerHTML = `<div class="duo-league-board">${globalEntries.map((entry, index) => {
+              const fillWidth = Math.min(100, Math.round((entry.points / highestXp) * 100));
+              const isMe = entry.name === currentPlayer || entry.uid === currentUid();
+              return `
+                <div class="duo-league-row ${isMe ? "promotion-zone" : "stay-zone"}">
+                  <div class="duo-rank-bubble">#${index + 1}</div>
+                  <div>
+                    <div class="flex items-center gap-3">
+                      <img src="${entry.avatar}" alt="${entry.name}" style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover;">
+                      <strong>${entry.name}${isMe ? " ⭐ (You)" : ""}</strong>
+                    </div>
+                    <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width: ${fillWidth}%;"></div></div>
+                    <p class="mt-1 text-xs soft-text">${entry.quizzes} quizzes completed</p>
+                  </div>
+                  <strong>${entry.points} XP</strong>
+                </div>
+              `;
+            }).join("")}</div>`;
+          } else {
+            leaderboardContent.innerHTML = `<div class="empty-state">No players yet. Complete a quiz to appear here!</div>`;
+          }
+        })
+        .catch(err => {
+          console.warn("Firestore leaderboard fetch failed:", err);
+          // Fallback to local leaderboard
+          const allEntries = Object.entries(leaderboard || {}).map(([name, data]) => ({
+            name,
+            points: Number(data.points || data.weeklyXp || 0),
+            quizzes: Number(data.quizzes || 0),
+            avatar: data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`
+          })).sort((a, b) => b.points - a.points);
+
+          const top20 = allEntries.slice(0, 20);
+          const myRankIdx = allEntries.findIndex(e => e.name === currentPlayer);
+
+          userRankEl.innerHTML = `
+            <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
+              <span class="font-bold">#${myRankIdx >= 0 ? myRankIdx + 1 : "-"}</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between gap-3">
+                <span class="font-bold">${currentPlayer}</span>
+                <span class="font-bold">${xp} XP</span>
+              </div>
+            </div>
+          `;
+
+          if (top20.length > 0) {
+            const highestXp = Math.max(1, top20[0].points);
+            leaderboardContent.innerHTML = `<div class="duo-league-board">${top20.map((entry, index) => {
+              const fillWidth = Math.min(100, Math.round((entry.points / highestXp) * 100));
+              return `
+                <div class="duo-league-row stay-zone">
+                  <div class="duo-rank-bubble">#${index + 1}</div>
+                  <div>
+                    <div class="flex items-center gap-3">
+                      <img src="${entry.avatar}" alt="${entry.name}" style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover;">
+                      <strong>${entry.name}${entry.name === currentPlayer ? " ⭐" : ""}</strong>
+                    </div>
+                    <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width: ${fillWidth}%;"></div></div>
+                    <p class="mt-1 text-xs soft-text">${entry.quizzes} quizzes</p>
+                  </div>
+                  <strong>${entry.points} XP</strong>
+                </div>
+              `;
+            }).join("")}</div>`;
+          } else {
+            leaderboardContent.innerHTML = `<div class="empty-state">No players yet. Complete a quiz to appear here.</div>`;
+          }
+        });
     }
 
     function startLeagueCountdownTicker() {
@@ -5501,16 +5569,45 @@ What is 7 x 8?
 
       if (currentUid()) {
         try {
+          const leagueName = getLeague(xp).name;
           await Promise.all([
+            // Save activity log
             firestore.collection(CLOUD_COLLECTIONS.users).doc(currentUid()).collection(CLOUD_COLLECTIONS.activity).doc(historyItem.id).set({
               ...historyItem,
               userId: currentUid(),
               username: currentPlayer,
               createdAt: serverTime()
             }),
-            pushCloudState({ lastQuizAt: serverTime() })
+            // Save user profile with XP
+            pushCloudState({ lastQuizAt: serverTime() }),
+            // Update publicProfiles (Firestore) for global leaderboard
+            firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(currentUid()).set({
+              uid: currentUid(),
+              username: currentPlayer,
+              displayName: currentUserProfile?.displayName || currentPlayer,
+              avatar: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
+              xp: xp,
+              weeklyXp: xp,
+              streak: streak,
+              quizzes: history.length,
+              league: leagueName,
+              public: true,
+              updatedAt: serverTime()
+            }, { merge: true }),
+            // Update RTDB leaderboard
+            database.ref(`leaderboard/${currentUid()}`).update({
+              uid: currentUid(),
+              name: currentPlayer,
+              points: xp,
+              weeklyXp: xp,
+              quizzes: history.length,
+              league: leagueName,
+              avatar: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
+              public: true,
+              updatedAt: Date.now()
+            })
           ]);
-          showToast("Progress, XP, streak, and leaderboard saved globally.");
+          showToast(`+${earnedXp} XP saved! Total: ${xp} XP. Synced globally.`);
         } catch (error) {
           console.error("Quiz cloud save failed:", error);
           showToast(`Progress save failed: ${error.message}`);
