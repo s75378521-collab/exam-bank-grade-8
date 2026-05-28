@@ -1836,7 +1836,19 @@
       <div class="space-y-4">
         <input id="quizTitleInput" type="text" placeholder="Quiz Title" class="quiz-field">
         <textarea id="quizDescriptionInput" placeholder="Quiz Description" class="quiz-field" rows="3"></textarea>
-        
+
+        <div class="flex items-center gap-4 rounded-2xl bg-white/5 p-3">
+          <span class="font-semibold soft-text">Visibility</span>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="quizVisibility" value="public" checked class="accent-emerald-500 w-4 h-4">
+            <span>🌐 Public</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="quizVisibility" value="private" class="accent-emerald-500 w-4 h-4">
+            <span>🔒 Private</span>
+          </label>
+        </div>
+
         <div id="questionsContainer" class="space-y-4">
           <div class="question-block glass rounded-2xl p-4">
             <input type="text" placeholder="Question" class="quiz-field mb-3 question-text">
@@ -3318,6 +3330,8 @@
     function closeCreateQuizModal() {
       document.getElementById("createQuizModal").classList.add("hidden");
       document.getElementById("createQuizModal").classList.remove("flex");
+      const publicRadio = document.querySelector('input[name="quizVisibility"][value="public"]');
+      if (publicRadio) publicRadio.checked = true;
     }
 
     // Handle profile photo upload
@@ -3587,14 +3601,19 @@
         return;
       }
       
+      const visEl = document.querySelector('input[name="quizVisibility"]:checked');
+      const isPublic = visEl ? visEl.value === "public" : true;
+
       const newQuiz = {
         id: `set-${Date.now()}-${Math.random().toString(36).slice(2)}`,
         title: title,   
         description: description,   
-        tags: ["exam-bank", "public", "student-created"],
+        tags: ["exam-bank", "student-created", isPublic ? "public" : "private"],
         questions: questions,
         author: currentPlayer,
         authorId: auth.currentUser ? auth.currentUser.uid : null,
+        visibility: isPublic ? "public" : "private",
+        public: isPublic,
         createdAt: new Date().toISOString()
       };
       
@@ -4976,18 +4995,21 @@
       });
       if (!valid || !questions.length) return showToast("Please fill in all question fields");
 
+      const visibilityEl = document.querySelector('input[name="quizVisibility"]:checked');
+      const isPublic = visibilityEl ? visibilityEl.value === "public" : true;
+
       const quizId = `set-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const newQuiz = {
         id: quizId,
         title,
         description,
-        tags: ["exam-bank", "public", "student-created", "made-by-you"],
+        tags: ["exam-bank", "student-created", "made-by-you", isPublic ? "public" : "private"],
         questions,
         author: currentPlayer,
         authorId: currentUid(),
         authorPhoto: currentUserProfile?.photoURL || null,
-        visibility: "public",
-        public: true,
+        visibility: isPublic ? "public" : "private",
+        public: isPublic,
         madeBy: "you",
         playCount: 0,
         createdAt: serverTime(),
@@ -4996,21 +5018,22 @@
 
       try {
         const userRef = firestore.collection(CLOUD_COLLECTIONS.users).doc(currentUid()).collection("quizzes").doc(quizId);
-        const publicRef = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes).doc(quizId);
-        await Promise.all([
-          userRef.set(newQuiz, { merge: true }),
-          publicRef.set(newQuiz, { merge: true }),
-          database.ref(`publicQuizzes/${quizId}`).set({ ...newQuiz, createdAt: Date.now(), updatedAt: Date.now() })
-        ]);
+        const saves = [userRef.set(newQuiz, { merge: true })];
+        if (isPublic) {
+          const publicRef = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes).doc(quizId);
+          saves.push(publicRef.set(newQuiz, { merge: true }));
+          saves.push(database.ref(`publicQuizzes/${quizId}`).set({ ...newQuiz, createdAt: Date.now(), updatedAt: Date.now() }));
+        }
+        await Promise.all(saves);
         closeCreateQuizModal();
         document.getElementById("quizTitleInput").value = "";
         document.getElementById("quizDescriptionInput").value = "";
         await pushCloudState({ lastCreatedSetId: quizId });
         loadTests();
         updateDashboard();
-        showToast("Public set saved to Firebase and marked Made by You!");
+        showToast(isPublic ? "Public set saved to Firebase!" : "Private set saved to your account!");
       } catch (error) {
-        console.error("Saving public set failed:", error);
+        console.error("Saving set failed:", error);
         showToast(`Could not save set: ${error.message}`);
       }
     }
