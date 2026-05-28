@@ -1587,7 +1587,7 @@
             <div class="max-w-3xl">
               <p class="display-font text-sm font-bold uppercase tracking-[0.3em] text-slate-300">Study Command Center</p>
               <h2 class="mt-3 text-4xl font-black leading-tight lg: text-5xl">Grade 8 exam bank</h2>
-              <p class="mt-3 max-w-2xl text-lg soft-text">Portal X the perfect place to grow and adapt your grade 8 knowledge made by the best coder in the class Spencer Ramsay 🤔</p>
+              <p class="mt-3 max-w-2xl text-lg soft-text">Portal X the perfect place to grow and adapt your grade 8 knowledge</p>
               
               <!-- Google Sign In Button on Main Page -->
               <div class="mt-6">
@@ -4898,22 +4898,47 @@ What is 7 x 8?
       try {
         await firestore.enableNetwork().catch(() => {});
         const ref = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid);
-        const snap = await ref.get({ source: "server" }).catch(async serverError => {
-          console.warn("Server profile read failed, trying cache/realtime fallback:", serverError);
-          return ref.get().catch(() => null);
-        });
-        existing = snap && snap.exists ? (snap.data() || {}) : {};
+
+        // Read Firestore profile AND RTDB accounts node in parallel so we never lose XP
+        const [snap, rtdbSnap] = await Promise.all([
+          ref.get({ source: "server" }).catch(() => ref.get().catch(() => null)),
+          realtimeRef.once("value").catch(() => null)
+        ]);
+
+        const fsData  = (snap && snap.exists)            ? safeObject(snap.data())         : {};
+        const rtdbData = (rtdbSnap && rtdbSnap.exists()) ? safeObject(rtdbSnap.val())       : {};
+
+        // Merge: take highest XP from any source so cross-device restores are lossless
+        const cloudXp = Math.max(
+          Number(fsData.xp  || 0),
+          Number(rtdbData.xp || 0)
+        );
+        const cloudStreak = Math.max(
+          Number(fsData.streak  || 0),
+          Number(rtdbData.streak || 0)
+        );
+
+        existing = { ...rtdbData, ...fsData }; // Firestore wins on conflicts except XP/streak
+
         const merged = {
           ...base,
           ...existing,
           uid,
+          xp: cloudXp,
+          streak: cloudStreak,
+          weeklyXp: Math.max(Number(existing.weeklyXp || 0), cloudXp),
           email: user.email || existing.email || null,
           username: existing.username || user.displayName || user.email || "User",
           displayName: existing.displayName || user.displayName || user.email || "User",
           photoURL: existing.photoURL || user.photoURL || base.photoURL,
           avatar: existing.avatar || user.photoURL || base.avatar,
           settings: { ...base.settings, ...safeObject(existing.settings) },
-          progress: { ...base.progress, ...safeObject(existing.progress) },
+          progress: {
+            ...base.progress,
+            ...safeObject(existing.progress),
+            history: safeArray(existing.progress?.history || existing.history || rtdbData.history),
+            bestScores: safeObject(existing.progress?.bestScores || existing.bestScores || rtdbData.bestScores)
+          },
           public: true,
           madeBy: "you",
           updatedAt: serverTime()
@@ -4952,17 +4977,27 @@ What is 7 x 8?
         console.warn("Firestore account setup failed; using Realtime Database fallback:", firestoreError);
         const realtimeSnap = await realtimeRef.once("value").catch(() => null);
         existing = realtimeSnap && realtimeSnap.exists() ? safeObject(realtimeSnap.val()) : {};
+        const rtdbXp     = Math.max(Number(existing.xp || 0), xp);
+        const rtdbStreak = Math.max(Number(existing.streak || 0), streak);
         const merged = {
           ...base,
           ...existing,
           uid,
+          xp: rtdbXp,
+          streak: rtdbStreak,
+          weeklyXp: Math.max(Number(existing.weeklyXp || 0), rtdbXp),
           email: user.email || existing.email || null,
           username: existing.username || user.displayName || user.email || "User",
           displayName: existing.displayName || user.displayName || user.email || "User",
           photoURL: existing.photoURL || user.photoURL || base.photoURL,
           avatar: existing.avatar || user.photoURL || base.avatar,
           settings: { ...base.settings, ...safeObject(existing.settings) },
-          progress: { ...base.progress, ...safeObject(existing.progress) },
+          progress: {
+            ...base.progress,
+            ...safeObject(existing.progress),
+            history: safeArray(existing.progress?.history || existing.history),
+            bestScores: safeObject(existing.progress?.bestScores || existing.bestScores)
+          },
           public: true,
           madeBy: "you",
           updatedAt: Date.now(),
@@ -5534,6 +5569,7 @@ What is 7 x 8?
     };
 
     updateFirebaseLeaderboard = function() {
+      _syncXpToCloud();
       return pushCloudState();
     };
 
@@ -5916,31 +5952,73 @@ What is 7 x 8?
       });
     });
 
-    // ── XP WRITE TO LEADERBOARD after every quiz ───────────────────────
+    // ── XP SYNC: write to every store after every quiz ───────────────────
+    // This is the canonical XP save. It writes to:
+    //   1. RTDB  accounts/{uid}/xp         — fast, cross-device restore on sign-in
+    //   2. RTDB  leaderboard/{uid}          — live leaderboard
+    //   3. Firestore users/{uid}            — full profile cloud save
+    //   4. Firestore publicProfiles/{uid}   — public leaderboard source
+    function _syncXpToCloud() {
+      var user = auth.currentUser;
+      if (!user) return;
+      var uid    = user.uid;
+      var name   = user.displayName || user.email || "Player";
+      var avatar = user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff");
+      var leagueVal = (typeof getLeague === "function" ? getLeague(xp).name : "Bronze");
+      var now = Date.now();
+
+      // RTDB: fast atomic writes — these are what load on the next device sign-in
+      var rtdbWrites = [
+        database.ref("accounts/" + uid).update({
+          xp: xp,
+          streak: streak,
+          weeklyXp: xp,
+          league: leagueVal,
+          quizzes: history.length,
+          username: name,
+          displayName: name,
+          avatar: avatar,
+          updatedAt: now
+        }),
+        database.ref("leaderboard/" + uid).set({
+          uid: uid, name: name, points: xp, weeklyXp: xp,
+          quizzes: history.length, league: leagueVal,
+          avatar: avatar, public: true, updatedAt: now
+        })
+      ];
+
+      // Firestore: full profile save
+      var firestoreWrites = [
+        firestore.collection("users").doc(uid).set({
+          xp: xp,
+          streak: streak,
+          weeklyXp: xp,
+          league: leagueVal,
+          "progress.history": history.slice(0, 100),
+          "progress.bestScores": bestScores,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }),
+        firestore.collection("publicProfiles").doc(uid).set({
+          uid: uid, username: name, displayName: name, avatar: avatar,
+          xp: xp, weeklyXp: xp, streak: streak,
+          quizzes: history.length, league: leagueVal,
+          public: true, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true })
+      ];
+
+      Promise.all(rtdbWrites)
+        .catch(function(e) { console.error("RTDB XP sync failed:", e); });
+      Promise.all(firestoreWrites)
+        .catch(function(e) { console.error("Firestore XP sync failed:", e); });
+    }
+
+    // Wrap submitQuiz one final time to call _syncXpToCloud after every quiz
     (function() {
       var _origSubmit = submitQuiz;
       submitQuiz = function() {
         var result = _origSubmit.apply(this, arguments);
-        // Push updated XP to both RTDB leaderboard + Firestore publicProfiles
-        setTimeout(function() {
-          var user = auth.currentUser;
-          if (!user) return;
-          var name   = user.displayName || user.email || "Player";
-          var avatar = user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff");
-          var leagueVal = (typeof getLeague === "function" ? getLeague(xp).name : "Bronze");
-          var payload = {
-            uid: user.uid, name: name, points: xp, weeklyXp: xp,
-            quizzes: history.length, league: leagueVal,
-            avatar: avatar, public: true, updatedAt: Date.now()
-          };
-          database.ref("leaderboard/" + user.uid).set(payload)
-            .catch(function(e){ console.error("RTDB leaderboard write failed:", e); });
-          firestore.collection("publicProfiles").doc(user.uid).set({
-            uid: user.uid, username: name, displayName: name, avatar: avatar,
-            xp: xp, weeklyXp: xp, quizzes: history.length,
-            league: leagueVal, public: true, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true }).catch(function(e){ console.error("Firestore profile write failed:", e); });
-        }, 300);
+        // XP has been updated by _origSubmit; sync to cloud after a short tick
+        setTimeout(_syncXpToCloud, 400);
         return result;
       };
     })();
