@@ -1782,6 +1782,26 @@
           </label>
         </div>
 
+        <div class="glass rounded-2xl p-4 bg-white/5 border border-white/10">
+          <div class="flex flex-col gap-2">
+            <label for="bulkImportInput" class="font-bold">Quizlet-style Import</label>
+            <p class="text-sm soft-text">Paste one question and one answer per line pair, or put each question and answer on the same line separated by a tab, comma, dash, or multiple spaces.</p>
+            <textarea id="bulkImportInput" class="quiz-field" rows="7" placeholder="Example:
+What is photosynthesis?    Plants making food from sunlight
+What is 7 x 8?    56
+
+Or:
+What is photosynthesis?
+Plants making food from sunlight
+What is 7 x 8?
+56"></textarea>
+            <div class="flex flex-wrap gap-3">
+              <button id="importQuestionsBtn" type="button" class="rounded-2xl bg-blue-500 px-4 py-2 font-bold transition hover:bg-blue-400">Import Questions</button>
+              <button id="clearImportBtn" type="button" class="rounded-2xl bg-white/10 px-4 py-2 font-bold transition hover:bg-white/15">Clear Import Box</button>
+            </div>
+          </div>
+        </div>
+
         <div id="questionsContainer" class="space-y-4">
           <div class="question-block glass rounded-2xl p-4">
             <input type="text" placeholder="Question" class="quiz-field mb-3 question-text">
@@ -3430,36 +3450,116 @@
     }
 
     // Add question to create quiz form
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function parseQuizletStyleImport(rawText) {
+      const lines = String(rawText || "")
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+      const pairs = [];
+      const splitSameLine = (line) => {
+        const separators = [/\t+/, /\s{2,}/, /\s+[—–-]\s+/, /\s*\|\s*/, /\s*,\s*/];
+        for (const sep of separators) {
+          const parts = line.split(sep).map(part => part.trim()).filter(Boolean);
+          if (parts.length >= 2) return [parts[0], parts.slice(1).join(" ")];
+        }
+        return null;
+      };
+
+      let usedSameLineFormat = false;
+      for (const line of lines) {
+        const pair = splitSameLine(line);
+        if (pair && pair[0] && pair[1]) {
+          usedSameLineFormat = true;
+          pairs.push({ question: pair[0], answer: pair[1] });
+        }
+      }
+
+      if (!usedSameLineFormat) {
+        for (let i = 0; i < lines.length; i += 2) {
+          if (lines[i] && lines[i + 1]) pairs.push({ question: lines[i], answer: lines[i + 1] });
+        }
+      }
+
+      const seen = new Set();
+      return pairs.filter(pair => {
+        const key = `${pair.question.toLowerCase()}|||${pair.answer.toLowerCase()}`;
+        if (!pair.question || !pair.answer || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function buildDistractorsForImportedAnswer(answer, allAnswers) {
+      const uniqueAnswers = Array.from(new Set(allAnswers.filter(item => item && item !== answer)));
+      const fallbacks = ["Not this answer", "None of the above", "I am not sure", "Another answer"];
+      const options = [answer];
+      uniqueAnswers.forEach(item => { if (options.length < 4) options.push(item); });
+      fallbacks.forEach(item => { if (options.length < 4 && !options.includes(item)) options.push(item); });
+      return options.slice(0, 4);
+    }
+
+    function createQuestionBlockHtml(question = "", options = ["", "", "", ""], correctIndex = 0) {
+      const safeOptions = [...options];
+      while (safeOptions.length < 4) safeOptions.push("");
+      return `
+          <div class="question-block glass rounded-2xl p-4">
+            <input type="text" placeholder="Question" class="quiz-field mb-3 question-text" value="${escapeHtml(question)}">
+            <div class="options-container space-y-2">
+              ${safeOptions.slice(0, 4).map((option, index) => `<input type="text" placeholder="Option ${index + 1}" class="quiz-field option-input" value="${escapeHtml(option)}">`).join("")}
+            </div>
+            <select class="quiz-select mt-3 correct-answer-select">
+              <option value="">Select correct answer</option>
+              <option value="0" ${Number(correctIndex) === 0 ? "selected" : ""}>Option 1</option>
+              <option value="1" ${Number(correctIndex) === 1 ? "selected" : ""}>Option 2</option>
+              <option value="2" ${Number(correctIndex) === 2 ? "selected" : ""}>Option 3</option>
+              <option value="3" ${Number(correctIndex) === 3 ? "selected" : ""}>Option 4</option>
+            </select>
+            <button type="button" class="remove-question-btn mt-3 rounded-xl bg-red-500/80 px-3 py-2 text-sm font-bold transition hover:bg-red-500">Remove</button>
+          </div>`;
+    }
+
+    function bindRemoveButtons(scope = document) {
+      scope.querySelectorAll(".remove-question-btn").forEach(button => {
+        button.onclick = function() {
+          const block = this.closest(".question-block");
+          if (block && document.querySelectorAll("#questionsContainer .question-block").length > 1) block.remove();
+          else showToast("Keep at least one question in the set.");
+        };
+      });
+    }
+
+    function importQuestionsFromPaste() {
+      const input = document.getElementById("bulkImportInput");
+      const container = document.getElementById("questionsContainer");
+      if (!input || !container) return;
+      const pairs = parseQuizletStyleImport(input.value);
+      if (!pairs.length) {
+        showToast("Paste question/answer pairs first. Use tabs, two spaces, dashes, commas, or alternating lines.");
+        return;
+      }
+      const answers = pairs.map(pair => pair.answer);
+      container.innerHTML = pairs.map(pair => createQuestionBlockHtml(pair.question, buildDistractorsForImportedAnswer(pair.answer, answers), 0)).join("");
+      bindRemoveButtons(container);
+      showToast(`Imported ${pairs.length} question${pairs.length === 1 ? "" : "s"}. Review the answer choices, then save.`);
+    }
+
     function addQuestion() {
       const questionsContainer = document.getElementById("questionsContainer");
-      const questionCount = questionsContainer.children.length + 1;
-      
-      const questionBlock = document.createElement("div");
-      questionBlock.className = "question-block glass rounded-2xl p-4";
-      questionBlock.innerHTML = `
-        <input type="text" placeholder="Question ${questionCount}" class="quiz-field mb-3 question-text">
-        <div class="options-container space-y-2">
-          <input type="text" placeholder="Option 1" class="quiz-field option-input">
-          <input type="text" placeholder="Option 2" class="quiz-field option-input">
-          <input type="text" placeholder="Option 3" class="quiz-field option-input">
-          <input type="text" placeholder="Option 4" class="quiz-field option-input">
-        </div>
-        <select class="quiz-select mt-3 correct-answer-select">
-          <option value="">Select correct answer</option>
-          <option value="0">Option 1</option>
-          <option value="1">Option 2</option>
-          <option value="2">Option 3</option>
-          <option value="3">Option 4</option>
-        </select>
-        <button class="remove-question-btn mt-2 text-red-400 hover: text-red-300">Remove Question</button>
-      `;
-      
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = createQuestionBlockHtml();
+      const questionBlock = wrapper.firstElementChild;
       questionsContainer.appendChild(questionBlock);
-      
-      // Add event listener to remove button
-      questionBlock.querySelector(".remove-question-btn").addEventListener("click", function() {
-        questionsContainer.removeChild(questionBlock);
-      });
+      bindRemoveButtons(questionBlock);
     }
 
     // Save custom quiz
@@ -3927,6 +4027,9 @@
       document.getElementById("closeCreateQuizModal").addEventListener("click", closeCreateQuizModal);
       document.getElementById("cancelCreateQuizBtn").addEventListener("click", closeCreateQuizModal);
       document.getElementById("addQuestionBtn").addEventListener("click", addQuestion);
+      document.getElementById("importQuestionsBtn").addEventListener("click", importQuestionsFromPaste);
+      document.getElementById("clearImportBtn").addEventListener("click", () => { document.getElementById("bulkImportInput").value = ""; });
+      bindRemoveButtons(document.getElementById("questionsContainer"));
       document.getElementById("saveQuizBtn").addEventListener("click", saveCustomQuiz);
       
       // Quick Quiz Button
@@ -4076,16 +4179,16 @@
       const container = document.getElementById("editQuestionsContainer");
       container.innerHTML = (quiz.questions || []).map((q, i) => `
         <div class="question-block glass rounded-2xl p-4">
-          <input type="text" value="${q.question}" class="quiz-field mb-3 edit-question-text" placeholder="Question ${i + 1}">
+          <input type="text" value="${escapeHtml(q.question)}" class="quiz-field mb-3 edit-question-text" placeholder="Question ${i + 1}">
           <div class="options-container space-y-2">
             ${(q.options || q.choices || []).map((opt, oi) => `
-              <input type="text" value="${opt}" class="quiz-field edit-option-input" placeholder="Option ${oi + 1}">
+              <input type="text" value="${escapeHtml(opt)}" class="quiz-field edit-option-input" placeholder="Option ${oi + 1}">
             `).join("")}
           </div>
           <select class="quiz-select mt-3 edit-correct-select">
             <option value="">Select correct answer</option>
             ${(q.options || q.choices || []).map((opt, oi) => `
-              <option value="${oi}" ${oi === q.correctIndex ? "selected" : ""}>Option ${oi + 1}</option>
+              <option value="${oi}" ${(oi === q.correctIndex || opt === q.answer) ? "selected" : ""}>Option ${oi + 1}</option>
             `).join("")}
           </select>
         </div>
@@ -4141,8 +4244,13 @@
           const uid = auth.currentUser.uid;
           const userRef = firestore.collection("users").doc(uid).collection("quizzes").doc(editingQuiz.id);
           await userRef.set(updated, { merge: true });
+          await database.ref(`userQuizzes/${uid}/${editingQuiz.id}`).update({ ...updated, updatedAt: Date.now() });
           if (updated.public || updated.visibility === "public") {
             await firestore.collection("publicQuizzes").doc(editingQuiz.id).set(updated, { merge: true });
+            await database.ref(`publicQuizzes/${editingQuiz.id}`).update({ ...updated, updatedAt: Date.now() });
+          } else {
+            await firestore.collection("publicQuizzes").doc(editingQuiz.id).delete().catch(() => {});
+            await database.ref(`publicQuizzes/${editingQuiz.id}`).remove().catch(() => {});
           }
         } catch (e) { console.error("Edit save error:", e); }
       }
@@ -4166,7 +4274,8 @@
       if (auth.currentUser && quiz.id) {
         try {
           const uid = auth.currentUser.uid;
-          await firestore.collection("users").doc(uid).collection("quizzes").doc(quiz.id).delete();
+          await firestore.collection("users").doc(uid).collection("quizzes").doc(quiz.id).delete().catch(() => {});
+          await database.ref(`userQuizzes/${uid}/${quiz.id}`).remove().catch(() => {});
           await firestore.collection("publicQuizzes").doc(quiz.id).delete().catch(() => {});
           await database.ref(`publicQuizzes/${quiz.id}`).remove().catch(() => {});
         } catch (e) { console.error("Delete error:", e); }
@@ -4226,7 +4335,17 @@
         if (quiz) shareQuiz(quiz);
         return;
       }
-      if (playBtn) return;
+      if (playBtn) {
+        const playQuizId = playBtn.dataset?.quizId || card.dataset?.quizId;
+        const quiz = allQuizzes.find(q => q.id === playQuizId || String(q.id) === playQuizId);
+        if (quiz) {
+          let idx = customQuizzes.findIndex(q => q.id === quiz.id);
+          if (idx < 0) { customQuizzes.push(quiz); idx = customQuizzes.length - 1; }
+          startCustomQuiz(idx);
+          document.getElementById("dashboardModal").classList.remove("open");
+        }
+        return;
+      }
 
       const localIndex = parseInt(card.dataset?.localIndex || e.target.closest("[data-local-index]")?.dataset?.localIndex);
       const cardQuizId = card.querySelector("[data-quiz-id]")?.dataset?.quizId;
@@ -4535,7 +4654,7 @@
             <p>${quiz.description || "No description"}</p>
             <div class="author">By ${quiz.author || "Community"} • ${quiz.questions?.length || 0} questions</div>
             <div class="actions">
-              <button class="play-btn" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play Set</button>
+              <button class="play-btn" data-quiz-id="${quiz.id || index}" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play Set</button>
             </div>
           </div>
         `).join("");
@@ -4618,9 +4737,8 @@
 
     const originalSaveCustomQuizForPublicSets = typeof saveCustomQuiz === "function" ? saveCustomQuiz : null;
     if (originalSaveCustomQuizForPublicSets) {
-      saveCustomQuiz = function() {
-        originalSaveCustomQuizForPublicSets.apply(this, arguments);
-        customQuizzes = JSON.parse(localStorage.getItem("customQuizzes") || "[]");
+      saveCustomQuiz = async function() {
+        await originalSaveCustomQuizForPublicSets.apply(this, arguments);
         saveExpandedAccountData();
         updateDashboard();
       };
@@ -4664,8 +4782,12 @@
 
     try {
       auth.useDeviceLanguage();
+      firestore.disableNetwork().then(() => firestore.enableNetwork()).catch(() => {});
       firestore.enablePersistence({ synchronizeTabs: true }).catch(error => {
-        console.info("Firestore offline persistence unavailable; cloud sync still works:", error.code || error.message);
+        console.info("Firestore offline persistence unavailable; using online Firebase sync:", error.code || error.message);
+        if (error && error.code === "failed-precondition") {
+          firestore.clearPersistence?.().catch(() => {});
+        }
       });
       Object.keys(localStorage || {}).forEach(key => {
         if (key.startsWith("examBank") || key === "customQuizzes") localStorage.removeItem(key);
@@ -4777,45 +4899,100 @@
     async function upsertCloudAccount(user) {
       if (!user) return null;
       const uid = user.uid;
-      const ref = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid);
-      const snap = await ref.get();
       const base = buildDefaultProfile(user);
-      if (!snap.exists) {
-        await ref.set(base, { merge: true });
-        await firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(uid).set({
+      const realtimeRef = database.ref(`accounts/${uid}`);
+      let existing = {};
+
+      try {
+        await firestore.enableNetwork().catch(() => {});
+        const ref = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid);
+        const snap = await ref.get({ source: "server" }).catch(async serverError => {
+          console.warn("Server profile read failed, trying cache/realtime fallback:", serverError);
+          return ref.get().catch(() => null);
+        });
+        existing = snap && snap.exists ? (snap.data() || {}) : {};
+        const merged = {
+          ...base,
+          ...existing,
           uid,
-          username: base.username,
-          displayName: base.displayName,
-          avatar: base.avatar,
-          xp: 0,
-          weeklyXp: 0,
-          league: base.league,
+          email: user.email || existing.email || null,
+          username: existing.username || user.displayName || user.email || "User",
+          displayName: existing.displayName || user.displayName || user.email || "User",
+          photoURL: existing.photoURL || user.photoURL || base.photoURL,
+          avatar: existing.avatar || user.photoURL || base.avatar,
+          settings: { ...base.settings, ...safeObject(existing.settings) },
+          progress: { ...base.progress, ...safeObject(existing.progress) },
           public: true,
           madeBy: "you",
-          createdAt: serverTime(),
           updatedAt: serverTime()
-        }, { merge: true });
-        await database.ref(`accounts/${uid}`).set({ ...base, updatedAt: Date.now(), createdAt: Date.now() });
-        return base;
+        };
+        await Promise.all([
+          ref.set(merged, { merge: true }),
+          firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(uid).set({
+            uid,
+            username: merged.username,
+            displayName: merged.displayName,
+            avatar: merged.avatar,
+            xp: Number(merged.xp || 0),
+            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
+            quizzes: safeArray(merged.progress?.history).length,
+            league: merged.league || getLeague(Number(merged.xp || 0)).name,
+            public: true,
+            madeBy: "you",
+            createdAt: existing.createdAt || serverTime(),
+            updatedAt: serverTime()
+          }, { merge: true }),
+          realtimeRef.update({ ...merged, updatedAt: Date.now(), createdAt: existing.createdAt || Date.now() }),
+          database.ref(`leaderboard/${uid}`).update({
+            uid,
+            name: merged.username,
+            points: Number(merged.xp || 0),
+            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
+            quizzes: safeArray(merged.progress?.history).length,
+            league: merged.league || getLeague(Number(merged.xp || 0)).name,
+            avatar: merged.avatar,
+            public: true,
+            updatedAt: Date.now()
+          })
+        ]);
+        return merged;
+      } catch (firestoreError) {
+        console.warn("Firestore account setup failed; using Realtime Database fallback:", firestoreError);
+        const realtimeSnap = await realtimeRef.once("value").catch(() => null);
+        existing = realtimeSnap && realtimeSnap.exists() ? safeObject(realtimeSnap.val()) : {};
+        const merged = {
+          ...base,
+          ...existing,
+          uid,
+          email: user.email || existing.email || null,
+          username: existing.username || user.displayName || user.email || "User",
+          displayName: existing.displayName || user.displayName || user.email || "User",
+          photoURL: existing.photoURL || user.photoURL || base.photoURL,
+          avatar: existing.avatar || user.photoURL || base.avatar,
+          settings: { ...base.settings, ...safeObject(existing.settings) },
+          progress: { ...base.progress, ...safeObject(existing.progress) },
+          public: true,
+          madeBy: "you",
+          updatedAt: Date.now(),
+          createdAt: existing.createdAt || Date.now()
+        };
+        await Promise.all([
+          realtimeRef.update(merged),
+          database.ref(`leaderboard/${uid}`).update({
+            uid,
+            name: merged.username,
+            points: Number(merged.xp || 0),
+            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
+            quizzes: safeArray(merged.progress?.history).length,
+            league: merged.league || getLeague(Number(merged.xp || 0)).name,
+            avatar: merged.avatar,
+            public: true,
+            updatedAt: Date.now()
+          })
+        ]);
+        showToast("Signed in. Firestore was offline, so Realtime Database sync is active.");
+        return merged;
       }
-      const existing = snap.data() || {};
-      const merged = {
-        ...base,
-        ...existing,
-        uid,
-        email: user.email || existing.email || null,
-        username: existing.username || user.displayName || user.email || "User",
-        displayName: existing.displayName || user.displayName || user.email || "User",
-        photoURL: existing.photoURL || user.photoURL || base.photoURL,
-        avatar: existing.avatar || user.photoURL || base.avatar,
-        settings: { ...base.settings, ...safeObject(existing.settings) },
-        progress: { ...base.progress, ...safeObject(existing.progress) },
-        public: true,
-        madeBy: "you",
-        updatedAt: serverTime()
-      };
-      await ref.set(merged, { merge: true });
-      return merged;
     }
 
     function cloudAccountPayload(extra = {}) {
@@ -4922,18 +5099,34 @@
       activeQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).collection("quizzes")
         .orderBy("createdAt", "desc")
         .onSnapshot(snapshot => {
-          userQuizzes = snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
+          userQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
           customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => q.authorId !== uid)];
           updateDashboard();
-        }, error => console.error("User quiz listener error:", error));
+        }, error => {
+          console.error("User quiz listener error:", error);
+          database.ref(`userQuizzes/${uid}`).on("value", snapshot => {
+            const data = snapshot.val() || {};
+            userQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
+            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => q.authorId !== uid)];
+            updateDashboard();
+          });
+        });
 
       publicQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes)
         .orderBy("createdAt", "desc")
         .onSnapshot(snapshot => {
-          publicQuizzes = snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
+          publicQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
           customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
           updateDashboard();
-        }, error => console.error("Public quiz listener error:", error));
+        }, error => {
+          console.error("Public quiz listener error:", error);
+          database.ref("publicQuizzes").on("value", snapshot => {
+            const data = snapshot.val() || {};
+            publicQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
+            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
+            updateDashboard();
+          });
+        });
 
       leaderboardUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicProfiles)
         .orderBy("xp", "desc")
@@ -4954,7 +5147,27 @@
             };
           });
           updateDashboard();
-        }, error => console.error("Leaderboard listener error:", error));
+        }, error => {
+          console.error("Leaderboard listener error:", error);
+          database.ref("leaderboard").on("value", snapshot => {
+            const rows = snapshot.val() || {};
+            leaderboard = {};
+            Object.entries(rows).forEach(([uidKey, row]) => {
+              const name = row.name || row.username || row.displayName || uidKey;
+              leaderboard[name] = {
+                uid: row.uid || uidKey,
+                name,
+                points: Number(row.points || row.xp || 0),
+                weeklyXp: Number(row.weeklyXp || row.points || row.xp || 0),
+                quizzes: Number(row.quizzes || 0),
+                league: row.league || getLeague(Number(row.points || row.xp || 0)).name,
+                avatar: row.avatar,
+                public: true
+              };
+            });
+            updateDashboard();
+          });
+        });
     }
 
     function detachCloudListeners() {
@@ -4969,10 +5182,18 @@
       publicQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes)
         .orderBy("createdAt", "desc")
         .onSnapshot(snapshot => {
-          publicQuizzes = snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
+          publicQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
           customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
           updateDashboard();
-        }, error => console.error("Public quiz listener error:", error));
+        }, error => {
+          console.error("Public quiz listener error:", error);
+          database.ref("publicQuizzes").on("value", snapshot => {
+            const data = snapshot.val() || {};
+            publicQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
+            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
+            updateDashboard();
+          });
+        });
 
       if (!leaderboardUnsubscribe) {
         leaderboardUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicProfiles)
@@ -4994,7 +5215,27 @@
               };
             });
             updateDashboard();
-          }, error => console.error("Leaderboard listener error:", error));
+          }, error => {
+            console.error("Leaderboard listener error:", error);
+            database.ref("leaderboard").on("value", snapshot => {
+              const rows = snapshot.val() || {};
+              leaderboard = {};
+              Object.entries(rows).forEach(([uidKey, row]) => {
+                const name = row.name || row.username || row.displayName || uidKey;
+                leaderboard[name] = {
+                  uid: row.uid || uidKey,
+                  name,
+                  points: Number(row.points || row.xp || 0),
+                  weeklyXp: Number(row.weeklyXp || row.points || row.xp || 0),
+                  quizzes: Number(row.quizzes || 0),
+                  league: row.league || getLeague(Number(row.points || row.xp || 0)).name,
+                  avatar: row.avatar,
+                  public: true
+                };
+              });
+              updateDashboard();
+            });
+          });
       }
     }
 
@@ -5128,9 +5369,14 @@
       const description = document.getElementById("quizDescriptionInput").value.trim();
       if (!title) return showToast("Please enter a quiz title");
 
+      const pastedPairs = parseQuizletStyleImport(document.getElementById("bulkImportInput")?.value || "");
+      if (pastedPairs.length && !Array.from(document.querySelectorAll("#questionsContainer .question-text")).some(input => input.value.trim())) {
+        importQuestionsFromPaste();
+      }
+
       const questions = [];
       let valid = true;
-      document.querySelectorAll(".question-block").forEach(block => {
+      document.querySelectorAll("#questionsContainer .question-block").forEach(block => {
         const questionText = block.querySelector(".question-text").value.trim();
         const options = Array.from(block.querySelectorAll(".option-input")).map(input => input.value.trim());
         const correctAnswerIndex = block.querySelector(".correct-answer-select").value;
@@ -5169,7 +5415,10 @@
 
       try {
         const userRef = firestore.collection(CLOUD_COLLECTIONS.users).doc(currentUid()).collection("quizzes").doc(quizId);
-        const saves = [userRef.set(newQuiz, { merge: true })];
+        const saves = [
+          userRef.set(newQuiz, { merge: true }),
+          database.ref(`userQuizzes/${currentUid()}/${quizId}`).set({ ...newQuiz, createdAt: Date.now(), updatedAt: Date.now() })
+        ];
         if (isPublic) {
           const publicRef = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes).doc(quizId);
           saves.push(publicRef.set(newQuiz, { merge: true }));
@@ -5179,6 +5428,8 @@
         closeCreateQuizModal();
         document.getElementById("quizTitleInput").value = "";
         document.getElementById("quizDescriptionInput").value = "";
+        const importBox = document.getElementById("bulkImportInput");
+        if (importBox) importBox.value = "";
         await pushCloudState({ lastCreatedSetId: quizId });
         loadTests();
         updateDashboard();
