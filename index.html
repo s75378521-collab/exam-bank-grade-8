@@ -1754,74 +1754,7 @@
         </div>
       </div>
       
-      <div>
-        <h4 class="text-xl font-bold mb-2">Leagues</h4>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="glass rounded-2xl p-4">
-            <div class="flex items-center mb-2">
-              <svg class="league-icon text-amber-700" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-              </svg>
-              <span class="font-bold ml-2">Bronze</span>
-            </div>
-            <p class="text-sm">0 - 499 XP</p>
-          </div>
-          <div class="glass rounded-2xl p-4">
-            <div class="flex items-center mb-2">
-              <svg class="league-icon text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-              </svg>
-              <span class="font-bold ml-2">Silver</span>
-            </div>
-            <p class="text-sm">500 - 999 XP</p>
-          </div>
-          <div class="glass rounded-2xl p-4">
-            <div class="flex items-center mb-2">
-              <svg class="league-icon text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-              </svg>
-              <span class="font-bold ml-2">Gold</span>
-            </div>
-            <p class="text-sm">1000 - 1999 XP</p>
-          </div>
-          <div class="glass rounded-2xl p-4">
-            <div class="flex items-center mb-2">
-              <svg class="league-icon text-blue-300" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-              </svg>
-              <span class="font-bold ml-2">Platinum</span>
-            </div>
-            <p class="text-sm">2000 - 3999 XP</p>
-          </div>
-          <div class="glass rounded-2xl p-4">
-            <div class="flex items-center mb-2">
-              <svg class="league-icon text-cyan-300" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-              </svg>
-              <span class="font-bold ml-2">Diamond</span>
-            </div>
-            <p class="text-sm">4000 - 7999 XP</p>
-          </div>
-          <div class="glass rounded-2xl p-4">
-            <div class="flex items-center mb-2">
-              <svg class="league-icon text-purple-500" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-              </svg>
-              <span class="font-bold ml-2">Master</span>
-            </div>
-            <p class="text-sm">8000 - 15999 XP</p>
-          </div>
-          <div class="glass rounded-2xl p-4 col-span-2">
-            <div class="flex items-center mb-2">
-              <svg class="league-icon text-red-500" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-              </svg>
-              <span class="font-bold ml-2">Grandmaster</span>
-            </div>
-            <p class="text-sm">16000+ XP</p>
-          </div>
-        </div>
-      </div>
+
     </div>
   </div>
 
@@ -1908,6 +1841,12 @@
       </div>
       
       <div id="dashboardContent">
+        <!-- Quiz Detail View (covers dashboard when a quiz is clicked) -->
+        <div id="quizDetailView" style="display:none;">
+          <button id="quizDetailBack" class="rounded-2xl bg-white/10 px-4 py-2 font-bold transition hover:bg-white/15 mb-4">← Back</button>
+          <div id="quizDetailBody"></div>
+        </div>
+
         <!-- My Quizzes Tab -->
         <div class="tab-content active" id="quizzesTab">
           <div class="search-bar">
@@ -3167,8 +3106,7 @@
       const leaderboardModal = document.getElementById("leaderboardModal");
       const leaderboardContent = document.getElementById("leaderboardContent");
       const userRankElement = document.getElementById("userRank");
-      
-      // Show loading state
+
       leaderboardContent.innerHTML = `<div class="text-center py-8 soft-text">Loading leaderboard...</div>`;
       userRankElement.innerHTML = `
         <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
@@ -3179,39 +3117,18 @@
             <span class="font-bold">Loading...</span>
             <span class="font-bold">0 XP</span>
           </div>
-          <div class="flex items-center mt-1">
-            <div class="league-badge league-bronze">
-              <svg class="league-icon" viewBox="0 0 24 24" fill="white">
-                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-              </svg>
-              Bronze
-            </div>
-          </div>
         </div>
       `;
-      
-      // Fetch leaderboard from Firebase
+
       database.ref("leaderboard").once("value").then(snapshot => {
         const firebaseLeaderboard = snapshot.val() || {};
-        
-        // Merge with local leaderboard
         const mergedLeaderboard = {...leaderboard, ...firebaseLeaderboard};
-        
-        // Sort leaderboard by points
-        const sortedLeaderboard = Object.entries(mergedLeaderboard)
-          .sort((a, b) => b[1].points - a[1].points)
-          .slice(0, 10); // Top 10 players
-        
-        // Find user rank
-        const userIndex = Object.entries(mergedLeaderboard)
-          .sort((a, b) => b[1].points - a[1].points)
-          .findIndex(([name]) => name === currentPlayer);
-        
+        const sortedAll = Object.entries(mergedLeaderboard).sort((a, b) => b[1].points - a[1].points);
+        const top20 = sortedAll.slice(0, 20);
+        const userIndex = sortedAll.findIndex(([name]) => name === currentPlayer);
         const userRank = userIndex !== -1 ? userIndex + 1 : "-";
         const userData = mergedLeaderboard[currentPlayer] || { points: 0, quizzes: 0 };
-        
-        // Update user rank display
-        const league = getLeague(userData.points);
+
         userRankElement.innerHTML = `
           <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
             <span class="font-bold">#${userRank}</span>
@@ -3221,43 +3138,26 @@
               <span class="font-bold">${currentPlayer}</span>
               <span class="font-bold">${userData.points} XP</span>
             </div>
-            <div class="flex items-center mt-1">
-              <div class="league-badge ${league.class}">
-                <svg class="league-icon" viewBox="0 0 24 24" fill="white">
-                  <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-                </svg>
-                ${league.name}
-              </div>
-            </div>
           </div>
         `;
-        
-        // Generate leaderboard HTML
-        leaderboardContent.innerHTML = sortedLeaderboard.length > 0 
-          ? sortedLeaderboard.map(([name, data], index) => {
-            const league = getLeague(data.points);
-            return `
+
+        leaderboardContent.innerHTML = top20.length > 0
+          ? top20.map(([name, data], index) => `
               <div class="leaderboard-entry">
                 <div class="rank">#${index + 1}</div>
                 <div class="player-info">
-                  <div class="player-name">${name}</div>
-                  <div class="player-stats">${data.quizzes} quizzes</div>
+                  <div class="player-name">${name}${name === currentPlayer ? " ⭐" : ""}</div>
+                  <div class="player-stats">${data.quizzes || 0} quizzes</div>
                 </div>
                 <div class="player-score">${data.points} XP</div>
-                <div class="league-badge ${league.class} ml-2">
-                  <svg class="league-icon" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-                  </svg>
-                </div>
               </div>
-            `;
-          }).join("")
+            `).join("")
           : `<div class="text-center py-8 soft-text">No players yet. Complete quizzes to appear on the leaderboard!</div>`;
       }).catch(error => {
         console.error("Error fetching leaderboard: ", error);
         leaderboardContent.innerHTML = `<div class="text-center py-8 soft-text">Error loading leaderboard. Please try again.</div>`;
       });
-      
+
       leaderboardModal.classList.remove("hidden");
       leaderboardModal.classList.add("flex");
     }
@@ -4050,17 +3950,10 @@
       // Dashboard tabs
       document.querySelectorAll(".tab").forEach(tab => {
         tab.addEventListener("click", () => {
-          // Remove active class from all tabs
           document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-          // Add active class to clicked tab
           tab.classList.add("active");
-          
-          // Hide all tab contents
-          document.querySelectorAll(".tab-content").forEach(content => {
-            content.style.display = "none";
-          });
-          
-          // Show the corresponding tab content
+          document.querySelectorAll(".tab-content").forEach(content => { content.style.display = "none"; });
+          document.getElementById("quizDetailView").style.display = "none";
           const tabId = tab.getAttribute("data-tab");
           document.getElementById(`${tabId}Tab`).style.display = "block";
         });
@@ -4109,6 +4002,238 @@
         }
       });
     }
+
+    /* ---- Dashboard: quiz detail view + edit / delete / share ---- */
+
+    let dashboardDetailQuiz = null;
+
+    function showQuizDetailInDashboard(quiz) {
+      dashboardDetailQuiz = quiz;
+      const detailView = document.getElementById("quizDetailView");
+      const body = document.getElementById("quizDetailBody");
+      document.querySelectorAll("#dashboardContent > .tab-content").forEach(el => el.style.display = "none");
+      document.querySelector(".tabs").style.display = "none";
+
+      body.innerHTML = `
+        <div class="dashboard-card" style="margin-bottom:1rem;">
+          <h3 style="font-size:1.5rem;">🧠 ${quiz.title}</h3>
+          <p>${quiz.description || "No description"}</p>
+          <p class="text-sm text-gray-400">${quiz.questions?.length || 0} questions • ${quiz.visibility === "private" ? "🔒 Private" : "🌐 Public"}</p>
+          <div class="dashboard-actions" style="margin-top:1rem;">
+            <button class="edit-btn" id="detailEditBtn">Edit</button>
+            <button class="share-btn" id="detailShareBtn">Share</button>
+            <button class="delete-btn" id="detailDeleteBtn">Delete</button>
+            <button class="duo-action-button primary" id="detailPlayBtn">Play</button>
+          </div>
+        </div>
+        <h4 class="font-bold mb-3">Questions</h4>
+        <div class="space-y-3">
+          ${(quiz.questions || []).map((q, i) => `
+            <div class="dashboard-card" style="padding:1rem;">
+              <p class="font-semibold">Q${i + 1}: ${q.question}</p>
+              <div class="mt-2 space-y-1">
+                ${(q.options || q.choices || []).map((opt, oi) => `
+                  <p class="${opt === q.answer ? "text-emerald-400 font-bold" : "soft-text"}">${String.fromCharCode(65 + oi)}. ${opt} ${opt === q.answer ? "✓" : ""}</p>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+
+      detailView.style.display = "block";
+
+      document.getElementById("detailPlayBtn").onclick = () => {
+        const idx = customQuizzes.findIndex(q => q.id === quiz.id);
+        if (idx >= 0) { startCustomQuiz(idx); document.getElementById("dashboardModal").classList.remove("open"); }
+        else showToast("Quiz not found in playable list");
+      };
+      document.getElementById("detailEditBtn").onclick = () => openEditQuizModal(quiz);
+      document.getElementById("detailDeleteBtn").onclick = () => confirmDeleteQuiz(quiz);
+      document.getElementById("detailShareBtn").onclick = () => shareQuiz(quiz);
+    }
+
+    function hideQuizDetail() {
+      document.getElementById("quizDetailView").style.display = "none";
+      document.querySelector(".tabs").style.display = "";
+      const activeTab = document.querySelector(".tab.active");
+      if (activeTab) {
+        const tabId = activeTab.getAttribute("data-tab");
+        document.getElementById(`${tabId}Tab`).style.display = "block";
+      }
+      dashboardDetailQuiz = null;
+    }
+
+    document.getElementById("quizDetailBack").addEventListener("click", hideQuizDetail);
+
+    /* ---- Edit Quiz ---- */
+    let editingQuiz = null;
+
+    function openEditQuizModal(quiz) {
+      editingQuiz = quiz;
+      document.getElementById("editQuizTitle").value = quiz.title || "";
+      document.getElementById("editQuizDescription").value = quiz.description || "";
+      const container = document.getElementById("editQuestionsContainer");
+      container.innerHTML = (quiz.questions || []).map((q, i) => `
+        <div class="question-block glass rounded-2xl p-4">
+          <input type="text" value="${q.question}" class="quiz-field mb-3 edit-question-text" placeholder="Question ${i + 1}">
+          <div class="options-container space-y-2">
+            ${(q.options || q.choices || []).map((opt, oi) => `
+              <input type="text" value="${opt}" class="quiz-field edit-option-input" placeholder="Option ${oi + 1}">
+            `).join("")}
+          </div>
+          <select class="quiz-select mt-3 edit-correct-select">
+            <option value="">Select correct answer</option>
+            ${(q.options || q.choices || []).map((opt, oi) => `
+              <option value="${oi}" ${oi === q.correctIndex ? "selected" : ""}>Option ${oi + 1}</option>
+            `).join("")}
+          </select>
+        </div>
+      `).join("");
+      document.getElementById("editQuizModal").classList.add("open");
+    }
+
+    function addEditQuestion() {
+      const container = document.getElementById("editQuestionsContainer");
+      const idx = container.querySelectorAll(".question-block").length;
+      const block = document.createElement("div");
+      block.className = "question-block glass rounded-2xl p-4";
+      block.innerHTML = `
+        <input type="text" class="quiz-field mb-3 edit-question-text" placeholder="Question ${idx + 1}">
+        <div class="options-container space-y-2">
+          <input type="text" class="quiz-field edit-option-input" placeholder="Option 1">
+          <input type="text" class="quiz-field edit-option-input" placeholder="Option 2">
+          <input type="text" class="quiz-field edit-option-input" placeholder="Option 3">
+          <input type="text" class="quiz-field edit-option-input" placeholder="Option 4">
+        </div>
+        <select class="quiz-select mt-3 edit-correct-select">
+          <option value="">Select correct answer</option>
+          <option value="0">Option 1</option>
+          <option value="1">Option 2</option>
+          <option value="2">Option 3</option>
+          <option value="3">Option 4</option>
+        </select>
+      `;
+      container.appendChild(block);
+    }
+
+    async function saveEditedQuiz() {
+      if (!editingQuiz) return;
+      const title = document.getElementById("editQuizTitle").value.trim();
+      const description = document.getElementById("editQuizDescription").value.trim();
+      if (!title) return showToast("Please enter a quiz title");
+
+      const questions = [];
+      let valid = true;
+      document.querySelectorAll("#editQuestionsContainer .question-block").forEach(block => {
+        const qText = block.querySelector(".edit-question-text").value.trim();
+        const opts = Array.from(block.querySelectorAll(".edit-option-input")).map(i => i.value.trim());
+        const correctIdx = block.querySelector(".edit-correct-select").value;
+        if (!qText || opts.some(o => !o) || correctIdx === "") valid = false;
+        questions.push({ question: qText, options: opts, choices: opts, answer: opts[Number(correctIdx)], correctIndex: Number(correctIdx), explanation: "Custom question explanation" });
+      });
+      if (!valid || !questions.length) return showToast("Please fill in all question fields");
+
+      const updated = { ...editingQuiz, title, description, questions, updatedAt: new Date().toISOString() };
+
+      if (auth.currentUser && editingQuiz.id) {
+        try {
+          const uid = auth.currentUser.uid;
+          const userRef = firestore.collection("users").doc(uid).collection("quizzes").doc(editingQuiz.id);
+          await userRef.set(updated, { merge: true });
+          if (updated.public || updated.visibility === "public") {
+            await firestore.collection("publicQuizzes").doc(editingQuiz.id).set(updated, { merge: true });
+          }
+        } catch (e) { console.error("Edit save error:", e); }
+      }
+
+      const localIdx = customQuizzes.findIndex(q => q.id === editingQuiz.id);
+      if (localIdx >= 0) customQuizzes[localIdx] = updated;
+      const userIdx = userQuizzes.findIndex(q => q.id === editingQuiz.id);
+      if (userIdx >= 0) userQuizzes[userIdx] = updated;
+
+      document.getElementById("editQuizModal").classList.remove("open");
+      editingQuiz = null;
+      updateDashboard();
+      hideQuizDetail();
+      showToast("Quiz updated!");
+    }
+
+    /* ---- Delete Quiz ---- */
+    async function confirmDeleteQuiz(quiz) {
+      if (!confirm(`Delete "${quiz.title}"? This cannot be undone.`)) return;
+
+      if (auth.currentUser && quiz.id) {
+        try {
+          const uid = auth.currentUser.uid;
+          await firestore.collection("users").doc(uid).collection("quizzes").doc(quiz.id).delete();
+          await firestore.collection("publicQuizzes").doc(quiz.id).delete().catch(() => {});
+          await database.ref(`publicQuizzes/${quiz.id}`).remove().catch(() => {});
+        } catch (e) { console.error("Delete error:", e); }
+      }
+
+      const localIdx = customQuizzes.findIndex(q => q.id === quiz.id);
+      if (localIdx >= 0) customQuizzes.splice(localIdx, 1);
+      const userIdx = userQuizzes.findIndex(q => q.id === quiz.id);
+      if (userIdx >= 0) userQuizzes.splice(userIdx, 1);
+
+      updateDashboard();
+      hideQuizDetail();
+      showToast("Quiz deleted");
+    }
+
+    /* ---- Share Quiz ---- */
+    function shareQuiz(quiz) {
+      const url = window.location.origin + window.location.pathname + "?quiz=" + encodeURIComponent(quiz.id);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => showToast("Share link copied!")).catch(() => showToast("Could not copy link"));
+      } else {
+        prompt("Copy this link:", url);
+      }
+    }
+
+    /* ---- Wire up edit modal buttons ---- */
+    document.getElementById("closeEditQuizModal").addEventListener("click", () => { document.getElementById("editQuizModal").classList.remove("open"); editingQuiz = null; });
+    document.getElementById("cancelEditQuizBtn").addEventListener("click", () => { document.getElementById("editQuizModal").classList.remove("open"); editingQuiz = null; });
+    document.getElementById("saveEditQuizBtn").addEventListener("click", saveEditedQuiz);
+    document.getElementById("addEditQuestionBtn").addEventListener("click", addEditQuestion);
+
+    /* ---- Delegated click handlers on dashboard quiz lists ---- */
+    document.getElementById("dashboardContent").addEventListener("click", (e) => {
+      const card = e.target.closest(".dashboard-card, .public-quiz-card");
+      if (!card) return;
+
+      const editBtn = e.target.closest(".edit-btn");
+      const deleteBtn = e.target.closest(".delete-btn");
+      const shareBtn = e.target.closest(".share-btn");
+      const playBtn = e.target.closest("[data-action='launch-custom-quiz']") || e.target.closest(".play-btn");
+
+      const quizId = (editBtn || deleteBtn || shareBtn)?.dataset?.quizId;
+      const allQuizzes = [...(userQuizzes || []), ...(customQuizzes || []), ...(publicQuizzes || [])];
+
+      if (editBtn && quizId) {
+        const quiz = allQuizzes.find(q => q.id === quizId || String(q.id) === quizId);
+        if (quiz) openEditQuizModal(quiz);
+        return;
+      }
+      if (deleteBtn && quizId) {
+        const quiz = allQuizzes.find(q => q.id === quizId || String(q.id) === quizId);
+        if (quiz) confirmDeleteQuiz(quiz);
+        return;
+      }
+      if (shareBtn && quizId) {
+        const quiz = allQuizzes.find(q => q.id === quizId || String(q.id) === quizId);
+        if (quiz) shareQuiz(quiz);
+        return;
+      }
+      if (playBtn) return;
+
+      const localIndex = parseInt(card.dataset?.localIndex || e.target.closest("[data-local-index]")?.dataset?.localIndex);
+      const cardQuizId = card.querySelector("[data-quiz-id]")?.dataset?.quizId;
+      const quiz = allQuizzes.find(q => q.id === cardQuizId || String(q.id) === cardQuizId)
+        || (Number.isFinite(localIndex) ? allQuizzes[localIndex] : null);
+      if (quiz) showQuizDetailInDashboard(quiz);
+    });
 
     // Show toast message
     function showToast(message) {
@@ -4385,14 +4510,14 @@
       const userQuizzesList = document.getElementById("userQuizzesList");
       if (combinedUserQuizzes.length > 0) {
         userQuizzesList.innerHTML = combinedUserQuizzes.map((quiz, index) => `
-          <div class="dashboard-card duo-result-pop">
+          <div class="dashboard-card duo-result-pop" style="cursor:pointer;" data-quiz-id="${quiz.id || index}">
             <h3>🧠 ${quiz.title}</h3>
             <p>${quiz.description || "No description"}</p>
-            <p class="text-sm text-gray-400">${quiz.questions.length} questions • ${quiz.tags ? quiz.tags.join(", ") : "Exam Bank Set"}</p>
+            <p class="text-sm text-gray-400">${quiz.questions.length} questions • ${quiz.visibility === "private" ? "🔒 Private" : "🌐 Public"}</p>
             <div class="dashboard-actions">
-              <button class="edit-btn" data-quiz-id="${quiz.id || index}" data-local-index="${index}">Edit</button>
-              <button class="share-btn" data-quiz-id="${quiz.id || index}" data-local-index="${index}">Share</button>
-              <button class="delete-btn" data-quiz-id="${quiz.id || index}" data-local-index="${index}">Delete</button>
+              <button class="edit-btn" data-quiz-id="${quiz.id || index}">Edit</button>
+              <button class="share-btn" data-quiz-id="${quiz.id || index}">Share</button>
+              <button class="delete-btn" data-quiz-id="${quiz.id || index}">Delete</button>
               <button class="duo-action-button primary" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play</button>
             </div>
           </div>
@@ -4405,7 +4530,7 @@
       const publicQuizzesList = document.getElementById("publicQuizzesList");
       if (allPublicQuizzes.length > 0) {
         publicQuizzesList.innerHTML = allPublicQuizzes.map((quiz, index) => `
-          <div class="public-quiz-card duo-result-pop">
+          <div class="public-quiz-card duo-result-pop" style="cursor:pointer;" data-quiz-id="${quiz.id || index}">
             <h3>🌎 ${quiz.title}</h3>
             <p>${quiz.description || "No description"}</p>
             <div class="author">By ${quiz.author || "Community"} • ${quiz.questions?.length || 0} questions</div>
@@ -4424,27 +4549,53 @@
       ensureLeaderboardLeagueData();
       const leaderboardModal = document.getElementById("leaderboardModal");
       const leaderboardContent = document.getElementById("leaderboardContent");
-      const userRank = document.getElementById("userRank");
-      const accountData = saveExpandedAccountData();
-      const league = DUOLINGO_LEAGUES[getLeagueIndexByName(accountData.league)] || getLeague(xp);
-      const sameLeagueEntries = getSameLeagueLeaderboard(league.name);
-      const currentRankIndex = sameLeagueEntries.findIndex(entry => entry.name === currentPlayer);
-      userRank.innerHTML = `
+      const userRankEl = document.getElementById("userRank");
+
+      const allEntries = Object.entries(leaderboard || {}).map(([name, data]) => ({
+        name,
+        points: Number(data.points || data.weeklyXp || 0),
+        quizzes: Number(data.quizzes || 0),
+        avatar: data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`
+      })).sort((a, b) => b.points - a.points);
+
+      const top20 = allEntries.slice(0, 20);
+      const myRankIdx = allEntries.findIndex(e => e.name === currentPlayer);
+
+      userRankEl.innerHTML = `
         <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
-          <span class="font-bold">#${currentRankIndex >= 0 ? currentRankIndex + 1 : "-"}</span>
+          <span class="font-bold">#${myRankIdx >= 0 ? myRankIdx + 1 : "-"}</span>
         </div>
         <div class="flex-1">
           <div class="flex justify-between gap-3">
             <span class="font-bold">${currentPlayer}</span>
             <span class="font-bold">${xp} XP</span>
           </div>
-          <div class="flex items-center mt-1">
-            <div class="league-badge ${league.class}">${league.icon} ${league.name}</div>
-          </div>
-          <p class="mt-2 text-sm soft-text">Weekly reset in ${getWeeklyCountdownText()}. You only see the ${league.name} League.</p>
         </div>
       `;
-      leaderboardContent.innerHTML = buildLeagueBoardHtml(sameLeagueEntries);
+
+      if (top20.length > 0) {
+        const highestXp = Math.max(1, top20[0].points);
+        leaderboardContent.innerHTML = `<div class="duo-league-board">${top20.map((entry, index) => {
+          const fillWidth = Math.min(100, Math.round((entry.points / highestXp) * 100));
+          return `
+            <div class="duo-league-row stay-zone">
+              <div class="duo-rank-bubble">#${index + 1}</div>
+              <div>
+                <div class="flex items-center gap-3">
+                  <img src="${entry.avatar}" alt="${entry.name}" style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover;">
+                  <strong>${entry.name}${entry.name === currentPlayer ? " ⭐" : ""}</strong>
+                </div>
+                <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width: ${fillWidth}%;"></div></div>
+                <p class="mt-1 text-xs soft-text">${entry.quizzes} quizzes</p>
+              </div>
+              <strong>${entry.points} XP</strong>
+            </div>
+          `;
+        }).join("")}</div>`;
+      } else {
+        leaderboardContent.innerHTML = `<div class="empty-state">No players yet. Complete a quiz to appear here.</div>`;
+      }
+
       leaderboardModal.classList.remove("hidden");
       leaderboardModal.classList.add("flex");
     }
