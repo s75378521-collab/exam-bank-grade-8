@@ -174,7 +174,7 @@
     .quiz-overlay {
       position: fixed;
       inset: 0;
-      z-index: 1100;
+      z-index: 60;
       background: rgba(2, 6, 23, 0.58);
       backdrop-filter: blur(8px);
       opacity: 0;
@@ -186,17 +186,6 @@
     .quiz-overlay.open {
       opacity: 1;
       visibility: visible;
-    }
-
-    /* Ensure quiz overlay is fully opaque */
-    .quiz-overlay {
-      background: rgba(2, 6, 23, 0.96) !important;
-    }
-
-    /* Browse public quizzes button hover */
-    #browsePublicQuizzesBtn:hover {
-      background: rgba(255,255,255,0.18) !important;
-      transform: translateY(-2px);
     }
 
     .auth-overlay {
@@ -259,7 +248,7 @@
     .quiz-shell {
       position: fixed;
       inset: 0;
-      z-index: 1110;
+      z-index: 70;
       transform: translateY(16px) scale(0.985);
       opacity: 0;
       transition: transform 0.35s ease, opacity 0.35s ease;
@@ -659,7 +648,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1050;
+      z-index: 1000;
       opacity: 0;
       visibility: hidden;
       transition: all 0.3s ease;
@@ -990,9 +979,8 @@
       background:
         radial-gradient(circle at top left, rgba(88, 204, 2, 0.25), transparent 34%),
         radial-gradient(circle at top right, rgba(28, 176, 246, 0.27), transparent 32%),
-        linear-gradient(135deg, rgb(7, 18, 34), rgb(13, 23, 42));
+        linear-gradient(135deg, rgba(7, 18, 34, 0.96), rgba(13, 23, 42, 0.98));
       backdrop-filter: blur(18px);
-      z-index: 1000 !important;
     }
 
     #dashboardModal.modal.open {
@@ -1582,8 +1570,7 @@
 
         <div class="mt-4 grid grid-cols-2 gap-3">
           <button id="quickSignInBtn"
-            class="rounded-2xl bg-white/10 px-4 py-3 font-bold hover: bg-white/15"
-            onclick="document.getElementById('profileDropdown').classList.add('hidden'); document.getElementById('authModal').classList.remove('hidden'); document.getElementById('authModal').classList.add('flex');">
+            class="rounded-2xl bg-white/10 px-4 py-3 font-bold hover: bg-white/15">
             Sign In
           </button>
 
@@ -1603,7 +1590,7 @@
               <p class="mt-3 max-w-2xl text-lg soft-text">Portal X the perfect place to grow and adapt your grade 8 knowledge</p>
               
               <!-- Google Sign In Button on Main Page -->
-              <div class="mt-6 flex flex-wrap gap-3">
+              <div class="mt-6">
                 <button id="googleSignInMainBtn" class="google-login-btn">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="google-icon">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -1612,9 +1599,6 @@
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
                   Sign in with Google
-                </button>
-                <button id="browsePublicQuizzesBtn" onclick="document.getElementById('dashboardModal').classList.add('open'); setTimeout(()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c=>c.style.display='none'); const pubTab=document.querySelector('[data-tab=public]'); if(pubTab){pubTab.classList.add('active'); document.getElementById('publicTab').style.display='block';}}, 100);" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:24px;padding:12px 20px;font-weight:600;cursor:pointer;transition:all 0.3s ease;backdrop-filter:blur(10px);">
-                  🌐 Browse Public Quizzes
                 </button>
               </div>
             </div>
@@ -1691,7 +1675,7 @@
   </div>
 
   <!-- Authentication Modal -->
-  <div id="authModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-80" style="z-index:1400;backdrop-filter:blur(12px);">
+  <div id="authModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-70">
     <div class="glass rounded-3xl p-8 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold">Account Management</h3>
@@ -1732,22 +1716,16 @@
   </div>
 
   <!-- Leaderboard Modal -->
-  <div id="leaderboardModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-80" style="z-index:1300;backdrop-filter:blur(12px);">
-    <div class="glass rounded-3xl p-8 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto" style="background:linear-gradient(135deg,rgba(8,17,31,0.98),rgba(17,24,43,0.98));border:1px solid rgba(255,255,255,0.15);">
+  <div id="leaderboardModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-70">
+    <div class="glass rounded-3xl p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6">
-        <div>
-          <h3 class="text-2xl font-bold" style="background:linear-gradient(90deg,#ffd700,#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🏆 Global Leaderboard</h3>
-          <p style="font-size:0.85rem;color:#9ca3af;margin-top:0.25rem;">Top 20 players worldwide — synced live from Firebase</p>
-        </div>
-        <div style="display:flex;gap:0.5rem;align-items:center;">
-          <button onclick="showLeaderboard()" style="background:rgba(255,255,255,0.1);color:white;border:none;padding:0.5rem 0.8rem;border-radius:10px;cursor:pointer;font-size:0.85rem;" title="Refresh">🔄</button>
-          <button id="closeLeaderboardModal" style="background:rgba(239,68,68,0.8);color:white;border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:1.2rem;font-weight:900;">×</button>
-        </div>
+        <h3 class="text-2xl font-bold">Leaderboard</h3>
+        <button id="closeLeaderboardModal" class="text-2xl">×</button>
       </div>
       
       <div class="mb-6">
-        <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9ca3af;margin-bottom:0.75rem;">Your Position</h4>
-        <div id="userRank" class="glass rounded-2xl p-4 flex items-center" style="border:1px solid rgba(255,211,42,0.3);background:rgba(255,211,42,0.05);">
+        <h4 class="text-xl font-bold mb-2">Your Rank</h4>
+        <div id="userRank" class="glass rounded-2xl p-4 flex items-center">
           <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
             <span class="font-bold">#-</span>
           </div>
@@ -1756,16 +1734,27 @@
               <span class="font-bold">Loading...</span>
               <span class="font-bold">0 XP</span>
             </div>
+            <div class="flex items-center mt-1">
+              <div class="league-badge league-bronze">
+                <svg class="league-icon" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+                </svg>
+                Bronze
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
       <div class="mb-6">
-        <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9ca3af;margin-bottom:0.75rem;">Top 20 Players</h4>
-        <div id="leaderboardContent" class="space-y-2">
-          <div class="text-center py-8 soft-text"><div class="spinner mx-auto mb-3"></div>Loading global leaderboard...</div>
+        <h4 class="text-xl font-bold mb-2">Top Players</h4>
+        <div id="leaderboardContent" class="space-y-4">
+          <!-- Leaderboard entries will be populated here -->
+          <div class="text-center py-8 soft-text">Loading leaderboard...</div>
         </div>
       </div>
+      
+
     </div>
   </div>
 
@@ -1880,10 +1869,6 @@ What is 7 x 8?
 
         <!-- My Quizzes Tab -->
         <div class="tab-content active" id="quizzesTab">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-            <p style="margin:0;font-size:0.9rem;color:#9ca3af;">Your created quizzes — edit, share, or play them anytime.</p>
-            <button onclick="document.getElementById('createQuizModal').classList.remove('hidden'); document.getElementById('createQuizModal').classList.add('flex');" style="background:linear-gradient(90deg,#10b981,#059669);color:white;padding:0.5rem 1.2rem;border-radius:12px;font-weight:700;border:none;cursor:pointer;font-size:0.9rem;">+ Create New</button>
-          </div>
           <div class="search-bar">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
@@ -1900,10 +1885,6 @@ What is 7 x 8?
         
         <!-- Public Quizzes Tab -->
         <div class="tab-content" id="publicTab" style="display: none;">
-          <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:16px;padding:1rem;margin-bottom:1rem;">
-            <p style="margin:0;font-weight:700;color:#34d399;">🌐 Community Quiz Library</p>
-            <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:#9ca3af;">Anyone can play these quizzes — no sign-in required! Sign in to create your own.</p>
-          </div>
           <div class="search-bar">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
@@ -1914,7 +1895,7 @@ What is 7 x 8?
           
           <div id="publicQuizzesList" class="mt-4">
             <!-- Public quizzes will be populated here -->
-            <div class="text-center py-8 soft-text">Loading public quizzes...</div>
+            <div class="text-center py-8 soft-text">No public quizzes available. Create and share your own!</div>
           </div>
         </div>
         
@@ -1940,10 +1921,7 @@ What is 7 x 8?
           </div>
           
           <div class="mt-6">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-              <h3 class="text-xl font-bold" style="margin:0;">Recent Activity</h3>
-              <button onclick="if(typeof pushCloudState==='function'&&typeof currentUid==='function'&&currentUid()){pushCloudState();showToast('XP and progress synced to Firebase!');}else{showToast('Sign in to sync your progress.');}" style="background:rgba(96,165,250,0.2);color:#60a5fa;border:1px solid rgba(96,165,250,0.3);padding:0.4rem 0.9rem;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.85rem;">☁️ Sync Now</button>
-            </div>
+            <h3 class="text-xl font-bold mb-4">Recent Activity</h3>
             <div id="recentActivity" class="space-y-3">
               <!-- Recent activity will be populated here -->
               <div class="text-center py-4 soft-text">No recent activity</div>
@@ -1984,7 +1962,7 @@ What is 7 x 8?
   </div>
 
   <!-- Edit Quiz Modal -->
-  <div id="editQuizModal" class="modal" style="z-index:1200;">
+  <div id="editQuizModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Edit Quiz</h2>
@@ -1999,20 +1977,6 @@ What is 7 x 8?
       <div class="form-group">
         <label for="editQuizDescription">Description</label>
         <textarea id="editQuizDescription" rows="3" placeholder="Enter quiz description"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Visibility</label>
-        <div style="display:flex;gap:1.5rem;margin-top:0.5rem;">
-          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
-            <input type="radio" name="editQuizVisibility" value="public" checked style="accent-color:#10b981;width:16px;height:16px;">
-            <span>🌐 Public (anyone can play)</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
-            <input type="radio" name="editQuizVisibility" value="private" style="accent-color:#ef4444;width:16px;height:16px;">
-            <span>🔒 Private (only you)</span>
-          </label>
-        </div>
       </div>
       
       <div class="form-group">
@@ -4183,17 +4147,9 @@ What is 7 x 8?
       detailView.style.display = "block";
 
       document.getElementById("detailPlayBtn").onclick = () => {
-        // Close dashboard first
-        document.getElementById("dashboardModal").classList.remove("open");
-        setTimeout(() => {
-          let idx = customQuizzes.findIndex(q => q.id === quiz.id);
-          if (idx < 0) {
-            // Add to customQuizzes if not found (e.g., public quiz from another user)
-            customQuizzes.push(quiz);
-            idx = customQuizzes.length - 1;
-          }
-          startCustomQuiz(idx);
-        }, 50);
+        const idx = customQuizzes.findIndex(q => q.id === quiz.id);
+        if (idx >= 0) { startCustomQuiz(idx); document.getElementById("dashboardModal").classList.remove("open"); }
+        else showToast("Quiz not found in playable list");
       };
       document.getElementById("detailEditBtn").onclick = () => openEditQuizModal(quiz);
       document.getElementById("detailDeleteBtn").onclick = () => confirmDeleteQuiz(quiz);
@@ -4220,10 +4176,6 @@ What is 7 x 8?
       editingQuiz = quiz;
       document.getElementById("editQuizTitle").value = quiz.title || "";
       document.getElementById("editQuizDescription").value = quiz.description || "";
-      // Set visibility radio
-      const isPublic = quiz.public || quiz.visibility === "public";
-      const visRadios = document.querySelectorAll('input[name="editQuizVisibility"]');
-      visRadios.forEach(r => { r.checked = (r.value === (isPublic ? "public" : "private")); });
       const container = document.getElementById("editQuestionsContainer");
       container.innerHTML = (quiz.questions || []).map((q, i) => `
         <div class="question-block glass rounded-2xl p-4">
@@ -4285,9 +4237,7 @@ What is 7 x 8?
       });
       if (!valid || !questions.length) return showToast("Please fill in all question fields");
 
-      const editVisEl = document.querySelector('input[name="editQuizVisibility"]:checked');
-      const editIsPublic = editVisEl ? editVisEl.value === "public" : (editingQuiz.public || editingQuiz.visibility === "public");
-      const updated = { ...editingQuiz, title, description, questions, visibility: editIsPublic ? "public" : "private", public: editIsPublic, updatedAt: new Date().toISOString() };
+      const updated = { ...editingQuiz, title, description, questions, updatedAt: new Date().toISOString() };
 
       if (auth.currentUser && editingQuiz.id) {
         try {
@@ -4343,17 +4293,11 @@ What is 7 x 8?
 
     /* ---- Share Quiz ---- */
     function shareQuiz(quiz) {
-      if (!quiz.public && quiz.visibility !== "public") {
-        showToast("This quiz is private. Change visibility to Public first to share it.");
-        return;
-      }
       const url = window.location.origin + window.location.pathname + "?quiz=" + encodeURIComponent(quiz.id);
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(url)
-          .then(() => showToast(`🔗 Share link copied! Anyone can play "${quiz.title}" with this link.`))
-          .catch(() => prompt("Copy this share link:", url));
+        navigator.clipboard.writeText(url).then(() => showToast("Share link copied!")).catch(() => showToast("Could not copy link"));
       } else {
-        prompt("Copy this share link:", url);
+        prompt("Copy this link:", url);
       }
     }
 
@@ -4373,21 +4317,12 @@ What is 7 x 8?
       const shareBtn = e.target.closest(".share-btn");
       const playBtn = e.target.closest("[data-action='launch-custom-quiz']") || e.target.closest(".play-btn");
 
-      // If any action button was clicked, stop propagation to prevent card detail view
-      if (editBtn || deleteBtn || shareBtn || playBtn) {
-        e.stopPropagation();
-      }
-
       const quizId = (editBtn || deleteBtn || shareBtn)?.dataset?.quizId;
       const allQuizzes = [...(userQuizzes || []), ...(customQuizzes || []), ...(publicQuizzes || [])];
 
       if (editBtn && quizId) {
         const quiz = allQuizzes.find(q => q.id === quizId || String(q.id) === quizId);
-        if (quiz) {
-          openEditQuizModal(quiz);
-        } else {
-          showToast("Quiz not found. Try refreshing.");
-        }
+        if (quiz) openEditQuizModal(quiz);
         return;
       }
       if (deleteBtn && quizId) {
@@ -4404,14 +4339,10 @@ What is 7 x 8?
         const playQuizId = playBtn.dataset?.quizId || card.dataset?.quizId;
         const quiz = allQuizzes.find(q => q.id === playQuizId || String(q.id) === playQuizId);
         if (quiz) {
-          // Close dashboard first so quiz overlay covers full screen
+          let idx = customQuizzes.findIndex(q => q.id === quiz.id);
+          if (idx < 0) { customQuizzes.push(quiz); idx = customQuizzes.length - 1; }
+          startCustomQuiz(idx);
           document.getElementById("dashboardModal").classList.remove("open");
-          // Small delay so the modal close animation completes
-          setTimeout(() => {
-            let idx = customQuizzes.findIndex(q => q.id === quiz.id);
-            if (idx < 0) { customQuizzes.push(quiz); idx = customQuizzes.length - 1; }
-            startCustomQuiz(idx);
-          }, 50);
         }
         return;
       }
@@ -4638,13 +4569,7 @@ What is 7 x 8?
       const league = DUOLINGO_LEAGUES[getLeagueIndexByName(accountData.league)] || getLeague(xp);
       const profileLeague = document.querySelector(".profile-league");
       document.getElementById("dashboardUserName").textContent = currentPlayer;
-      const emailEl = document.getElementById("dashboardUserEmail");
-      if (currentUserProfile?.email) {
-        emailEl.textContent = currentUserProfile.email;
-        emailEl.style.color = "";
-      } else {
-        emailEl.innerHTML = `<span style="color:#f87171;">⚠️ Guest mode — </span><a href="#" onclick="document.getElementById('authModal').classList.remove('hidden');document.getElementById('authModal').classList.add('flex');return false;" style="color:#60a5fa;text-decoration:underline;">Sign in to save XP across devices</a>`;
-      }
+      document.getElementById("dashboardUserEmail").textContent = currentUserProfile?.email || "Local / Guest account";
       document.getElementById("dashboardProfileImage").src = accountData.avatar;
       document.getElementById("dashboardUserLeague").textContent = `${league.icon} ${league.name}`;
       if (profileLeague) profileLeague.className = `profile-league ${league.class}`;
@@ -4705,17 +4630,14 @@ What is 7 x 8?
       if (combinedUserQuizzes.length > 0) {
         userQuizzesList.innerHTML = combinedUserQuizzes.map((quiz, index) => `
           <div class="dashboard-card duo-result-pop" style="cursor:pointer;" data-quiz-id="${quiz.id || index}">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-              <h3 style="margin:0;">🧠 ${quiz.title}</h3>
-              <span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:999px;background:${quiz.visibility === 'private' ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'};color:${quiz.visibility === 'private' ? '#f87171' : '#34d399'};">${quiz.visibility === "private" ? "🔒 Private" : "🌐 Public"}</span>
-            </div>
+            <h3>🧠 ${quiz.title}</h3>
             <p>${quiz.description || "No description"}</p>
-            <p class="text-sm text-gray-400">${quiz.questions.length} questions</p>
-            <div class="dashboard-actions" style="margin-top:0.75rem;">
-              <button class="edit-btn" data-quiz-id="${quiz.id || index}" style="background:#3b82f6;color:white;padding:0.4rem 0.9rem;border-radius:8px;font-size:0.85rem;font-weight:700;border:none;cursor:pointer;">✏️ Edit</button>
-              <button class="share-btn" data-quiz-id="${quiz.id || index}" style="background:#10b981;color:white;padding:0.4rem 0.9rem;border-radius:8px;font-size:0.85rem;font-weight:700;border:none;cursor:pointer;">🔗 Share</button>
-              <button class="delete-btn" data-quiz-id="${quiz.id || index}" style="background:#ef4444;color:white;padding:0.4rem 0.9rem;border-radius:8px;font-size:0.85rem;font-weight:700;border:none;cursor:pointer;">🗑️ Delete</button>
-              <button class="play-btn" data-quiz-id="${quiz.id || index}" style="background:#8b5cf6;color:white;padding:0.4rem 0.9rem;border-radius:8px;font-size:0.85rem;font-weight:700;border:none;cursor:pointer;">▶ Play</button>
+            <p class="text-sm text-gray-400">${quiz.questions.length} questions • ${quiz.visibility === "private" ? "🔒 Private" : "🌐 Public"}</p>
+            <div class="dashboard-actions">
+              <button class="edit-btn" data-quiz-id="${quiz.id || index}">Edit</button>
+              <button class="share-btn" data-quiz-id="${quiz.id || index}">Share</button>
+              <button class="delete-btn" data-quiz-id="${quiz.id || index}">Delete</button>
+              <button class="duo-action-button primary" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play</button>
             </div>
           </div>
         `).join("");
@@ -4723,37 +4645,21 @@ What is 7 x 8?
         userQuizzesList.innerHTML = `<div class="empty-state">No quizzes found. Create your first Blooket-style public set!</div>`;
       }
 
-      // Deduplicate public quizzes by ID, only show public ones
-      const seenIds = new Set();
-      const allPublicQuizzes = [...publicQuizzes, ...customQuizzes.filter(q => q.public || q.visibility === "public")]
-        .filter(quiz => {
-          if (!quiz || !quiz.title) return false;
-          const id = quiz.id || quiz.title;
-          if (seenIds.has(id)) return false;
-          seenIds.add(id);
-          return true;
-        });
+      const allPublicQuizzes = [...publicQuizzes, ...customQuizzes];
       const publicQuizzesList = document.getElementById("publicQuizzesList");
       if (allPublicQuizzes.length > 0) {
         publicQuizzesList.innerHTML = allPublicQuizzes.map((quiz, index) => `
           <div class="public-quiz-card duo-result-pop" style="cursor:pointer;" data-quiz-id="${quiz.id || index}">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;">
-              <h3 style="margin:0 0 0.4rem 0;">🌎 ${quiz.title}</h3>
-              <span style="font-size:0.7rem;padding:0.2rem 0.5rem;border-radius:999px;background:rgba(16,185,129,0.2);color:#34d399;white-space:nowrap;">🌐 Public</span>
-            </div>
+            <h3>🌎 ${quiz.title}</h3>
             <p>${quiz.description || "No description"}</p>
-            <div class="author" style="font-size:0.85rem;color:#9ca3af;margin-bottom:0.75rem;">By ${quiz.author || "Community"} • ${quiz.questions?.length || 0} questions</div>
+            <div class="author">By ${quiz.author || "Community"} • ${quiz.questions?.length || 0} questions</div>
             <div class="actions">
-              <button class="play-btn" data-quiz-id="${quiz.id || index}" style="background:linear-gradient(90deg,#3b82f6,#06b6d4);color:white;padding:0.5rem 1.4rem;border-radius:12px;font-weight:700;border:none;cursor:pointer;font-size:0.95rem;">▶ Play Now</button>
+              <button class="play-btn" data-quiz-id="${quiz.id || index}" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play Set</button>
             </div>
           </div>
         `).join("");
       } else {
-        publicQuizzesList.innerHTML = `<div class="empty-state" style="text-align:center;padding:3rem 1rem;color:rgba(226,232,240,0.8);">
-          <div style="font-size:3rem;margin-bottom:1rem;">🌐</div>
-          <p style="font-weight:700;margin-bottom:0.5rem;">No public quizzes yet!</p>
-          <p style="font-size:0.9rem;">Be the first to create and share a quiz with the community.</p>
-        </div>`;
+        publicQuizzesList.innerHTML = `<div class="empty-state">No public quizzes available. Create and share your own!</div>`;
       }
     }
 
@@ -4764,102 +4670,53 @@ What is 7 x 8?
       const leaderboardContent = document.getElementById("leaderboardContent");
       const userRankEl = document.getElementById("userRank");
 
-      leaderboardModal.classList.remove("hidden");
-      leaderboardModal.classList.add("flex");
-      leaderboardContent.innerHTML = `<div class="text-center py-8 soft-text"><div class="spinner mx-auto mb-3"></div>Loading global leaderboard...</div>`;
-
-      function renderLeaderboardEntries(entries) {
-        const allEntries = entries.sort((a, b) => b.points - a.points);
-        const top20 = allEntries.slice(0, 20);
-        const myRankIdx = allEntries.findIndex(e => e.name === currentPlayer || e.uid === currentUid());
-
-        userRankEl.innerHTML = `
-          <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
-            <span class="font-bold">#${myRankIdx >= 0 ? myRankIdx + 1 : "-"}</span>
-          </div>
-          <div class="flex-1">
-            <div class="flex justify-between gap-3">
-              <span class="font-bold">${currentPlayer}</span>
-              <span class="font-bold">${xp} XP</span>
-            </div>
-          </div>
-        `;
-
-        if (top20.length > 0) {
-          const highestXp = Math.max(1, top20[0].points);
-          const medalEmojis = ["🥇", "🥈", "🥉"];
-          leaderboardContent.innerHTML = `<div class="duo-league-board">${top20.map((entry, index) => {
-            const fillWidth = Math.min(100, Math.round((entry.points / highestXp) * 100));
-            const isMe = entry.name === currentPlayer || entry.uid === currentUid();
-            const medal = index < 3 ? medalEmojis[index] : `#${index + 1}`;
-            return `
-              <div class="duo-league-row ${isMe ? "promotion-zone" : "stay-zone"}" style="${isMe ? "border: 2px solid rgba(255,211,42,0.5);" : ""}">
-                <div class="duo-rank-bubble">${medal}</div>
-                <div style="flex:1;">
-                  <div class="flex items-center gap-3">
-                    <img src="${entry.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.name)}&background=111827&color=fff`}" alt="${entry.name}" style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover;">
-                    <strong>${entry.name}${isMe ? " ⭐ (You)" : ""}</strong>
-                  </div>
-                  <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width: ${fillWidth}%;"></div></div>
-                  <p class="mt-1 text-xs soft-text">${entry.quizzes || 0} quizzes completed</p>
-                </div>
-                <strong style="white-space:nowrap;">${entry.points} XP</strong>
-              </div>
-            `;
-          }).join("")}</div>`;
-        } else {
-          leaderboardContent.innerHTML = `<div class="empty-state">No players yet. Complete a quiz to appear here!</div>`;
-        }
-      }
-
-      // First render from local cache immediately
-      const localEntries = Object.entries(leaderboard || {}).map(([name, data]) => ({
-        name: data.name || name,
-        uid: data.uid || null,
+      const allEntries = Object.entries(leaderboard || {}).map(([name, data]) => ({
+        name,
         points: Number(data.points || data.weeklyXp || 0),
         quizzes: Number(data.quizzes || 0),
-        avatar: data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || name)}&background=111827&color=fff`
-      }));
-      if (localEntries.length > 0) renderLeaderboardEntries(localEntries);
+        avatar: data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`
+      })).sort((a, b) => b.points - a.points);
 
-      // Then fetch fresh from Firestore for truly global top 20
-      firestore.collection("publicProfiles")
-        .orderBy("xp", "desc")
-        .limit(20)
-        .get()
-        .then(snapshot => {
-          const freshEntries = snapshot.docs.map(doc => {
-            const row = doc.data();
-            return {
-              name: row.username || row.displayName || "Player",
-              uid: doc.id,
-              points: Number(row.xp || 0),
-              quizzes: Number(row.quizzes || safeArray(row.progress?.history).length || 0),
-              avatar: row.avatar || row.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.username || "Player")}&background=111827&color=fff`
-            };
-          });
-          renderLeaderboardEntries(freshEntries);
-        })
-        .catch(err => {
-          console.warn("Firestore leaderboard fetch failed, using RTDB fallback:", err);
-          database.ref("leaderboard").orderByChild("points").limitToLast(20).once("value")
-            .then(snap => {
-              const rows = snap.val() || {};
-              const rtdbEntries = Object.entries(rows).map(([uid, row]) => ({
-                name: row.name || row.username || "Player",
-                uid,
-                points: Number(row.points || row.xp || 0),
-                quizzes: Number(row.quizzes || 0),
-                avatar: row.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.name || "Player")}&background=111827&color=fff`
-              }));
-              renderLeaderboardEntries(rtdbEntries);
-            })
-            .catch(() => {
-              if (localEntries.length === 0) {
-                leaderboardContent.innerHTML = `<div class="empty-state">Could not load leaderboard. Check your connection.</div>`;
-              }
-            });
-        });
+      const top20 = allEntries.slice(0, 20);
+      const myRankIdx = allEntries.findIndex(e => e.name === currentPlayer);
+
+      userRankEl.innerHTML = `
+        <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mr-4">
+          <span class="font-bold">#${myRankIdx >= 0 ? myRankIdx + 1 : "-"}</span>
+        </div>
+        <div class="flex-1">
+          <div class="flex justify-between gap-3">
+            <span class="font-bold">${currentPlayer}</span>
+            <span class="font-bold">${xp} XP</span>
+          </div>
+        </div>
+      `;
+
+      if (top20.length > 0) {
+        const highestXp = Math.max(1, top20[0].points);
+        leaderboardContent.innerHTML = `<div class="duo-league-board">${top20.map((entry, index) => {
+          const fillWidth = Math.min(100, Math.round((entry.points / highestXp) * 100));
+          return `
+            <div class="duo-league-row stay-zone">
+              <div class="duo-rank-bubble">#${index + 1}</div>
+              <div>
+                <div class="flex items-center gap-3">
+                  <img src="${entry.avatar}" alt="${entry.name}" style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover;">
+                  <strong>${entry.name}${entry.name === currentPlayer ? " ⭐" : ""}</strong>
+                </div>
+                <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width: ${fillWidth}%;"></div></div>
+                <p class="mt-1 text-xs soft-text">${entry.quizzes} quizzes</p>
+              </div>
+              <strong>${entry.points} XP</strong>
+            </div>
+          `;
+        }).join("")}</div>`;
+      } else {
+        leaderboardContent.innerHTML = `<div class="empty-state">No players yet. Complete a quiz to appear here.</div>`;
+      }
+
+      leaderboardModal.classList.remove("hidden");
+      leaderboardModal.classList.add("flex");
     }
 
     function startLeagueCountdownTicker() {
@@ -5507,12 +5364,7 @@ What is 7 x 8?
     }
 
     async function saveCustomQuiz() {
-      if (!currentUid()) {
-        showToast("Please sign in with Google to create and save quizzes.");
-        document.getElementById("authModal").classList.remove("hidden");
-        document.getElementById("authModal").classList.add("flex");
-        return;
-      }
+      if (!currentUid()) return showToast("Sign in first so your public set can save to Firebase.");
       const title = document.getElementById("quizTitleInput").value.trim();
       const description = document.getElementById("quizDescriptionInput").value.trim();
       if (!title) return showToast("Please enter a quiz title");
@@ -5649,51 +5501,22 @@ What is 7 x 8?
 
       if (currentUid()) {
         try {
-          const leagueName = getLeague(xp).name;
           await Promise.all([
-            // Save activity log
             firestore.collection(CLOUD_COLLECTIONS.users).doc(currentUid()).collection(CLOUD_COLLECTIONS.activity).doc(historyItem.id).set({
               ...historyItem,
               userId: currentUid(),
               username: currentPlayer,
               createdAt: serverTime()
             }),
-            // Save full profile with updated XP/streak/history
-            pushCloudState({ lastQuizAt: serverTime() }),
-            // Update public leaderboard entry immediately
-            firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(currentUid()).set({
-              uid: currentUid(),
-              username: currentPlayer,
-              displayName: currentUserProfile?.displayName || currentPlayer,
-              avatar: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
-              xp: xp,
-              weeklyXp: xp,
-              streak: streak,
-              quizzes: history.length,
-              league: leagueName,
-              public: true,
-              updatedAt: serverTime()
-            }, { merge: true }),
-            // Update RTDB leaderboard
-            database.ref(`leaderboard/${currentUid()}`).update({
-              uid: currentUid(),
-              name: currentPlayer,
-              points: xp,
-              weeklyXp: xp,
-              quizzes: history.length,
-              league: leagueName,
-              avatar: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
-              public: true,
-              updatedAt: Date.now()
-            })
+            pushCloudState({ lastQuizAt: serverTime() })
           ]);
-          showToast(`+${earnedXp} XP saved! Total: ${xp} XP. Progress synced globally. 🎉`);
+          showToast("Progress, XP, streak, and leaderboard saved globally.");
         } catch (error) {
           console.error("Quiz cloud save failed:", error);
           showToast(`Progress save failed: ${error.message}`);
         }
       } else {
-        showToast("Sign in with Google to save this progress globally across all devices.");
+        showToast("Sign in with Google to save this progress globally.");
       }
     }
 
@@ -5767,47 +5590,7 @@ What is 7 x 8?
     };
 
 
-    document.addEventListener("DOMContentLoaded", () => {
-      init();
-      // Handle shared quiz URL parameter
-      const urlParams = new URLSearchParams(window.location.search);
-      const sharedQuizId = urlParams.get("quiz");
-      if (sharedQuizId) {
-        // Wait for public quizzes to load, then auto-play the shared quiz
-        const tryLoadSharedQuiz = (attempts = 0) => {
-          const allAvailable = [...publicQuizzes, ...customQuizzes, ...userQuizzes];
-          const sharedQuiz = allAvailable.find(q => q.id === sharedQuizId);
-          if (sharedQuiz) {
-            showToast(`Loading shared quiz: "${sharedQuiz.title}"`);
-            setTimeout(() => {
-              let idx = customQuizzes.findIndex(q => q.id === sharedQuiz.id);
-              if (idx < 0) { customQuizzes.push(sharedQuiz); idx = customQuizzes.length - 1; }
-              startCustomQuiz(idx);
-            }, 800);
-          } else if (attempts < 10) {
-            // Retry up to 10 times (5 seconds) while Firestore loads
-            setTimeout(() => tryLoadSharedQuiz(attempts + 1), 500);
-          } else {
-            // Try direct Firestore fetch as last resort
-            firestore.collection("publicQuizzes").doc(sharedQuizId).get()
-              .then(doc => {
-                if (doc.exists) {
-                  const quiz = { id: doc.id, ...doc.data() };
-                  showToast(`Loading shared quiz: "${quiz.title}"`);
-                  setTimeout(() => {
-                    customQuizzes.push(quiz);
-                    startCustomQuiz(customQuizzes.length - 1);
-                  }, 800);
-                } else {
-                  showToast("Shared quiz not found or has been deleted.");
-                }
-              })
-              .catch(() => showToast("Could not load shared quiz."));
-          }
-        };
-        setTimeout(() => tryLoadSharedQuiz(), 1500);
-      }
-    });
+    document.addEventListener("DOMContentLoaded", init);
   </script>
 </body>
 </html>
