@@ -1587,7 +1587,7 @@
             <div class="max-w-3xl">
               <p class="display-font text-sm font-bold uppercase tracking-[0.3em] text-slate-300">Study Command Center</p>
               <h2 class="mt-3 text-4xl font-black leading-tight lg: text-5xl">Grade 8 exam bank</h2>
-              <p class="mt-3 max-w-2xl text-lg soft-text">Portal X the perfect place to grow and adapt your grade 8 knowledge</p>
+              <p class="mt-3 max-w-2xl text-lg soft-text">Portal X the perfect place to grow and adapt your grade 8 knowledge made by the best coder in the class Spencer Ramsay 🤔</p>
               
               <!-- Google Sign In Button on Main Page -->
               <div class="mt-6">
@@ -3287,44 +3287,58 @@ What is 7 x 8?
       });
     }
 
-    // Google Sign-In
-    function signInWithGoogle() {
+    // Google Sign-In — popup with auto-redirect fallback and friendly error messages
+    async function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(result => {
-          // User signed in successfully
-          const user = result.user;
-          currentPlayer = user.displayName || user.email || "User";
-          currentUserProfile = {
-            uid: user.uid,    
-            displayName: user.displayName,    
-            email: user.email,    
-            photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`
-          };
-          
-          // Save to localStorage
-          localStorage.setItem(storageKeys.currentPlayer, currentPlayer);
-          localStorage.setItem(storageKeys.authUser, JSON.stringify(currentUserProfile));
-          
-          // Update leaderboard with Firebase user
-          if (!leaderboard[currentPlayer]) {
-            leaderboard[currentPlayer] = { points: 0, quizzes: 0 };
-            localStorage.setItem(storageKeys.leaderboard, JSON.stringify(leaderboard));
-          }
-          
-          updateStats();
-          updateUnitProgress(currentUnitKey);
-          
-          // Close auth modal
-          document.getElementById("authModal").classList.add("hidden");
-          document.getElementById("authModal").classList.remove("flex");
-          
-          showToast(`Welcome, ${currentPlayer}!`);
-        })
-        .catch(error => {
-          console.error("Google Sign-In error: ", error);
-          showToast("Sign-in failed. Please try again.");
+      provider.setCustomParameters({ prompt: "select_account" });
+      provider.addScope("profile");
+      provider.addScope("email");
+
+      const btn = document.getElementById("googleSignInBtn");
+      const mainBtn = document.getElementById("googleSignInMainBtn");
+      const loadingHTML = '<span style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:16px;height:16px;border:2px solid rgba(0,0,0,0.18);border-top-color:#555;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;"></div> Signing in...</span>';
+      const originalHTML = btn ? btn.innerHTML : null;
+      const setLoading = (on) => {
+        [btn, mainBtn].forEach(b => {
+          if (!b) return;
+          b.innerHTML = on ? loadingHTML : (originalHTML || "Sign in with Google");
+          b.disabled = on;
         });
+      };
+
+      setLoading(true);
+      try {
+        await auth.signInWithPopup(provider);
+        // Success: onAuthStateChanged / handleCloudAuthUser closes the modal and shows welcome toast
+      } catch (error) {
+        setLoading(false);
+        console.error("Google sign-in error:", error.code, error.message);
+
+        const popupErrors = ["auth/popup-blocked","auth/popup-closed-by-user","auth/cancelled-popup-request"];
+        if (popupErrors.includes(error.code)) {
+          showToast("Popup was blocked — trying full-page redirect to Google...");
+          try {
+            await auth.signInWithRedirect(provider);
+          } catch(redirectErr) {
+            showToast("Redirect sign-in also failed: " + (redirectErr.message || redirectErr.code));
+          }
+          return;
+        }
+
+        const friendlyMsgs = {
+          "auth/network-request-failed":  "No internet. Check your connection and try again.",
+          "auth/user-disabled":           "This account has been disabled.",
+          "auth/operation-not-allowed":   "Google sign-in is not enabled for this app. The developer needs to enable it in Firebase → Authentication.",
+          "auth/unauthorized-domain":     "Sign-in failed: this domain is not authorized. The developer must add it in Firebase → Authentication → Settings → Authorized Domains.",
+          "auth/invalid-api-key":         "App configuration error (bad API key). Contact the developer.",
+          "auth/app-deleted":             "App configuration error. Contact the developer.",
+          "auth/web-storage-unsupported": "Your browser is blocking cookies needed for sign-in. Try Chrome, or allow third-party cookies.",
+          "auth/internal-error":          "Google had an internal error. Please try again in a moment.",
+          "auth/too-many-requests":       "Too many attempts. Wait a moment and try again.",
+        };
+        const msg = friendlyMsgs[error.code] || ("Sign-in failed: " + (error.message || error.code));
+        showToast(msg);
+      }
     }
 
     // Sign out
@@ -5255,23 +5269,7 @@ What is 7 x 8?
       }
     }
 
-    async function signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: "select_account" });
-      provider.addScope("profile");
-      provider.addScope("email");
-      try {
-        await auth.signInWithPopup(provider);
-      } catch (error) {
-        console.error("Google popup sign-in error:", error);
-        if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
-          showToast("Popup blocked/closed. Trying Google redirect sign-in...");
-          await auth.signInWithRedirect(provider);
-        } else {
-          showToast(`Google sign-in failed: ${error.message}`);
-        }
-      }
-    }
+    // signInWithGoogle is defined earlier (single authoritative version)
 
     async function signInWithEmail() {
       const email = document.getElementById("authEmailInput").value.trim();
@@ -5560,8 +5558,17 @@ What is 7 x 8?
       attachPublicListeners();
       if (!authBootstrapped) {
         authBootstrapped = true;
-        auth.getRedirectResult().catch(error => {
-          if (error && error.code) showToast(`Google redirect sign-in failed: ${error.message}`);
+        auth.getRedirectResult().then(result => {
+          if (result && result.user) console.log("Redirect sign-in OK:", result.user.email);
+        }).catch(error => {
+          if (!error || !error.code) return;
+          const rMsgs = {
+            "auth/unauthorized-domain":    "Sign-in blocked: this domain isn't authorized in Firebase. The developer must add it under Authentication → Authorized Domains.",
+            "auth/operation-not-allowed":  "Google sign-in isn't enabled. Enable it in Firebase → Authentication → Sign-in Methods.",
+            "auth/network-request-failed": "Network error during sign-in. Check your internet connection.",
+            "auth/web-storage-unsupported":"Browser is blocking cookies needed for sign-in. Try Chrome or allow third-party cookies.",
+          };
+          showToast(rMsgs[error.code] || ("Google sign-in failed: " + (error.message || error.code)));
         });
         auth.onAuthStateChanged(handleCloudAuthUser);
       }
