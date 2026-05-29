@@ -1,30 +1,26 @@
+javascript
+
 /* ================================================================
-   EXAM BANK PORTAL X — FEATURES MODULE
-   - Login gate with "Continue as Guest" + session timeout
-   - Quiz launches over dashboard (no exit needed)
-   - Coins system (100%=50, 90%=45, 80%=40 coins)
-   - Market / shop
-   - Teams with team leaderboard
-   - Player profile pages (friend requests, team invites)
-   - Top-5 banner badge
+   EXAM BANK PORTAL X — FEATURES MODULE  v3.0
+   ✓ Login gate (every load) + "Continue as Guest"
+   ✓ Session timeout (30 min idle → re-login)
+   ✓ Quiz launches OVER dashboard (no exit needed)
+   ✓ Coins: 100%=50, 90%=45, 80%=40, 70%=25, 60%=15, 50%=8
+   ✓ Market / shop with badges, frames, boosts
+   ✓ Teams with leaderboard (NitroType style)
+   ✓ Player profile pages with friend requests + team invites
+   ✓ Top-5 banner badge
+   ✓ XP synced to Firebase across devices
 ================================================================ */
 
-(function() {
+(function () {
   "use strict";
 
-  /* ── CONFIG ─────────────────────────────────────────────────── */
+  /* ── CONFIG ──────────────────────────────────────────────────── */
   const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 min idle
-  const FB_CONFIG = {
-    apiKey: "AIzaSyCO_lCaHej5QUNyDpzV84Y2DfIG87zOl-s",
-    authDomain: "exam-bank-grade-8.firebaseapp.com",
-    projectId: "exam-bank-grade-8",
-    storageBucket: "exam-bank-grade-8.appspot.com",
-    messagingSenderId: "429310662726",
-    appId: "1:429310662726:web:33932a1b13bda4e5efd247",
-    databaseURL: "https://exam-bank-grade-8-default-rtdb.firebaseio.com/"
-  };
+  const SESSION_KEY = "exambank_session_ts";  // localStorage key
 
-  /* ── WAIT FOR FIREBASE ──────────────────────────────────────── */
+  /* ── WAIT FOR FIREBASE ───────────────────────────────────────── */
   function waitForFirebase(cb) {
     if (window.firebase && window.auth && window.database && window.firestore) {
       cb();
@@ -33,217 +29,240 @@
     }
   }
 
-  /* ── INJECT CSS ─────────────────────────────────────────────── */
+  /* ── INJECT CSS ──────────────────────────────────────────────── */
   function injectCSS() {
+    if (document.getElementById("featCSS")) return;
     const style = document.createElement("style");
+    style.id = "featCSS";
     style.textContent = `
       /* ── LOGIN GATE ── */
       #loginGate {
-        position: fixed; inset: 0; z-index: 9999;
-        background: radial-gradient(circle at 20% 20%, rgba(96,165,250,0.18), transparent 40%),
-                    radial-gradient(circle at 80% 80%, rgba(124,240,194,0.15), transparent 40%),
-                    linear-gradient(135deg, #08111f, #11182b 50%, #1c2b4a);
-        display: flex; align-items: center; justify-content: center;
-        flex-direction: column; gap: 0; padding: 1rem;
-        font-family: "Manrope", sans-serif;
+        position:fixed;inset:0;z-index:99999;
+        background:radial-gradient(circle at 20% 20%,rgba(96,165,250,.18),transparent 40%),
+                   radial-gradient(circle at 80% 80%,rgba(124,240,194,.15),transparent 40%),
+                   linear-gradient(135deg,#08111f,#11182b 50%,#1c2b4a);
+        display:flex;align-items:center;justify-content:center;
+        flex-direction:column;padding:1rem;font-family:"Manrope",sans-serif;
       }
-      #loginGate.hidden { display: none !important; }
-      .lg-card {
-        background: rgba(255,255,255,0.07);
-        backdrop-filter: blur(24px);
-        border: 1px solid rgba(255,255,255,0.13);
-        border-radius: 28px;
-        padding: clamp(1.5rem, 5vw, 3rem);
-        width: 100%; max-width: 420px;
-        box-shadow: 0 24px 80px rgba(0,0,0,0.4);
-        animation: lgFadeIn 0.5s ease;
+      #loginGate.lg-hidden{display:none!important;}
+      .lg-card{
+        background:rgba(255,255,255,.07);backdrop-filter:blur(24px);
+        border:1px solid rgba(255,255,255,.13);border-radius:28px;
+        padding:clamp(1.5rem,5vw,3rem);width:100%;max-width:420px;
+        box-shadow:0 24px 80px rgba(0,0,0,.4);animation:lgIn .5s ease;
       }
-      @keyframes lgFadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-      .lg-logo { font-size: 2.8rem; font-weight: 900; font-family: "Space Grotesk", sans-serif;
-        background: linear-gradient(90deg, #60a5fa, #7cf0c2, #ffb1cb);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        margin-bottom: 0.25rem; }
-      .lg-sub { color: rgba(226,232,240,0.7); font-size: 0.95rem; margin-bottom: 2rem; }
-      .lg-google-btn {
-        width: 100%; padding: 0.9rem 1.5rem; border-radius: 16px; border: none; cursor: pointer;
-        background: white; color: #111; font-weight: 700; font-size: 1rem;
-        display: flex; align-items: center; justify-content: center; gap: 10px;
-        transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        margin-bottom: 1rem;
+      @keyframes lgIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+      .lg-logo{font-size:2.8rem;font-weight:900;font-family:"Space Grotesk",sans-serif;
+        background:linear-gradient(90deg,#60a5fa,#7cf0c2,#ffb1cb);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.25rem;}
+      .lg-sub{color:rgba(226,232,240,.7);font-size:.95rem;margin-bottom:2rem;}
+      .lg-google-btn{
+        width:100%;padding:.9rem 1.5rem;border-radius:16px;border:none;cursor:pointer;
+        background:white;color:#111;font-weight:700;font-size:1rem;
+        display:flex;align-items:center;justify-content:center;gap:10px;
+        transition:transform .2s,box-shadow .2s;box-shadow:0 4px 12px rgba(0,0,0,.2);margin-bottom:1rem;
       }
-      .lg-google-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-      .lg-divider { display: flex; align-items: center; gap: 1rem; margin: 1.2rem 0; color: rgba(255,255,255,0.3); font-size: 0.85rem; }
-      .lg-divider::before, .lg-divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.1); }
-      .lg-field { width:100%; padding:0.8rem 1rem; border-radius:12px; border:1px solid rgba(255,255,255,0.15);
-        background:rgba(0,0,0,0.3); color:white; font-size:0.95rem; margin-bottom:0.75rem; outline:none; }
-      .lg-field:focus { border-color:#60a5fa; }
-      .lg-row { display:flex; gap:0.6rem; margin-bottom:0.75rem; }
-      .lg-btn { flex:1; padding:0.8rem; border-radius:12px; border:none; font-weight:700; font-size:0.9rem;
-        cursor:pointer; transition:all 0.2s; }
-      .lg-btn-primary { background:#60a5fa; color:#000; }
-      .lg-btn-secondary { background:#10b981; color:#000; }
-      .lg-btn:hover { opacity:0.88; transform:translateY(-1px); }
-      .lg-guest-btn { width:100%; padding:0.7rem; border-radius:12px; border:1px solid rgba(255,255,255,0.15);
-        background:transparent; color:rgba(255,255,255,0.6); font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
-      .lg-guest-btn:hover { background:rgba(255,255,255,0.06); color:white; }
-      .lg-err { color:#f87171; font-size:0.85rem; margin-bottom:0.5rem; min-height:1.2rem; }
+      .lg-google-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.3);}
+      .lg-divider{display:flex;align-items:center;gap:1rem;margin:1.2rem 0;color:rgba(255,255,255,.3);font-size:.85rem;}
+      .lg-divider::before,.lg-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1);}
+      .lg-field{width:100%;padding:.8rem 1rem;border-radius:12px;border:1px solid rgba(255,255,255,.15);
+        background:rgba(0,0,0,.3);color:white;font-size:.95rem;margin-bottom:.75rem;outline:none;box-sizing:border-box;}
+      .lg-field:focus{border-color:#60a5fa;}
+      .lg-row{display:flex;gap:.6rem;margin-bottom:.75rem;}
+      .lg-btn{flex:1;padding:.8rem;border-radius:12px;border:none;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;}
+      .lg-btn-primary{background:#60a5fa;color:#000;}
+      .lg-btn-secondary{background:#10b981;color:#000;}
+      .lg-btn:hover{opacity:.88;transform:translateY(-1px);}
+      .lg-guest-btn{width:100%;padding:.7rem;border-radius:12px;border:1px solid rgba(255,255,255,.15);
+        background:transparent;color:rgba(255,255,255,.6);font-size:.9rem;cursor:pointer;transition:all .2s;margin-top:.25rem;}
+      .lg-guest-btn:hover{background:rgba(255,255,255,.06);color:white;}
+      .lg-err{color:#f87171;font-size:.85rem;margin-bottom:.5rem;min-height:1.2rem;}
+      .lg-tabs{display:flex;gap:.5rem;margin-bottom:1.2rem;}
+      .lg-tab{flex:1;padding:.5rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);
+        background:transparent;color:rgba(255,255,255,.5);font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;}
+      .lg-tab.active{background:rgba(96,165,250,.2);border-color:#60a5fa;color:white;}
 
       /* ── TOP-5 BANNER ── */
-      .top5-banner {
-        background: linear-gradient(90deg, #f59e0b, #ef4444, #a855f7, #3b82f6);
-        background-size: 300% 100%; animation: top5Shimmer 3s linear infinite;
-        border-radius: 12px; padding: 0.4rem 1rem; font-weight: 900; font-size: 0.82rem;
-        color: white; display: inline-flex; align-items: center; gap: 6px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.04em;
-        box-shadow: 0 0 20px rgba(245,158,11,0.5);
+      .top5-banner{
+        background:linear-gradient(90deg,#f59e0b,#ef4444,#a855f7,#3b82f6);
+        background-size:300% 100%;animation:shimmer 3s linear infinite;
+        border-radius:12px;padding:.4rem 1rem;font-weight:900;font-size:.82rem;
+        color:white;display:inline-flex;align-items:center;gap:6px;
+        text-shadow:0 1px 2px rgba(0,0,0,.3);letter-spacing:.04em;box-shadow:0 0 20px rgba(245,158,11,.5);
       }
-      @keyframes top5Shimmer { 0%{background-position:0%} 100%{background-position:300%} }
+      @keyframes shimmer{0%{background-position:0%}100%{background-position:300%}}
+      #top5HomeBanner{
+        position:fixed;top:0;left:0;right:0;z-index:500;padding:.45rem;text-align:center;
+        background:linear-gradient(90deg,#f59e0b,#ef4444,#a855f7,#3b82f6);
+        background-size:300%;animation:shimmer 3s linear infinite;
+        font-weight:900;color:white;font-size:.88rem;letter-spacing:.05em;cursor:pointer;
+      }
 
       /* ── COINS ── */
-      .coins-display {
-        display: inline-flex; align-items: center; gap: 6px;
-        background: rgba(255,213,42,0.15); border: 1px solid rgba(255,213,42,0.3);
-        border-radius: 999px; padding: 4px 12px; font-weight: 800; color: #ffd12a;
-        font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+      .coins-display{
+        display:inline-flex;align-items:center;gap:6px;
+        background:rgba(255,213,42,.15);border:1px solid rgba(255,213,42,.3);
+        border-radius:999px;padding:4px 12px;font-weight:800;color:#ffd12a;
+        font-size:.9rem;cursor:pointer;transition:all .2s;
       }
-      .coins-display:hover { background:rgba(255,213,42,0.25); }
+      .coins-display:hover{background:rgba(255,213,42,.25);}
 
-      /* ── MARKET MODAL ── */
-      #marketModal {
-        position:fixed; inset:0; z-index:8000; background:rgba(0,0,0,0.75);
-        display:none; align-items:center; justify-content:center; padding:1rem;
+      /* ── COIN ANIMATION ── */
+      .coin-pop{
+        position:fixed;font-size:1.4rem;font-weight:900;color:#ffd12a;
+        pointer-events:none;z-index:99999;animation:coinFloat 1.6s ease forwards;
       }
-      #marketModal.open { display:flex; }
-      .market-shell {
-        background: radial-gradient(circle at 10% 10%, rgba(255,213,42,0.12), transparent 50%),
-                    linear-gradient(135deg, #0d1a2e, #131f35);
-        border: 1px solid rgba(255,213,42,0.2); border-radius: 28px;
-        width:100%; max-width:680px; max-height:88vh; overflow-y:auto;
-        padding: clamp(1.2rem, 4vw, 2.5rem); box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-        animation: lgFadeIn 0.3s ease;
+      @keyframes coinFloat{
+        0%{opacity:1;transform:translateY(0) scale(1)}
+        60%{opacity:1;transform:translateY(-70px) scale(1.3)}
+        100%{opacity:0;transform:translateY(-110px) scale(.8)}
       }
-      .market-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:1rem; margin-top:1.5rem; }
-      .market-item {
-        background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-        border-radius:18px; padding:1.2rem; text-align:center; cursor:pointer;
-        transition:all 0.25s;
-      }
-      .market-item:hover { transform:translateY(-4px); background:rgba(255,255,255,0.1); border-color:rgba(255,213,42,0.4); }
-      .market-item.owned { border-color:rgba(124,240,194,0.5); background:rgba(124,240,194,0.07); }
-      .market-item.equipped { border-color:#7cf0c2; box-shadow:0 0 14px rgba(124,240,194,0.3); }
-      .market-emoji { font-size:2.5rem; display:block; margin-bottom:0.5rem; }
-      .market-name { font-weight:800; font-size:0.9rem; margin-bottom:0.3rem; }
-      .market-price { color:#ffd12a; font-weight:700; font-size:0.85rem; }
-      .market-owned-label { color:#7cf0c2; font-size:0.8rem; font-weight:700; }
 
-      /* ── TEAMS MODAL ── */
-      #teamsModal {
-        position:fixed; inset:0; z-index:8000; background:rgba(0,0,0,0.75);
-        display:none; align-items:flex-start; justify-content:center; padding:1rem; overflow-y:auto;
+      /* ── MODAL BASE ── */
+      .feat-modal{
+        position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.8);
+        display:none;align-items:flex-start;justify-content:center;
+        padding:1rem;overflow-y:auto;
       }
-      #teamsModal.open { display:flex; }
-      .teams-shell {
-        background: radial-gradient(circle at 90% 10%, rgba(96,165,250,0.15), transparent 50%),
-                    linear-gradient(135deg, #0d1a2e, #131f35);
-        border:1px solid rgba(96,165,250,0.2); border-radius:28px;
-        width:100%; max-width:700px; margin:auto;
-        padding:clamp(1.2rem,4vw,2.5rem); box-shadow:0 30px 80px rgba(0,0,0,0.5);
-        animation:lgFadeIn 0.3s ease;
+      .feat-modal.open{display:flex;}
+      .feat-shell{
+        width:100%;margin:auto;border-radius:28px;
+        padding:clamp(1.2rem,4vw,2.5rem);box-shadow:0 30px 80px rgba(0,0,0,.5);
+        animation:lgIn .3s ease;
       }
-      .team-card {
-        background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-        border-radius:18px; padding:1.25rem; margin-bottom:0.75rem; transition:all 0.2s;
+      .feat-close-btn{
+        background:rgba(255,255,255,.1);border:none;color:white;
+        width:38px;height:38px;border-radius:50%;font-size:1.3rem;cursor:pointer;
+        flex-shrink:0;transition:background .2s;
       }
-      .team-card:hover { background:rgba(255,255,255,0.09); }
-      .team-card.my-team { border-color:rgba(96,165,250,0.5); }
-      .team-leaderboard-row {
-        display:flex; align-items:center; gap:0.75rem; padding:0.75rem;
-        border-radius:14px; background:rgba(255,255,255,0.04); margin-bottom:0.5rem;
-        transition:background 0.2s;
-      }
-      .team-leaderboard-row:hover { background:rgba(255,255,255,0.08); }
+      .feat-close-btn:hover{background:rgba(255,255,255,.2);}
 
-      /* ── PROFILE PAGE ── */
-      #profilePageModal {
-        position:fixed; inset:0; z-index:8100; background:rgba(0,0,0,0.8);
-        display:none; align-items:flex-start; justify-content:center;
-        padding:1rem; overflow-y:auto;
+      /* ── MARKET ── */
+      #marketModal .feat-shell{
+        max-width:680px;
+        background:radial-gradient(circle at 10% 10%,rgba(255,213,42,.12),transparent 50%),
+                   linear-gradient(135deg,#0d1a2e,#131f35);
+        border:1px solid rgba(255,213,42,.2);
       }
-      #profilePageModal.open { display:flex; }
-      .profile-page-shell {
-        background: radial-gradient(circle at 20% 0%, rgba(124,240,194,0.12), transparent 40%),
-                    linear-gradient(160deg, #0a1628, #111c34);
-        border:1px solid rgba(255,255,255,0.12); border-radius:28px;
-        width:100%; max-width:600px; margin:auto;
-        padding:clamp(1.2rem,4vw,2.5rem); box-shadow:0 30px 80px rgba(0,0,0,0.5);
-        animation:lgFadeIn 0.3s ease;
+      .market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1rem;margin-top:1.5rem;}
+      .market-item{
+        background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+        border-radius:18px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .25s;
       }
-      .profile-avatar-lg {
-        width:100px; height:100px; border-radius:50%; object-fit:cover;
-        border:3px solid rgba(255,255,255,0.2); display:block;
+      .market-item:hover{transform:translateY(-4px);background:rgba(255,255,255,.1);border-color:rgba(255,213,42,.4);}
+      .market-item.owned{border-color:rgba(124,240,194,.5);background:rgba(124,240,194,.07);}
+      .market-item.equipped{border-color:#7cf0c2;box-shadow:0 0 14px rgba(124,240,194,.3);}
+      .market-emoji{font-size:2.5rem;display:block;margin-bottom:.5rem;}
+      .market-name{font-weight:800;font-size:.9rem;margin-bottom:.3rem;color:white;}
+      .market-price{color:#ffd12a;font-weight:700;font-size:.85rem;}
+      .market-owned{color:#7cf0c2;font-size:.8rem;font-weight:700;}
+
+      /* ── TEAMS ── */
+      #teamsModal .feat-shell{
+        max-width:720px;
+        background:radial-gradient(circle at 90% 10%,rgba(96,165,250,.15),transparent 50%),
+                   linear-gradient(135deg,#0d1a2e,#131f35);
+        border:1px solid rgba(96,165,250,.2);
       }
-      .profile-action-btn {
-        padding:0.6rem 1.2rem; border-radius:12px; border:none; font-weight:700;
-        font-size:0.88rem; cursor:pointer; transition:all 0.2s;
+      .team-card{
+        background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+        border-radius:18px;padding:1.25rem;margin-bottom:.75rem;transition:all .2s;
       }
-      .profile-action-btn:hover { opacity:0.85; transform:translateY(-1px); }
+      .team-card:hover{background:rgba(255,255,255,.09);}
+      .team-card.my-team{border-color:rgba(96,165,250,.5);}
+      .tlb-row{
+        display:flex;align-items:center;gap:.75rem;padding:.75rem;
+        border-radius:14px;background:rgba(255,255,255,.04);margin-bottom:.5rem;transition:background .2s;
+        cursor:pointer;
+      }
+      .tlb-row:hover{background:rgba(255,255,255,.08);}
+
+      /* ── PROFILE ── */
+      #profileModal .feat-shell{
+        max-width:600px;
+        background:radial-gradient(circle at 20% 0%,rgba(124,240,194,.12),transparent 40%),
+                   linear-gradient(160deg,#0a1628,#111c34);
+        border:1px solid rgba(255,255,255,.12);
+      }
+      .profile-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.2);}
+      .profile-btn{
+        padding:.55rem 1.1rem;border-radius:12px;border:none;font-weight:700;
+        font-size:.85rem;cursor:pointer;transition:all .2s;
+      }
+      .profile-btn:hover{opacity:.85;transform:translateY(-1px);}
 
       /* ── QUIZ OVER DASHBOARD ── */
-      #quizOverlay { z-index: 10000 !important; }
-      #quizShell { z-index: 10001 !important; }
+      #quizOverlay{z-index:10000!important;}
+      #quizShell{z-index:10001!important;}
 
-      /* ── TEAM/FRIENDS NOTIFICATION BADGE ── */
-      .notif-badge {
-        position:absolute; top:-4px; right:-4px;
-        background:#ef4444; color:white; border-radius:999px;
-        font-size:0.68rem; font-weight:900; min-width:16px; height:16px;
-        display:flex; align-items:center; justify-content:center; padding:0 3px;
+      /* ── NOTIF BADGE ── */
+      .notif-badge{
+        position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;
+        border-radius:999px;font-size:.65rem;font-weight:900;min-width:16px;height:16px;
+        display:flex;align-items:center;justify-content:center;padding:0 3px;
         border:2px solid #0d1a2e;
       }
 
-      /* ── DASHBOARD TEAM TAB ── */
-      #teamTab { display:none; }
-
-      /* ── COIN EARNED ANIMATION ── */
-      .coin-pop {
-        position:fixed; font-size:1.4rem; font-weight:900; color:#ffd12a;
-        pointer-events:none; z-index:99999; animation:coinFloat 1.6s ease forwards;
+      /* ── INPUT HELPER ── */
+      .feat-input{
+        width:100%;padding:.75rem 1rem;border-radius:12px;
+        border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.3);
+        color:white;font-size:.92rem;outline:none;box-sizing:border-box;
+        transition:border-color .2s;
       }
-      @keyframes coinFloat {
-        0%   { opacity:1; transform:translateY(0) scale(1); }
-        60%  { opacity:1; transform:translateY(-60px) scale(1.2); }
-        100% { opacity:0; transform:translateY(-100px) scale(0.8); }
+      .feat-input:focus{border-color:#60a5fa;}
+      .feat-btn{
+        padding:.7rem 1.4rem;border-radius:12px;border:none;font-weight:700;
+        font-size:.9rem;cursor:pointer;transition:all .2s;
       }
+      .feat-btn:hover{opacity:.88;transform:translateY(-1px);}
+      .feat-btn-blue{background:#3b82f6;color:white;}
+      .feat-btn-green{background:#10b981;color:white;}
+      .feat-btn-red{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#f87171;}
+      .feat-btn-ghost{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);}
     `;
     document.head.appendChild(style);
   }
 
-  /* ── SESSION TIMEOUT ────────────────────────────────────────── */
-  let sessionTimer = null;
+  /* ── SESSION TIMEOUT ─────────────────────────────────────────── */
+  let _sessionTimer = null;
+
   function resetSessionTimer() {
-    clearTimeout(sessionTimer);
-    sessionTimer = setTimeout(() => {
-      // Only trigger for signed-in users (guests don't time out)
-      if (window.auth && window.auth.currentUser) {
-        window.auth.signOut().then(() => {
-          showLoginGate();
-          showFeatToast("Session expired. Please sign in again.");
-        });
+    clearTimeout(_sessionTimer);
+    _sessionTimer = setTimeout(async () => {
+      if (window.auth?.currentUser) {
+        await window.auth.signOut().catch(() => {});
+        localStorage.removeItem(SESSION_KEY);
+        showLoginGate();
+        showFeatToast("⏱ Session expired. Please sign in again.");
       }
     }, SESSION_TIMEOUT_MS);
+    localStorage.setItem(SESSION_KEY, Date.now());
   }
+
   function startSessionTracking() {
-    ["mousemove","keydown","click","touchstart","scroll"].forEach(ev => {
-      document.addEventListener(ev, resetSessionTimer, { passive: true });
-    });
-    // Also restart on tab visibility change
+    ["mousemove", "keydown", "click", "touchstart", "scroll"].forEach(ev =>
+      document.addEventListener(ev, resetSessionTimer, { passive: true })
+    );
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) resetSessionTimer();
+      if (!document.hidden) {
+        // Check if session expired while tab was hidden
+        const lastTs = parseInt(localStorage.getItem(SESSION_KEY) || "0");
+        if (lastTs && Date.now() - lastTs > SESSION_TIMEOUT_MS) {
+          window.auth?.signOut().then(() => {
+            localStorage.removeItem(SESSION_KEY);
+            showLoginGate();
+            showFeatToast("⏱ Session expired. Please sign in again.");
+          });
+        } else {
+          resetSessionTimer();
+        }
+      }
     });
     resetSessionTimer();
   }
 
-  /* ── LOGIN GATE ─────────────────────────────────────────────── */
+  /* ── LOGIN GATE ──────────────────────────────────────────────── */
   function buildLoginGate() {
     if (document.getElementById("loginGate")) return;
     const el = document.createElement("div");
@@ -251,7 +270,7 @@
     el.innerHTML = `
       <div class="lg-card">
         <div class="lg-logo">📚 ExamBank</div>
-        <p class="lg-sub">Sign in to save your progress across all devices</p>
+        <p class="lg-sub">Sign in to sync your XP, streaks & quizzes across all devices</p>
 
         <button class="lg-google-btn" id="lgGoogleBtn">
           <svg width="20" height="20" viewBox="0 0 24 24">
@@ -263,83 +282,112 @@
           Continue with Google
         </button>
 
-        <div class="lg-divider">or sign in with email</div>
-        <div class="lg-err" id="lgErr"></div>
-
-        <input class="lg-field" type="email" id="lgEmail" placeholder="Email address">
-        <input class="lg-field" type="password" id="lgPassword" placeholder="Password">
-        <div class="lg-row">
-          <button class="lg-btn lg-btn-primary" id="lgSignIn">Sign In</button>
-          <button class="lg-btn lg-btn-secondary" id="lgSignUp">Sign Up</button>
+        <div class="lg-divider">or use email</div>
+        <div class="lg-tabs">
+          <button class="lg-tab active" id="lgTabSignIn">Sign In</button>
+          <button class="lg-tab" id="lgTabSignUp">Sign Up</button>
         </div>
+        <div class="lg-err" id="lgErr"></div>
+        <input class="lg-field" type="email" id="lgEmail" placeholder="Email address" autocomplete="email">
+        <input class="lg-field" type="password" id="lgPassword" placeholder="Password" autocomplete="current-password">
+        <button class="lg-btn lg-btn-primary" id="lgEmailBtn" style="width:100%;margin-bottom:.75rem;">Sign In</button>
 
+        <div class="lg-divider">or</div>
         <button class="lg-guest-btn" id="lgGuest">Continue as Guest (progress won't be saved)</button>
       </div>
     `;
     document.body.appendChild(el);
 
+    // Tab toggle
+    let isSignUp = false;
+    document.getElementById("lgTabSignIn").addEventListener("click", () => {
+      isSignUp = false;
+      document.getElementById("lgTabSignIn").classList.add("active");
+      document.getElementById("lgTabSignUp").classList.remove("active");
+      document.getElementById("lgEmailBtn").textContent = "Sign In";
+      document.getElementById("lgPassword").autocomplete = "current-password";
+    });
+    document.getElementById("lgTabSignUp").addEventListener("click", () => {
+      isSignUp = true;
+      document.getElementById("lgTabSignUp").classList.add("active");
+      document.getElementById("lgTabSignIn").classList.remove("active");
+      document.getElementById("lgEmailBtn").textContent = "Create Account";
+      document.getElementById("lgPassword").autocomplete = "new-password";
+    });
+
     // Google
     document.getElementById("lgGoogleBtn").addEventListener("click", async () => {
+      document.getElementById("lgErr").textContent = "";
+      const btn = document.getElementById("lgGoogleBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<div style="width:18px;height:18px;border:2px solid rgba(0,0,0,.2);border-top-color:#333;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;"></div> Signing in...';
       const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
       try {
         await window.auth.signInWithPopup(provider);
-        hideLoginGate();
-        startSessionTracking();
-      } catch(e) {
-        document.getElementById("lgErr").textContent = e.message || "Google sign-in failed";
+      } catch (e) {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google';
+        if (e.code === "auth/popup-blocked" || e.code === "auth/popup-closed-by-user") {
+          try { await window.auth.signInWithRedirect(provider); } catch (e2) { /* noop */ }
+        } else {
+          document.getElementById("lgErr").textContent = e.message || "Google sign-in failed";
+        }
       }
     });
 
-    // Email sign in
-    document.getElementById("lgSignIn").addEventListener("click", async () => {
+    // Email
+    document.getElementById("lgEmailBtn").addEventListener("click", async () => {
       const email = document.getElementById("lgEmail").value.trim();
       const pw = document.getElementById("lgPassword").value;
-      document.getElementById("lgErr").textContent = "";
+      const errEl = document.getElementById("lgErr");
+      errEl.textContent = "";
+      if (!email || !pw) { errEl.textContent = "Enter email and password."; return; }
+      if (isSignUp && pw.length < 6) { errEl.textContent = "Password must be 6+ characters."; return; }
       try {
-        await window.auth.signInWithEmailAndPassword(email, pw);
-        hideLoginGate();
-        startSessionTracking();
-      } catch(e) {
-        document.getElementById("lgErr").textContent = e.message || "Sign in failed";
+        if (isSignUp) {
+          await window.auth.createUserWithEmailAndPassword(email, pw);
+        } else {
+          await window.auth.signInWithEmailAndPassword(email, pw);
+        }
+      } catch (e) {
+        const msgs = {
+          "auth/user-not-found": "No account with that email.",
+          "auth/wrong-password": "Incorrect password.",
+          "auth/email-already-in-use": "Email already in use — try Sign In.",
+          "auth/invalid-email": "Invalid email address.",
+          "auth/weak-password": "Password too weak.",
+          "auth/too-many-requests": "Too many attempts. Try again later.",
+          "auth/network-request-failed": "No internet connection.",
+        };
+        errEl.textContent = msgs[e.code] || e.message || "Sign-in failed.";
       }
     });
 
-    // Email sign up
-    document.getElementById("lgSignUp").addEventListener("click", async () => {
-      const email = document.getElementById("lgEmail").value.trim();
-      const pw = document.getElementById("lgPassword").value;
-      document.getElementById("lgErr").textContent = "";
-      if (!email || pw.length < 6) {
-        document.getElementById("lgErr").textContent = "Enter a valid email and password (6+ chars)";
-        return;
-      }
-      try {
-        await window.auth.createUserWithEmailAndPassword(email, pw);
-        hideLoginGate();
-        startSessionTracking();
-      } catch(e) {
-        document.getElementById("lgErr").textContent = e.message || "Sign up failed";
-      }
+    // Enter key on password
+    document.getElementById("lgPassword").addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("lgEmailBtn").click();
     });
 
     // Guest
     document.getElementById("lgGuest").addEventListener("click", () => {
       hideLoginGate();
-      // Guests don't get session tracking
+      showFeatToast("👋 Continuing as guest — progress won't be saved.");
     });
   }
 
   function showLoginGate() {
-    let gate = document.getElementById("loginGate");
-    if (!gate) { buildLoginGate(); gate = document.getElementById("loginGate"); }
-    gate.classList.remove("hidden");
-  }
-  function hideLoginGate() {
+    buildLoginGate();
     const gate = document.getElementById("loginGate");
-    if (gate) gate.classList.add("hidden");
+    if (gate) gate.classList.remove("lg-hidden");
   }
 
-  /* ── COINS STATE ────────────────────────────────────────────── */
+  function hideLoginGate() {
+    const gate = document.getElementById("loginGate");
+    if (gate) gate.classList.add("lg-hidden");
+  }
+
+  /* ── COINS STATE ─────────────────────────────────────────────── */
   let coins = 0;
   let ownedItems = {};
   let equippedItems = {};
@@ -362,24 +410,28 @@
   function saveCoins() {
     const user = window.auth?.currentUser;
     if (!user) return;
-    window.database.ref(`accounts/${user.uid}`).update({
-      coins, ownedItems, equippedItems, updatedAt: Date.now()
-    });
+    window.database.ref(`accounts/${user.uid}`).update({ coins, ownedItems, equippedItems, updatedAt: Date.now() });
   }
 
   function updateCoinsDisplay() {
-    document.querySelectorAll(".coins-val").forEach(el => el.textContent = coins);
+    document.querySelectorAll(".coins-val").forEach(el => el.textContent = coins.toLocaleString());
   }
 
   function awardCoins(accuracy) {
     let earned = 0;
-    if (accuracy === 100) earned = 50;
-    else if (accuracy >= 90) earned = 45;
-    else if (accuracy >= 80) earned = 40;
-    else if (accuracy >= 70) earned = 25;
-    else if (accuracy >= 60) earned = 15;
-    else if (accuracy >= 50) earned = 8;
+    if (accuracy === 100)     earned = 50;
+    else if (accuracy >= 90)  earned = 45;
+    else if (accuracy >= 80)  earned = 40;
+    else if (accuracy >= 70)  earned = 25;
+    else if (accuracy >= 60)  earned = 15;
+    else if (accuracy >= 50)  earned = 8;
     if (earned > 0) {
+      // Apply coin boost if equipped
+      if (equippedItems["boost"] === "coin_boost_1") {
+        earned *= 2;
+        delete equippedItems["boost"];
+        showFeatToast("⚡ 2× Coin Boost used!");
+      }
       coins += earned;
       updateCoinsDisplay();
       saveCoins();
@@ -393,52 +445,55 @@
     const pop = document.createElement("div");
     pop.className = "coin-pop";
     pop.textContent = `+${amount} 🪙`;
-    pop.style.cssText = `top:${window.innerHeight/2 - 80}px;left:${window.innerWidth/2 - 40}px;`;
+    pop.style.cssText = `top:${Math.max(100, window.innerHeight / 2 - 80)}px;left:${Math.max(20, window.innerWidth / 2 - 40)}px;`;
     document.body.appendChild(pop);
     setTimeout(() => pop.remove(), 1700);
   }
 
-  /* ── SHOP ITEMS ─────────────────────────────────────────────── */
+  /* ── SHOP ITEMS ──────────────────────────────────────────────── */
   const SHOP_ITEMS = [
-    { id:"badge_star",      name:"⭐ Star Badge",        emoji:"⭐", price:100, type:"badge",  desc:"Show off on your profile!" },
-    { id:"badge_fire",      name:"🔥 Fire Badge",        emoji:"🔥", price:80,  type:"badge",  desc:"You're on fire!" },
-    { id:"badge_rocket",    name:"🚀 Rocket Badge",      emoji:"🚀", price:120, type:"badge",  desc:"Blast off to the top!" },
-    { id:"badge_diamond",   name:"💎 Diamond Badge",     emoji:"💎", price:200, type:"badge",  desc:"Rare and precious." },
-    { id:"badge_crown",     name:"👑 Crown Badge",       emoji:"👑", price:300, type:"badge",  desc:"For true royalty." },
-    { id:"frame_gold",      name:"Gold Frame",           emoji:"🟡", price:150, type:"frame",  desc:"Golden profile border." },
-    { id:"frame_neon",      name:"Neon Frame",           emoji:"🟢", price:180, type:"frame",  desc:"Glowing neon border." },
-    { id:"frame_galaxy",    name:"Galaxy Frame",         emoji:"🌌", price:250, type:"frame",  desc:"Out of this world." },
-    { id:"theme_sunset",    name:"Sunset Theme",         emoji:"🌅", price:200, type:"theme",  desc:"Warm sunset colors." },
-    { id:"theme_ocean",     name:"Ocean Theme",          emoji:"🌊", price:200, type:"theme",  desc:"Deep ocean vibes." },
-    { id:"xp_boost_1",      name:"2× XP Boost (1 quiz)",emoji:"⚡",  price:60,  type:"boost",  desc:"Double XP for 1 quiz!" },
-    { id:"coin_boost_1",    name:"2× Coin Boost (1 quiz)",emoji:"🪙", price:60,  type:"boost",  desc:"Double coins for 1 quiz!" },
+    { id: "badge_star",    name: "⭐ Star Badge",          emoji: "⭐", price: 100, type: "badge", desc: "Show off on your profile!" },
+    { id: "badge_fire",    name: "🔥 Fire Badge",          emoji: "🔥", price: 80,  type: "badge", desc: "You're on fire!" },
+    { id: "badge_rocket",  name: "🚀 Rocket Badge",        emoji: "🚀", price: 120, type: "badge", desc: "Blast off to the top!" },
+    { id: "badge_diamond", name: "💎 Diamond Badge",       emoji: "💎", price: 200, type: "badge", desc: "Rare and precious." },
+    { id: "badge_crown",   name: "👑 Crown Badge",         emoji: "👑", price: 300, type: "badge", desc: "For true royalty." },
+    { id: "badge_lightning",name: "⚡ Lightning Badge",    emoji: "⚡", price: 160, type: "badge", desc: "Fast and unstoppable." },
+    { id: "frame_gold",    name: "Gold Frame",             emoji: "🟡", price: 150, type: "frame", desc: "Golden profile border." },
+    { id: "frame_neon",    name: "Neon Frame",             emoji: "🟢", price: 180, type: "frame", desc: "Glowing neon border." },
+    { id: "frame_galaxy",  name: "Galaxy Frame",           emoji: "🌌", price: 250, type: "frame", desc: "Out of this world." },
+    { id: "frame_fire",    name: "Fire Frame",             emoji: "🔴", price: 220, type: "frame", desc: "Burning hot profile." },
+    { id: "theme_sunset",  name: "Sunset Theme",           emoji: "🌅", price: 200, type: "theme", desc: "Warm sunset colors." },
+    { id: "theme_ocean",   name: "Ocean Theme",            emoji: "🌊", price: 200, type: "theme", desc: "Deep ocean vibes." },
+    { id: "theme_forest",  name: "Forest Theme",           emoji: "🌲", price: 200, type: "theme", desc: "Calm forest greens." },
+    { id: "xp_boost_1",   name: "2× XP Boost",           emoji: "⚡", price: 60,  type: "xpboost", desc: "Double XP for 1 quiz!" },
+    { id: "coin_boost_1",  name: "2× Coin Boost",         emoji: "🪙", price: 60,  type: "boost", desc: "Double coins for 1 quiz!" },
+    { id: "title_scholar", name: "Scholar Title",          emoji: "🎓", price: 400, type: "title", desc: 'Show "Scholar" on profile.' },
+    { id: "title_champion",name: "Champion Title",         emoji: "🏆", price: 500, type: "title", desc: 'Show "Champion" on profile.' },
   ];
 
-  /* ── MARKET MODAL ───────────────────────────────────────────── */
+  /* ── MARKET ──────────────────────────────────────────────────── */
   function buildMarketModal() {
     if (document.getElementById("marketModal")) return;
     const el = document.createElement("div");
     el.id = "marketModal";
+    el.className = "feat-modal";
     el.innerHTML = `
-      <div class="market-shell">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+      <div class="feat-shell" style="max-width:680px;background:radial-gradient(circle at 10% 10%,rgba(255,213,42,.12),transparent 50%),linear-gradient(135deg,#0d1a2e,#131f35);border:1px solid rgba(255,213,42,.2);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
           <div>
             <h2 style="margin:0;font-size:1.7rem;font-weight:900;">🛒 Market</h2>
-            <p style="color:#9ca3af;margin:0.3rem 0 0;font-size:0.9rem;">Spend your coins on cool stuff</p>
+            <p style="color:#9ca3af;margin:.25rem 0 0;font-size:.88rem;">Spend your hard-earned coins</p>
           </div>
-          <div style="display:flex;align-items:center;gap:1rem;">
+          <div style="display:flex;align-items:center;gap:.75rem;">
             <span class="coins-display"><span class="coins-val">${coins}</span> 🪙</span>
-            <button id="closeMarketModal" style="background:rgba(255,255,255,0.1);border:none;color:white;width:38px;height:38px;border-radius:50%;font-size:1.3rem;cursor:pointer;">×</button>
+            <button class="feat-close-btn" id="closeMarketModal">×</button>
           </div>
         </div>
         <div class="market-grid" id="marketGrid"></div>
       </div>
     `;
     document.body.appendChild(el);
-
-    document.getElementById("closeMarketModal").addEventListener("click", () => {
-      el.classList.remove("open");
-    });
+    document.getElementById("closeMarketModal").addEventListener("click", () => el.classList.remove("open"));
     el.addEventListener("click", e => { if (e.target === el) el.classList.remove("open"); });
   }
 
@@ -453,87 +508,67 @@
              onclick="window._featBuyItem('${item.id}')">
           <span class="market-emoji">${item.emoji}</span>
           <div class="market-name">${item.name}</div>
-          <div style="font-size:0.78rem;color:#9ca3af;margin-bottom:0.4rem;">${item.desc}</div>
+          <div style="font-size:.75rem;color:#9ca3af;margin-bottom:.4rem;">${item.desc}</div>
           ${owned
-            ? `<div class="market-owned-label">${equipped ? "✓ Equipped" : "Owned — Click to equip"}</div>`
-            : `<div class="market-price">${item.price} 🪙</div>`
-          }
-        </div>
-      `;
+            ? `<div class="market-owned">${equipped ? "✓ Equipped" : "Owned — click to equip"}</div>`
+            : `<div class="market-price">${item.price} 🪙</div>`}
+        </div>`;
     }).join("");
+    updateCoinsDisplay();
   }
 
-  window._featBuyItem = function(itemId) {
+  window._featBuyItem = function (itemId) {
     const item = SHOP_ITEMS.find(i => i.id === itemId);
     if (!item) return;
     if (ownedItems[itemId]) {
-      // Toggle equip
-      if (equippedItems[item.type] === itemId) {
-        delete equippedItems[item.type];
-        showFeatToast(`${item.emoji} ${item.name} unequipped`);
-      } else {
-        equippedItems[item.type] = itemId;
-        showFeatToast(`${item.emoji} ${item.name} equipped!`);
-      }
-      saveCoins();
-      renderMarket();
-      return;
+      equippedItems[item.type] === itemId
+        ? (delete equippedItems[item.type], showFeatToast(`${item.emoji} ${item.name} unequipped`))
+        : (equippedItems[item.type] = itemId, showFeatToast(`${item.emoji} ${item.name} equipped!`));
+      saveCoins(); renderMarket(); return;
     }
-    if (coins < item.price) {
-      showFeatToast(`Not enough coins! Need ${item.price - coins} more 🪙`);
-      return;
-    }
+    if (coins < item.price) { showFeatToast(`Not enough coins! Need ${item.price - coins} more 🪙`); return; }
     if (!confirm(`Buy ${item.name} for ${item.price} 🪙?`)) return;
     coins -= item.price;
     ownedItems[itemId] = true;
-    if (item.type !== "boost") equippedItems[item.type] = itemId;
-    updateCoinsDisplay();
-    saveCoins();
-    renderMarket();
+    if (!["boost", "xpboost"].includes(item.type)) equippedItems[item.type] = itemId;
+    updateCoinsDisplay(); saveCoins(); renderMarket();
     showFeatToast(`${item.emoji} ${item.name} purchased!`);
   };
 
-  function openMarket() {
+  window.openMarket = function () {
     buildMarketModal();
     renderMarket();
     document.getElementById("marketModal").classList.add("open");
-  }
+  };
 
-  /* ── TEAMS ──────────────────────────────────────────────────── */
+  /* ── TEAMS ───────────────────────────────────────────────────── */
   let myTeamId = null;
 
   function buildTeamsModal() {
     if (document.getElementById("teamsModal")) return;
     const el = document.createElement("div");
     el.id = "teamsModal";
+    el.className = "feat-modal";
     el.innerHTML = `
-      <div class="teams-shell" style="margin-top:2rem;margin-bottom:2rem;">
+      <div class="feat-shell" style="max-width:720px;background:radial-gradient(circle at 90% 10%,rgba(96,165,250,.15),transparent 50%),linear-gradient(135deg,#0d1a2e,#131f35);border:1px solid rgba(96,165,250,.2);margin-top:1.5rem;margin-bottom:1.5rem;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
           <div>
             <h2 style="margin:0;font-size:1.7rem;font-weight:900;">⚔️ Teams</h2>
-            <p style="color:#9ca3af;margin:0.25rem 0 0;font-size:0.88rem;">Compete together, rise together</p>
+            <p style="color:#9ca3af;margin:.2rem 0 0;font-size:.88rem;">Compete together · Rise together</p>
           </div>
-          <button id="closeTeamsModal" style="background:rgba(255,255,255,0.1);border:none;color:white;width:38px;height:38px;border-radius:50%;font-size:1.3rem;cursor:pointer;">×</button>
+          <button class="feat-close-btn" id="closeTeamsModal">×</button>
         </div>
 
-        <!-- Team leaderboard -->
-        <div style="margin-bottom:2rem;">
-          <h3 style="margin:0 0 1rem;font-size:1.1rem;font-weight:800;color:#60a5fa;">🏆 Team Leaderboard</h3>
-          <div id="teamLeaderboardList"><div style="text-align:center;padding:1.5rem;color:#666;">Loading...</div></div>
-        </div>
+        <h3 style="margin:0 0 .75rem;font-size:1.05rem;font-weight:800;color:#60a5fa;">🏆 Team Leaderboard</h3>
+        <div id="teamLeaderboardList"><div style="text-align:center;padding:1.5rem;color:#666;">Loading...</div></div>
 
-        <!-- My team section -->
-        <div id="myTeamSection">
-          <h3 style="margin:0 0 1rem;font-size:1.1rem;font-weight:800;color:#7cf0c2;">👥 My Team</h3>
-          <div id="myTeamDisplay"><div style="text-align:center;padding:1.5rem;color:#666;">You're not in a team yet.</div></div>
-        </div>
+        <h3 style="margin:1.75rem 0 .75rem;font-size:1.05rem;font-weight:800;color:#7cf0c2;">👥 My Team</h3>
+        <div id="myTeamDisplay"><div style="text-align:center;padding:1rem;color:#666;">You're not in a team yet.</div></div>
 
-        <!-- Create / join -->
-        <div style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:0.75rem;">
-          <button onclick="window._featShowCreateTeam()" style="background:#3b82f6;border:none;color:white;padding:0.7rem 1.4rem;border-radius:12px;font-weight:700;cursor:pointer;">+ Create Team</button>
-          <button onclick="window._featShowJoinTeam()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:0.7rem 1.4rem;border-radius:12px;font-weight:700;cursor:pointer;">Join by Code</button>
+        <div style="margin-top:1.25rem;display:flex;flex-wrap:wrap;gap:.75rem;">
+          <button onclick="window._featShowCreateTeam()" class="feat-btn feat-btn-blue">+ Create Team</button>
+          <button onclick="window._featShowJoinTeam()" class="feat-btn feat-btn-ghost">🔑 Join by Code</button>
         </div>
-
         <div id="teamActionArea" style="margin-top:1rem;"></div>
       </div>
     `;
@@ -542,12 +577,12 @@
     el.addEventListener("click", e => { if (e.target === el) el.classList.remove("open"); });
   }
 
-  function openTeams() {
+  window.openTeams = function () {
     buildTeamsModal();
     document.getElementById("teamsModal").classList.add("open");
     loadTeamLeaderboard();
     loadMyTeam();
-  }
+  };
 
   function loadTeamLeaderboard() {
     const list = document.getElementById("teamLeaderboardList");
@@ -555,20 +590,30 @@
     window.database.ref("teams").orderByChild("totalXp").limitToLast(10).on("value", snap => {
       const teams = [];
       snap.forEach(child => teams.push({ id: child.key, ...child.val() }));
-      teams.sort((a,b) => (b.totalXp||0) - (a.totalXp||0));
-      if (!teams.length) { list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#666;">No teams yet. Create one!</div>'; return; }
-      const medals = ["🥇","🥈","🥉"];
-      list.innerHTML = teams.map((t,i) => `
-        <div class="team-leaderboard-row">
-          <span style="font-size:1.3rem;width:32px;text-align:center;">${medals[i] || "#"+(i+1)}</span>
-          <span style="font-size:1.5rem;">${t.emoji || "⚔️"}</span>
-          <div style="flex:1;">
-            <div style="font-weight:800;">${t.name || "Unnamed"}</div>
-            <div style="font-size:0.78rem;color:#9ca3af;">${t.memberCount||0} members</div>
-          </div>
-          <strong style="color:#ffd12a;">${t.totalXp||0} XP</strong>
-        </div>
-      `).join("");
+      teams.sort((a, b) => (b.totalXp || 0) - (a.totalXp || 0));
+      if (!teams.length) {
+        list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#666;">No teams yet. Be the first!</div>';
+        return;
+      }
+      const medals = ["🥇", "🥈", "🥉"];
+      const highest = Math.max(1, teams[0].totalXp || 1);
+      list.innerHTML = teams.map((t, i) => {
+        const fill = Math.min(100, Math.round(((t.totalXp || 0) / highest) * 100));
+        const isMyTeam = t.id === myTeamId;
+        return `
+          <div class="tlb-row${isMyTeam ? ' my-team' : ''}" style="${isMyTeam ? 'border:1px solid rgba(96,165,250,.4);background:rgba(96,165,250,.08);' : ''}">
+            <span style="font-size:1.3rem;width:32px;text-align:center;">${medals[i] || "#" + (i + 1)}</span>
+            <span style="font-size:1.6rem;">${t.emoji || "⚔️"}</span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.name || "Unnamed"}${isMyTeam ? " ⭐" : ""}</div>
+              <div style="height:4px;border-radius:99px;background:rgba(0,0,0,.35);margin-top:4px;">
+                <div style="height:100%;width:${fill}%;border-radius:99px;background:linear-gradient(90deg,#60a5fa,#7cf0c2);transition:width .4s;"></div>
+              </div>
+              <div style="font-size:.75rem;color:#9ca3af;margin-top:2px;">${t.memberCount || 0} members</div>
+            </div>
+            <strong style="color:#ffd12a;white-space:nowrap;">${(t.totalXp || 0).toLocaleString()} XP</strong>
+          </div>`;
+      }).join("");
     });
   }
 
@@ -579,52 +624,63 @@
     window.database.ref(`accounts/${user.uid}/teamId`).once("value", snap => {
       myTeamId = snap.val();
       if (!myTeamId) {
-        display.innerHTML = '<p style="color:#9ca3af;">You\'re not in a team yet.</p>';
+        display.innerHTML = '<p style="color:#9ca3af;margin:0;">You\'re not in a team yet.</p>';
         return;
       }
       window.database.ref(`teams/${myTeamId}`).once("value", tSnap => {
         const team = tSnap.val();
         if (!team) { display.innerHTML = '<p style="color:#9ca3af;">Team not found.</p>'; return; }
-        const memberKeys = Object.keys(team.members || {});
+        const members = team.members || {};
+        const isLeader = team.leaderId === user.uid;
         display.innerHTML = `
           <div class="team-card my-team">
-            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
-              <span style="font-size:2.5rem;">${team.emoji||"⚔️"}</span>
+            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+              <span style="font-size:2.5rem;">${team.emoji || "⚔️"}</span>
               <div>
-                <div style="font-weight:900;font-size:1.2rem;">${team.name}</div>
-                <div style="font-size:0.82rem;color:#9ca3af;">Code: <strong style="color:#60a5fa;">${myTeamId}</strong> · ${memberKeys.length} members</div>
+                <div style="font-weight:900;font-size:1.15rem;">${team.name}</div>
+                <div style="font-size:.8rem;color:#9ca3af;">
+                  Code: <strong style="color:#60a5fa;user-select:all;">${myTeamId}</strong>
+                  · ${Object.keys(members).length} members
+                  ${isLeader ? ' · <span style="color:#ffd12a;">👑 Leader</span>' : ""}
+                </div>
               </div>
+              <strong style="margin-left:auto;color:#ffd12a;">${(team.totalXp || 0).toLocaleString()} XP</strong>
             </div>
-            <div style="font-size:0.88rem;color:#9ca3af;margin-bottom:0.75rem;">Members:</div>
-            <div id="teamMembersList">${memberKeys.map(uid => `
-              <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem;background:rgba(255,255,255,0.04);border-radius:10px;margin-bottom:0.4rem;">
-                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(team.members[uid]?.name||"?")}&background=111827&color=fff" style="width:28px;height:28px;border-radius:50%;">
-                <span style="font-weight:600;">${team.members[uid]?.name||"Unknown"}</span>
-                <span style="color:#ffd12a;margin-left:auto;">${team.members[uid]?.xp||0} XP</span>
-              </div>`).join("")}
+            <div style="font-size:.85rem;color:#9ca3af;margin-bottom:.5rem;">Members:</div>
+            <div>
+              ${Object.keys(members).map(uid => `
+                <div style="display:flex;align-items:center;gap:.6rem;padding:.5rem;background:rgba(255,255,255,.04);border-radius:10px;margin-bottom:.35rem;cursor:pointer;"
+                     onclick="window._openPlayerProfile('${uid}')">
+                  <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(members[uid]?.name || "?")}&background=111827&color=fff"
+                       style="width:28px;height:28px;border-radius:50%;object-fit:cover;">
+                  <span style="font-weight:600;">${members[uid]?.name || "Unknown"}</span>
+                  <span style="color:#ffd12a;margin-left:auto;font-size:.85rem;">${(members[uid]?.xp || 0).toLocaleString()} XP</span>
+                </div>`).join("")}
             </div>
-            <button onclick="window._featLeaveTeam()" style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#f87171;padding:0.5rem 1rem;border-radius:10px;font-weight:700;cursor:pointer;margin-top:0.5rem;">Leave Team</button>
-          </div>
-        `;
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;">
+              <button onclick="window._featLeaveTeam()" class="feat-btn feat-btn-red" style="font-size:.82rem;padding:.5rem .9rem;">Leave Team</button>
+              ${isLeader ? `
+                <button onclick="window._featInviteToTeamBySearch()" class="feat-btn feat-btn-ghost" style="font-size:.82rem;padding:.5rem .9rem;">+ Invite Player</button>
+              ` : ""}
+            </div>
+          </div>`;
       });
     });
   }
 
-  window._featShowCreateTeam = function() {
+  window._featShowCreateTeam = function () {
     const user = window.auth?.currentUser;
     if (!user) { showFeatToast("Sign in to create a team!"); return; }
-    const area = document.getElementById("teamActionArea");
-    area.innerHTML = `
-      <div style="background:rgba(255,255,255,0.05);border-radius:16px;padding:1.2rem;">
+    document.getElementById("teamActionArea").innerHTML = `
+      <div style="background:rgba(255,255,255,.05);border-radius:16px;padding:1.2rem;margin-top:.5rem;">
         <h4 style="margin:0 0 1rem;font-weight:800;">Create a Team</h4>
-        <input id="newTeamName" placeholder="Team name" style="width:100%;padding:0.7rem;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.3);color:white;margin-bottom:0.6rem;">
-        <input id="newTeamEmoji" placeholder="Team emoji (e.g. 🦁)" style="width:100%;padding:0.7rem;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.3);color:white;margin-bottom:0.75rem;">
-        <button onclick="window._featCreateTeam()" style="background:#3b82f6;border:none;color:white;padding:0.7rem 1.4rem;border-radius:10px;font-weight:700;cursor:pointer;">Create!</button>
-      </div>
-    `;
+        <input id="newTeamName" class="feat-input" placeholder="Team name" style="margin-bottom:.6rem;">
+        <input id="newTeamEmoji" class="feat-input" placeholder="Team emoji (e.g. 🦁)" style="margin-bottom:.75rem;">
+        <button onclick="window._featCreateTeam()" class="feat-btn feat-btn-blue">Create!</button>
+      </div>`;
   };
 
-  window._featCreateTeam = async function() {
+  window._featCreateTeam = async function () {
     const user = window.auth?.currentUser;
     if (!user) return;
     if (myTeamId) { showFeatToast("Leave your current team first!"); return; }
@@ -632,35 +688,31 @@
     const emoji = document.getElementById("newTeamEmoji").value.trim() || "⚔️";
     if (!name) { showFeatToast("Enter a team name!"); return; }
     const teamId = "team_" + Date.now().toString(36);
-    const teamData = {
+    await window.database.ref(`teams/${teamId}`).set({
       name, emoji,
       leaderId: user.uid,
       totalXp: window.xp || 0,
       memberCount: 1,
-      members: { [user.uid]: { name: window.currentPlayer || user.displayName || "Player", xp: window.xp||0, joinedAt: Date.now() } },
+      members: { [user.uid]: { name: window.currentPlayer || user.displayName || "Player", xp: window.xp || 0, joinedAt: Date.now() } },
       createdAt: Date.now()
-    };
-    await window.database.ref(`teams/${teamId}`).set(teamData);
+    });
     await window.database.ref(`accounts/${user.uid}/teamId`).set(teamId);
     myTeamId = teamId;
     document.getElementById("teamActionArea").innerHTML = "";
-    loadMyTeam();
-    loadTeamLeaderboard();
-    showFeatToast(`Team "${name}" created! Code: ${teamId}`);
+    loadMyTeam(); loadTeamLeaderboard();
+    showFeatToast(`Team "${name}" created! Share code: ${teamId}`);
   };
 
-  window._featShowJoinTeam = function() {
-    const area = document.getElementById("teamActionArea");
-    area.innerHTML = `
-      <div style="background:rgba(255,255,255,0.05);border-radius:16px;padding:1.2rem;">
-        <h4 style="margin:0 0 0.75rem;font-weight:800;">Join a Team</h4>
-        <input id="joinTeamCode" placeholder="Enter team code" style="width:100%;padding:0.7rem;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.3);color:white;margin-bottom:0.6rem;">
-        <button onclick="window._featJoinTeam()" style="background:#10b981;border:none;color:white;padding:0.7rem 1.4rem;border-radius:10px;font-weight:700;cursor:pointer;">Join!</button>
-      </div>
-    `;
+  window._featShowJoinTeam = function () {
+    document.getElementById("teamActionArea").innerHTML = `
+      <div style="background:rgba(255,255,255,.05);border-radius:16px;padding:1.2rem;margin-top:.5rem;">
+        <h4 style="margin:0 0 .75rem;font-weight:800;">Join a Team</h4>
+        <input id="joinTeamCode" class="feat-input" placeholder="Enter team code" style="margin-bottom:.6rem;">
+        <button onclick="window._featJoinTeam()" class="feat-btn feat-btn-green">Join!</button>
+      </div>`;
   };
 
-  window._featJoinTeam = async function() {
+  window._featJoinTeam = async function () {
     const user = window.auth?.currentUser;
     if (!user) { showFeatToast("Sign in to join a team!"); return; }
     if (myTeamId) { showFeatToast("Leave your current team first!"); return; }
@@ -672,151 +724,170 @@
       name: window.currentPlayer || user.displayName || "Player",
       xp: window.xp || 0, joinedAt: Date.now()
     });
-    await window.database.ref(`teams/${code}/memberCount`).transaction(n => (n||0)+1);
+    await window.database.ref(`teams/${code}/memberCount`).transaction(n => (n || 0) + 1);
     await window.database.ref(`accounts/${user.uid}/teamId`).set(code);
     myTeamId = code;
     document.getElementById("teamActionArea").innerHTML = "";
-    loadMyTeam();
-    loadTeamLeaderboard();
-    showFeatToast("Joined team!");
+    loadMyTeam(); loadTeamLeaderboard();
+    showFeatToast("🎉 Joined team!");
   };
 
-  window._featLeaveTeam = async function() {
+  window._featLeaveTeam = async function () {
     const user = window.auth?.currentUser;
     if (!user || !myTeamId) return;
-    if (!confirm("Leave your team?")) return;
+    if (!confirm("Leave your team? You can rejoin with the code.")) return;
     await window.database.ref(`teams/${myTeamId}/members/${user.uid}`).remove();
-    await window.database.ref(`teams/${myTeamId}/memberCount`).transaction(n => Math.max(0,(n||1)-1));
+    await window.database.ref(`teams/${myTeamId}/memberCount`).transaction(n => Math.max(0, (n || 1) - 1));
     await window.database.ref(`accounts/${user.uid}/teamId`).remove();
     myTeamId = null;
-    loadMyTeam();
+    loadMyTeam(); loadTeamLeaderboard();
     showFeatToast("Left team.");
   };
 
-  /* ── PLAYER PROFILE PAGE ────────────────────────────────────── */
-  function buildProfilePageModal() {
-    if (document.getElementById("profilePageModal")) return;
+  window._featJoinTeamById = async function (teamId, user) {
+    await window.database.ref(`teams/${teamId}/members/${user.uid}`).set({
+      name: window.currentPlayer || user.displayName || "Player",
+      xp: window.xp || 0, joinedAt: Date.now()
+    });
+    await window.database.ref(`teams/${teamId}/memberCount`).transaction(n => (n || 0) + 1);
+    await window.database.ref(`accounts/${user.uid}/teamId`).set(teamId);
+    await window.database.ref(`accounts/${user.uid}/teamInvites/${teamId}`).remove();
+    myTeamId = teamId;
+    showFeatToast("🎉 Joined team!");
+  };
+
+  /* ── PLAYER PROFILE PAGE ─────────────────────────────────────── */
+  function buildProfileModal() {
+    if (document.getElementById("profileModal")) return;
     const el = document.createElement("div");
-    el.id = "profilePageModal";
+    el.id = "profileModal";
+    el.className = "feat-modal";
     el.innerHTML = `
-      <div class="profile-page-shell" style="margin-top:2rem;margin-bottom:2rem;">
+      <div class="feat-shell" style="max-width:600px;background:radial-gradient(circle at 20% 0%,rgba(124,240,194,.12),transparent 40%),linear-gradient(160deg,#0a1628,#111c34);border:1px solid rgba(255,255,255,.12);margin-top:1.5rem;margin-bottom:1.5rem;">
         <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
-          <button id="closeProfilePageModal" style="background:rgba(255,255,255,0.1);border:none;color:white;width:38px;height:38px;border-radius:50%;font-size:1.3rem;cursor:pointer;">×</button>
+          <button class="feat-close-btn" id="closeProfileModal">×</button>
         </div>
-        <div id="profilePageBody">Loading...</div>
-      </div>
-    `;
+        <div id="profileBody"><div style="text-align:center;padding:2rem;color:#9ca3af;">Loading...</div></div>
+      </div>`;
     document.body.appendChild(el);
-    document.getElementById("closeProfilePageModal").addEventListener("click", () => el.classList.remove("open"));
+    document.getElementById("closeProfileModal").addEventListener("click", () => el.classList.remove("open"));
     el.addEventListener("click", e => { if (e.target === el) el.classList.remove("open"); });
   }
 
-  window._openPlayerProfile = async function(uid) {
-    buildProfilePageModal();
-    const modal = document.getElementById("profilePageModal");
-    const body = document.getElementById("profilePageBody");
+  window._openPlayerProfile = async function (uid) {
+    buildProfileModal();
+    const modal = document.getElementById("profileModal");
+    const body = document.getElementById("profileBody");
     modal.classList.add("open");
     body.innerHTML = '<div style="text-align:center;padding:2rem;color:#9ca3af;">Loading profile...</div>';
 
     try {
       const [accSnap, lbSnap] = await Promise.all([
         window.database.ref(`accounts/${uid}`).once("value"),
-        window.database.ref(`leaderboard/${uid}`).once("value")
+        window.database.ref(`leaderboard/${uid}`).once("value"),
       ]);
       const acc = accSnap.val() || {};
       const lb = lbSnap.val() || {};
       const name = acc.username || acc.displayName || lb.name || "Player";
-      const avatar = acc.photoURL || lb.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`;
-      const xp = Number(acc.xp || lb.points || 0);
-      const quizzes = Number(lb.quizzes || 0);
+      const avatar = acc.photoURL || acc.avatar || lb.avatar ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`;
+      const xpVal = Number(acc.xp || lb.points || 0);
+      const quizzesN = Number(lb.quizzes || 0);
       const league = lb.league || "Bronze";
-      const badges = Object.keys(acc.equippedItems || {}).map(type => {
-        const id = acc.equippedItems[type];
-        const item = SHOP_ITEMS.find(i => i.id === id);
-        return item ? item.emoji : "";
-      }).filter(Boolean).join(" ");
+
+      const badges = Object.values(acc.equippedItems || {})
+        .map(id => { const it = SHOP_ITEMS.find(i => i.id === id); return it ? it.emoji : ""; })
+        .filter(Boolean).join("  ");
+      const titleItem = SHOP_ITEMS.find(i => i.id === acc.equippedItems?.title);
+      const titleLabel = titleItem ? titleItem.name.replace(/^[^ ]+ /, "") : null;
+
       const myUid = window.auth?.currentUser?.uid;
       const isMe = myUid === uid;
       const isTop5 = await checkIsTop5(uid);
 
-      // Check friend status
       let friendStatus = "none";
       if (!isMe && myUid) {
         const fs = await window.database.ref(`accounts/${myUid}/friends/${uid}`).once("value");
         friendStatus = fs.val() || "none";
       }
 
+      // Frame class
+      const frameId = acc.equippedItems?.frame;
+      const frameStyles = {
+        frame_gold: "border:3px solid #ffd12a;box-shadow:0 0 16px rgba(255,209,42,.4);",
+        frame_neon: "border:3px solid #7cf0c2;box-shadow:0 0 16px rgba(124,240,194,.4);",
+        frame_galaxy: "border:3px solid #a855f7;box-shadow:0 0 16px rgba(168,85,247,.4);",
+        frame_fire:  "border:3px solid #ef4444;box-shadow:0 0 16px rgba(239,68,68,.4);",
+      };
+      const frameStyle = frameStyles[frameId] || "";
+
       body.innerHTML = `
-        ${isTop5 ? `<div style="margin-bottom:1.5rem;"><span class="top5-banner">🏆 TOP 5 PLAYER · Season ${new Date().getFullYear()}</span></div>` : ""}
+        ${isTop5 ? `<div style="margin-bottom:1.5rem;"><span class="top5-banner">🏆 TOP 5 PLAYER · ${new Date().getFullYear()}</span></div>` : ""}
         <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:2rem;flex-wrap:wrap;">
-          <div style="position:relative;">
-            <img src="${avatar}" class="profile-avatar-lg" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff'">
-            ${isTop5 ? '<div style="position:absolute;bottom:-6px;right:-6px;background:linear-gradient(90deg,#f59e0b,#ef4444);border-radius:999px;padding:2px 7px;font-size:0.65rem;font-weight:900;">TOP 5</div>' : ""}
+          <div style="position:relative;flex-shrink:0;">
+            <img src="${avatar}" class="profile-avatar" style="${frameStyle}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff'">
+            ${isTop5 ? '<div style="position:absolute;bottom:-6px;right:-6px;background:linear-gradient(90deg,#f59e0b,#ef4444);border-radius:999px;padding:2px 7px;font-size:.62rem;font-weight:900;">TOP 5</div>' : ""}
           </div>
-          <div>
-            <h2 style="margin:0 0 0.25rem;font-size:1.6rem;font-weight:900;">${name}</h2>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
-              <span style="background:rgba(255,255,255,0.08);border-radius:8px;padding:3px 10px;font-size:0.82rem;">${league}</span>
-              <span style="color:#ffd12a;font-weight:800;">${xp} XP</span>
-              <span style="color:#9ca3af;font-size:0.85rem;">${quizzes} quizzes</span>
+          <div style="flex:1;min-width:0;">
+            <h2 style="margin:0 0 .2rem;font-size:1.5rem;font-weight:900;overflow:hidden;text-overflow:ellipsis;">${name}</h2>
+            ${titleLabel ? `<div style="font-size:.78rem;color:#ffd12a;font-weight:700;margin-bottom:.4rem;">${titleLabel}</div>` : ""}
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-bottom:.4rem;">
+              <span style="background:rgba(255,255,255,.08);border-radius:8px;padding:3px 10px;font-size:.8rem;">${league}</span>
+              <span style="color:#ffd12a;font-weight:800;">${xpVal.toLocaleString()} XP</span>
+              <span style="color:#9ca3af;font-size:.82rem;">${quizzesN} quizzes</span>
             </div>
-            ${badges ? `<div style="font-size:1.3rem;margin-bottom:0.5rem;">${badges}</div>` : ""}
+            ${badges ? `<div style="font-size:1.25rem;letter-spacing:.15em;">${badges}</div>` : ""}
           </div>
         </div>
 
         ${!isMe ? `
-          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:2rem;">
+          <div style="display:flex;flex-wrap:wrap;gap:.65rem;margin-bottom:2rem;">
             ${friendStatus === "friends"
-              ? `<button class="profile-action-btn" style="background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3);" onclick="window._featRemoveFriend('${uid}','${name}')">💔 Remove Friend</button>`
+              ? `<button class="profile-btn feat-btn-red" onclick="window._featRemoveFriend('${uid}','${name}')">💔 Remove Friend</button>`
               : friendStatus === "pending"
-              ? `<button class="profile-action-btn" style="background:rgba(255,255,255,0.08);color:#9ca3af;border:1px solid rgba(255,255,255,0.1);" disabled>✉️ Request Sent</button>`
-              : `<button class="profile-action-btn" style="background:#3b82f6;color:white;" onclick="window._featSendFriendReq('${uid}','${name}')">👋 Add Friend</button>`
-            }
+              ? `<button class="profile-btn" style="background:rgba(255,255,255,.08);color:#9ca3af;" disabled>✉️ Request Sent</button>`
+              : `<button class="profile-btn" style="background:#3b82f6;color:white;" onclick="window._featSendFriendReq('${uid}','${name}')">👋 Add Friend</button>`}
             ${myTeamId
-              ? `<button class="profile-action-btn" style="background:#7c3aed;color:white;" onclick="window._featInviteToTeam('${uid}','${name}')">⚔️ Invite to Team</button>`
-              : ""
-            }
+              ? `<button class="profile-btn" style="background:#7c3aed;color:white;" onclick="window._featInviteToTeam('${uid}','${name}')">⚔️ Invite to Team</button>`
+              : ""}
           </div>
-        ` : `<div style="color:#9ca3af;font-size:0.88rem;margin-bottom:1.5rem;">This is your profile</div>`}
+        ` : `<div style="color:#9ca3af;font-size:.85rem;margin-bottom:1.5rem;">✨ This is your profile</div>`}
 
-        <div style="background:rgba(255,255,255,0.04);border-radius:16px;padding:1.25rem;">
-          <h4 style="margin:0 0 0.75rem;font-weight:800;">Stats</h4>
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;">
-            <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:0.9rem;text-align:center;">
-              <div style="font-size:1.8rem;font-weight:900;">${xp}</div>
-              <div style="font-size:0.78rem;color:#9ca3af;">Total XP</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:0.9rem;text-align:center;">
-              <div style="font-size:1.8rem;font-weight:900;">${quizzes}</div>
-              <div style="font-size:0.78rem;color:#9ca3af;">Quizzes Done</div>
-            </div>
+        <div style="background:rgba(255,255,255,.04);border-radius:16px;padding:1.25rem;">
+          <h4 style="margin:0 0 .75rem;font-weight:800;">📊 Stats</h4>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;">
+            ${[["Total XP", xpVal.toLocaleString(), "#ffd12a"], ["Quizzes", quizzesN, "#60a5fa"], ["League", league, "#7cf0c2"]].map(([label, val, color]) => `
+              <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:.9rem;text-align:center;">
+                <div style="font-size:1.4rem;font-weight:900;color:${color};">${val}</div>
+                <div style="font-size:.72rem;color:#9ca3af;margin-top:2px;">${label}</div>
+              </div>`).join("")}
           </div>
         </div>
       `;
-    } catch(e) {
+    } catch (e) {
       body.innerHTML = `<p style="color:#f87171;">Could not load profile: ${e.message}</p>`;
     }
   };
 
   async function checkIsTop5(uid) {
     const snap = await window.database.ref("leaderboard").orderByChild("points").limitToLast(5).once("value");
-    let top5 = [];
+    const top5 = [];
     snap.forEach(c => top5.push(c.key));
     return top5.includes(uid);
   }
 
-  window._featSendFriendReq = async function(targetUid, targetName) {
+  window._featSendFriendReq = async function (targetUid, targetName) {
     const user = window.auth?.currentUser;
     if (!user) { showFeatToast("Sign in first!"); return; }
     await window.database.ref(`accounts/${user.uid}/friends/${targetUid}`).set("pending");
     await window.database.ref(`accounts/${targetUid}/friendRequests/${user.uid}`).set({
       from: user.uid, name: window.currentPlayer || user.displayName || "Player", ts: Date.now()
     });
-    showFeatToast(`Friend request sent to ${targetName}!`);
+    showFeatToast(`Friend request sent to ${targetName}! 👋`);
     window._openPlayerProfile(targetUid);
   };
 
-  window._featRemoveFriend = async function(targetUid, targetName) {
+  window._featRemoveFriend = async function (targetUid, targetName) {
     const user = window.auth?.currentUser;
     if (!user) return;
     await window.database.ref(`accounts/${user.uid}/friends/${targetUid}`).remove();
@@ -825,182 +896,187 @@
     window._openPlayerProfile(targetUid);
   };
 
-  window._featInviteToTeam = async function(targetUid, targetName) {
+  window._featInviteToTeam = async function (targetUid, targetName) {
     const user = window.auth?.currentUser;
-    if (!user || !myTeamId) { showFeatToast("You need to be in a team first!"); return; }
+    if (!user || !myTeamId) { showFeatToast("Join a team first!"); return; }
     await window.database.ref(`accounts/${targetUid}/teamInvites/${myTeamId}`).set({
-      from: user.uid, fromName: window.currentPlayer || "Player",
+      from: user.uid, fromName: window.currentPlayer || user.displayName || "Player",
       teamId: myTeamId, ts: Date.now()
     });
-    showFeatToast(`Team invite sent to ${targetName}!`);
+    showFeatToast(`Team invite sent to ${targetName}! ⚔️`);
   };
 
-  /* ── INJECT COINS DISPLAY INTO HEADER ───────────────────────── */
+  /* ── COINS IN HEADER ─────────────────────────────────────────── */
   function injectCoinsIntoHeader() {
-    // Add coins display next to the profile button in header
-    const profileBtn = document.getElementById("openDashboardBtn") || document.getElementById("hamburgerBtn");
-    if (!profileBtn) return;
-    if (document.getElementById("coinsHeaderBtn")) return;
-
-    const coinsBtn = document.createElement("button");
-    coinsBtn.id = "coinsHeaderBtn";
-    coinsBtn.className = "coins-display";
-    coinsBtn.innerHTML = `<span class="coins-val">${coins}</span> 🪙`;
-    coinsBtn.addEventListener("click", openMarket);
-    profileBtn.parentElement.insertBefore(coinsBtn, profileBtn);
+    const anchor = document.getElementById("openDashboardBtn") ||
+      document.getElementById("hamburgerBtn") ||
+      document.querySelector("header button, nav button");
+    if (!anchor || document.getElementById("coinsHeaderBtn")) return;
+    const btn = document.createElement("button");
+    btn.id = "coinsHeaderBtn";
+    btn.className = "coins-display";
+    btn.innerHTML = `<span class="coins-val">${coins.toLocaleString()}</span> 🪙`;
+    btn.addEventListener("click", window.openMarket);
+    anchor.parentElement.insertBefore(btn, anchor);
   }
 
-  /* ── DASHBOARD TEAM TAB INJECTION ───────────────────────────── */
+  /* ── TEAM TAB IN DASHBOARD ───────────────────────────────────── */
   function injectDashboardTeamTab() {
     const tabs = document.querySelector("#dashboardModal .tabs");
     if (!tabs || document.querySelector('[data-tab="teams"]')) return;
 
-    const teamTab = document.createElement("div");
-    teamTab.className = "tab";
-    teamTab.dataset.tab = "teams";
-    teamTab.textContent = "Teams";
-    tabs.appendChild(teamTab);
+    const tab = document.createElement("div");
+    tab.className = "tab";
+    tab.dataset.tab = "teams";
+    tab.textContent = "⚔️ Teams";
+    tabs.appendChild(tab);
 
     const dashContent = document.getElementById("dashboardContent");
     if (!dashContent) return;
-    const teamTabContent = document.createElement("div");
-    teamTabContent.className = "tab-content";
-    teamTabContent.id = "teamsTab";
-    teamTabContent.style.display = "none";
-    teamTabContent.innerHTML = `
+    const panel = document.createElement("div");
+    panel.className = "tab-content";
+    panel.id = "teamsTab";
+    panel.style.display = "none";
+    panel.innerHTML = `
       <div style="padding:1rem 0;">
-        <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
-          <button onclick="openTeamsModal()" style="background:#3b82f6;border:none;color:white;padding:0.7rem 1.4rem;border-radius:12px;font-weight:700;cursor:pointer;">⚔️ Open Teams</button>
+        <p style="color:#9ca3af;margin:0 0 1.25rem;font-size:.9rem;">Form a team, compete on the team leaderboard, and invite friends — NitroType style.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;">
+          <button onclick="window.openTeams()" class="feat-btn feat-btn-blue">⚔️ Open Teams</button>
+          <button onclick="window.openMarket()" class="feat-btn" style="background:rgba(255,213,42,.15);color:#ffd12a;border:1px solid rgba(255,213,42,.3);">🛒 Market</button>
         </div>
-        <div id="dashTeamPreview" style="color:#9ca3af;">Click "Open Teams" to manage your team.</div>
-      </div>
-    `;
-    dashContent.appendChild(teamTabContent);
+        <div id="dashTeamPreview"></div>
+      </div>`;
+    dashContent.appendChild(panel);
 
-    // Wire tab click
-    teamTab.addEventListener("click", () => {
+    tab.addEventListener("click", () => {
       document.querySelectorAll("#dashboardModal .tab").forEach(t => t.classList.remove("active"));
       document.querySelectorAll("#dashboardModal .tab-content").forEach(c => c.style.display = "none");
-      teamTab.classList.add("active");
-      teamTabContent.style.display = "block";
+      document.getElementById("quizDetailView") && (document.getElementById("quizDetailView").style.display = "none");
+      tab.classList.add("active");
+      panel.style.display = "block";
+      // Render mini team preview
+      renderDashTeamPreview();
     });
   }
 
-  window.openTeamsModal = function() {
-    openTeams();
-    // Close dashboard
-    const dash = document.getElementById("dashboardModal");
-    if (dash) dash.classList.remove("open");
-  };
+  function renderDashTeamPreview() {
+    const preview = document.getElementById("dashTeamPreview");
+    if (!preview) return;
+    const user = window.auth?.currentUser;
+    if (!user) { preview.innerHTML = '<p style="color:#9ca3af;">Sign in to see your team.</p>'; return; }
+    if (!myTeamId) { preview.innerHTML = '<p style="color:#9ca3af;">You\'re not in a team yet. Open Teams to create or join one.</p>'; return; }
+    window.database.ref(`teams/${myTeamId}`).once("value", snap => {
+      const team = snap.val();
+      if (!team) { preview.innerHTML = '<p style="color:#9ca3af;">Team not found.</p>'; return; }
+      preview.innerHTML = `
+        <div style="background:rgba(255,255,255,.05);border-radius:16px;padding:1.1rem;border:1px solid rgba(96,165,250,.2);">
+          <div style="display:flex;align-items:center;gap:.75rem;">
+            <span style="font-size:2rem;">${team.emoji || "⚔️"}</span>
+            <div>
+              <div style="font-weight:900;">${team.name}</div>
+              <div style="font-size:.8rem;color:#9ca3af;">${Object.keys(team.members || {}).length} members · <span style="color:#ffd12a;">${(team.totalXp || 0).toLocaleString()} XP</span></div>
+            </div>
+          </div>
+        </div>`;
+    });
+  }
 
-  /* ── QUIZ OVER DASHBOARD FIX ────────────────────────────────── */
+  /* ── QUIZ OVER DASHBOARD ─────────────────────────────────────── */
   function fixQuizOverDashboard() {
     const quizOverlay = document.getElementById("quizOverlay");
-    const quizShell = document.getElementById("quizShell");
     if (quizOverlay) quizOverlay.style.zIndex = "10000";
+    const quizShell = document.getElementById("quizShell");
     if (quizShell) quizShell.style.zIndex = "10001";
 
-    // Also patch startCustomQuiz to NOT close dashboard first
-    const origStartCustomQuiz = window.startCustomQuiz;
-    if (origStartCustomQuiz && !origStartCustomQuiz._patched) {
-      window.startCustomQuiz = function(idx) {
-        // Don't close dashboard — quiz is z:10000, dashboard is z:1000
-        return origStartCustomQuiz.call(this, idx);
+    // Patch startCustomQuiz so it doesn't close dashboard
+    const orig = window.startCustomQuiz;
+    if (orig && !orig._featPatched) {
+      window.startCustomQuiz = function (idx) {
+        return orig.call(this, idx);
       };
-      window.startCustomQuiz._patched = true;
+      window.startCustomQuiz._featPatched = true;
     }
 
-    // Patch unit card clicks in dashboard to not close it
+    // Capture quiz-start clicks inside dashboard without closing it
     const dashContent = document.getElementById("dashboardContent");
-    if (dashContent) {
-      dashContent.addEventListener("click", function(e) {
-        const playBtn = e.target.closest('[data-action="launch-custom-quiz"], .play-btn[data-quiz-id]');
-        if (playBtn) {
-          e.stopPropagation();
-          const qid = playBtn.dataset.quizId || playBtn.dataset.quizIndex;
-          const allQ = [...(window.customQuizzes||[]), ...(window.userQuizzes||[]), ...(window.publicQuizzes||[])];
-          let quiz = allQ.find(q => String(q.id) === String(qid) || String(q.firestoreId) === String(qid));
-          if (!quiz && !isNaN(+qid)) quiz = allQ[+qid];
-          if (quiz) {
-            let idx = (window.customQuizzes||[]).findIndex(q => q.id === quiz.id);
-            if (idx < 0) { (window.customQuizzes = window.customQuizzes||[]).push(quiz); idx = window.customQuizzes.length-1; }
-            if (window.startCustomQuiz) window.startCustomQuiz(idx);
+    if (dashContent && !dashContent._featWired) {
+      dashContent._featWired = true;
+      dashContent.addEventListener("click", function (e) {
+        const btn = e.target.closest('[data-action="launch-custom-quiz"], .play-btn[data-quiz-id]');
+        if (!btn) return;
+        e.stopPropagation();
+        const qid = btn.dataset.quizId || btn.dataset.quizIndex;
+        const allQ = [...(window.customQuizzes || []), ...(window.publicQuizzes || [])];
+        let quiz = allQ.find(q => String(q.id) === String(qid));
+        if (!quiz && !isNaN(+qid)) quiz = allQ[+qid];
+        if (quiz) {
+          let idx = (window.customQuizzes || []).findIndex(q => q.id === quiz.id);
+          if (idx < 0) {
+            window.customQuizzes = window.customQuizzes || [];
+            window.customQuizzes.push(quiz);
+            idx = window.customQuizzes.length - 1;
           }
+          if (window.startCustomQuiz) window.startCustomQuiz(idx);
         }
       }, true);
     }
   }
 
-  /* ── PATCH submitQuiz for coins + leaderboard ───────────────── */
+  /* ── PATCH submitQuiz ────────────────────────────────────────── */
   function patchSubmitQuiz() {
     const orig = window.submitQuiz;
-    if (!orig || orig._coinPatched) return;
-    window.submitQuiz = async function() {
+    if (!orig || orig._featCoinPatched) return;
+    window.submitQuiz = async function () {
       const result = await orig.apply(this, arguments);
-      // Award coins based on last quiz accuracy
       setTimeout(() => {
-        const accuracyEl = document.querySelector("#quizResults .accuracy-value, #resultAccuracy, [data-result='accuracy']");
-        let accuracy = 0;
-        if (accuracyEl) {
-          accuracy = parseInt(accuracyEl.textContent) || 0;
-        } else {
-          // Fallback: compute from result display text
-          const txt = document.querySelector("#quizShell")?.innerText || "";
-          const m = txt.match(/(\d+)%/);
-          if (m) accuracy = parseInt(m[1]);
-        }
+        const accuracy = Number(window._lastQuizAccuracy || 0);
         awardCoins(accuracy);
+
+        // Apply XP boost if equipped
+        if (equippedItems["xpboost"] === "xp_boost_1") {
+          const bonus = (window.xp || 0); // already counted once; just add same amount
+          window.xp = (window.xp || 0) + (accuracy > 0 ? Math.round(accuracy / 10) * 10 : 0);
+          delete equippedItems["xpboost"];
+          saveCoins();
+          showFeatToast("⚡ 2× XP Boost applied!");
+        }
 
         // Update team XP
         const user = window.auth?.currentUser;
         if (user && myTeamId) {
-          window.database.ref(`teams/${myTeamId}/members/${user.uid}/xp`).set(window.xp||0);
-          // Recompute team total
+          window.database.ref(`teams/${myTeamId}/members/${user.uid}/xp`).set(window.xp || 0);
           window.database.ref(`teams/${myTeamId}/members`).once("value", s => {
             let total = 0;
-            s.forEach(c => total += Number(c.val()?.xp||0));
+            s.forEach(c => total += Number(c.val()?.xp || 0));
             window.database.ref(`teams/${myTeamId}/totalXp`).set(total);
           });
         }
 
-        // Write to leaderboard RTDB
+        // Write leaderboard
         if (user) {
           const name = window.currentPlayer || user.displayName || "Player";
-          const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`;
+          const avatar = user.photoURL ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`;
           window.database.ref(`leaderboard/${user.uid}`).set({
-            uid: user.uid, name, points: window.xp||0, weeklyXp: window.xp||0,
-            quizzes: (window.history||[]).length,
-            league: (typeof window.getLeague === "function" ? window.getLeague(window.xp||0).name : "Bronze"),
+            uid: user.uid, name,
+            points: window.xp || 0,
+            weeklyXp: window.xp || 0,
+            quizzes: (window.history || []).length,
+            league: (typeof window.getLeague === "function" ? window.getLeague(window.xp || 0).name : "Bronze"),
             avatar, updatedAt: Date.now()
           });
         }
-      }, 600);
+
+        checkAndShowTop5Banner();
+      }, 500);
       return result;
     };
-    window.submitQuiz._coinPatched = true;
+    window.submitQuiz._featCoinPatched = true;
   }
 
-  /* ── TOP-5 BANNER ON HOME ───────────────────────────────────── */
-  function checkAndShowTop5Banner() {
-    const user = window.auth?.currentUser;
-    if (!user) return;
-    checkIsTop5(user.uid).then(isTop5 => {
-      if (!isTop5) return;
-      // Show banner on home hero section
-      const hero = document.getElementById("section-hero") || document.querySelector("header, nav, .hero");
-      if (!hero) return;
-      if (document.getElementById("top5HomeBanner")) return;
-      const banner = document.createElement("div");
-      banner.id = "top5HomeBanner";
-      banner.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:500;padding:0.5rem;text-align:center;background:linear-gradient(90deg,#f59e0b,#ef4444,#a855f7,#3b82f6);background-size:300%;animation:top5Shimmer 3s linear infinite;font-weight:900;color:white;font-size:0.9rem;letter-spacing:0.05em;";
-      banner.innerHTML = "🏆 YOU ARE IN THE TOP 5! 🏆";
-      document.body.prepend(banner);
-    });
-  }
-
-  /* ── LEADERBOARD: live sync fix ─────────────────────────────── */
+  /* ── LEADERBOARD PATCH ───────────────────────────────────────── */
   function patchLeaderboard() {
-    window.showLeaderboard = function() {
+    window.showLeaderboard = function () {
       const modal = document.getElementById("leaderboardModal");
       const lc = document.getElementById("leaderboardContent");
       const ur = document.getElementById("userRank");
@@ -1014,46 +1090,48 @@
         const entries = Object.keys(rows).map(uid => {
           const d = rows[uid];
           const name = d.name || d.username || "Player";
-          const pts = Number(d.points || d.weeklyXp || d.xp || 0);
-          return { uid, name, points: pts, quizzes: Number(d.quizzes||0),
-            avatar: d.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
-            league: d.league || "Bronze" };
-        }).sort((a,b) => b.points - a.points);
+          return { uid, name, points: Number(d.points || d.weeklyXp || d.xp || 0),
+            quizzes: Number(d.quizzes || 0), league: d.league || "Bronze",
+            avatar: d.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff` };
+        }).sort((a, b) => b.points - a.points);
 
-        const top20 = entries.slice(0, 20);
         const myUid = window.auth?.currentUser?.uid;
         const myIdx = entries.findIndex(e => myUid ? e.uid === myUid : e.name === window.currentPlayer);
         const myEntry = myIdx >= 0 ? entries[myIdx] : null;
 
         if (ur) ur.innerHTML = `
-          <div style="width:44px;height:44px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;margin-right:0.9rem;">
-            <span style="font-weight:900;">#${myIdx >= 0 ? myIdx+1 : "-"}</span>
+          <div style="width:44px;height:44px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;margin-right:.9rem;font-weight:900;font-size:.9rem;">
+            #${myIdx >= 0 ? myIdx + 1 : "-"}
           </div>
-          <div style="flex:1;display:flex;justify-content:space-between;align-items:center;">
+          <div style="flex:1;display:flex;justify-content:space-between;align-items:center;gap:.5rem;">
             <span style="font-weight:700;">${myEntry?.name || window.currentPlayer}</span>
-            <span style="font-weight:700;color:#ffd12a;">${myEntry?.points ?? (window.xp||0)} XP</span>
+            <span style="font-weight:700;color:#ffd12a;">${(myEntry?.points ?? (window.xp || 0)).toLocaleString()} XP</span>
           </div>`;
 
         if (!lc) return;
+        const top20 = entries.slice(0, 20);
         if (!top20.length) { lc.innerHTML = '<div style="text-align:center;padding:2rem;color:#9ca3af;">No players yet!</div>'; return; }
-        const medals = ["🥇","🥈","🥉"];
+        const medals = ["🥇", "🥈", "🥉"];
         const highest = Math.max(1, top20[0].points);
-        lc.innerHTML = '<div style="display:flex;flex-direction:column;gap:0.5rem;">' + top20.map((e,i) => {
-          const isMe = myUid ? e.uid === myUid : e.name === window.currentPlayer;
-          const fill = Math.min(100, Math.round(e.points/highest*100));
-          return `<div style="display:flex;align-items:center;gap:0.7rem;padding:0.8rem;border-radius:14px;
-            border:${isMe?"2px solid rgba(88,204,2,0.6)":"1px solid rgba(255,255,255,0.08)"};
-            background:${isMe?"rgba(88,204,2,0.08)":"rgba(255,255,255,0.04)"};
-            cursor:pointer;" onclick="window._openPlayerProfile('${e.uid}')">
-            <div style="width:36px;text-align:center;font-weight:900;font-size:${i<3?"1.3":"0.9"}rem;">${medals[i]||"#"+(i+1)}</div>
-            <img src="${e.avatar}" style="width:34px;height:34px;border-radius:10px;object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(e.name)}&background=111827&color=fff'">
-            <div style="flex:1;min-width:0;">
-              <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}${isMe?" ⭐":""}</div>
-              <div style="height:5px;border-radius:99px;background:rgba(0,0,0,0.3);margin-top:3px;"><div style="height:100%;width:${fill}%;border-radius:99px;background:linear-gradient(90deg,#58cc02,#1cb0f6);"></div></div>
-            </div>
-            <strong style="white-space:nowrap;color:${i===0?"#ffd12a":i===1?"#e2e8f0":i===2?"#cd7f32":"white"}">${e.points} XP</strong>
-          </div>`;
-        }).join("") + "</div>";
+        lc.innerHTML = '<div style="display:flex;flex-direction:column;gap:.45rem;">' +
+          top20.map((e, i) => {
+            const isMe = myUid ? e.uid === myUid : e.name === window.currentPlayer;
+            const fill = Math.min(100, Math.round(e.points / highest * 100));
+            return `<div style="display:flex;align-items:center;gap:.7rem;padding:.8rem;border-radius:14px;
+              border:${isMe ? "2px solid rgba(96,165,250,.6)" : "1px solid rgba(255,255,255,.08)"};
+              background:${isMe ? "rgba(96,165,250,.08)" : "rgba(255,255,255,.04)"};cursor:pointer;"
+              onclick="window._openPlayerProfile('${e.uid}')">
+              <div style="width:36px;text-align:center;font-weight:900;font-size:${i < 3 ? "1.2" : ".88"}rem;">${medals[i] || "#" + (i + 1)}</div>
+              <img src="${e.avatar}" style="width:34px;height:34px;border-radius:10px;object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(e.name)}&background=111827&color=fff'">
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}${isMe ? " ⭐" : ""}</div>
+                <div style="height:4px;border-radius:99px;background:rgba(0,0,0,.3);margin-top:3px;">
+                  <div style="height:100%;width:${fill}%;border-radius:99px;background:linear-gradient(90deg,#60a5fa,#7cf0c2);"></div>
+                </div>
+              </div>
+              <strong style="white-space:nowrap;font-size:.95rem;">${e.points.toLocaleString()} XP</strong>
+            </div>`;
+          }).join("") + "</div>";
       });
     };
 
@@ -1069,19 +1147,13 @@
     }
   }
 
-  /* ── PUBLIC QUIZZES GLOBAL SYNC ─────────────────────────────── */
+  /* ── PUBLIC QUIZZES SYNC ─────────────────────────────────────── */
   function patchPublicQuizzes() {
-    // Listen for any quiz saved to RTDB publicQuizzes and render in Public tab
     window.database.ref("publicQuizzes").on("value", snap => {
       const data = snap.val() || {};
-      const quizzes = Object.values(data).filter(q => q && q.questions && q.questions.length);
-      quizzes.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+      const quizzes = Object.values(data).filter(q => q?.questions?.length);
+      quizzes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-      // Merge into window.publicQuizzes (app's array)
-      const existingIds = new Set((window.publicQuizzes||[]).map(q => q.id));
-      quizzes.forEach(q => { if (!existingIds.has(q.id)) (window.publicQuizzes||[]).push(q); });
-
-      // Render public tab
       const list = document.getElementById("publicQuizzesList");
       if (!list) return;
       if (!quizzes.length) {
@@ -1090,138 +1162,109 @@
       }
       const myUid = window.auth?.currentUser?.uid;
       list.innerHTML = quizzes.map(quiz => {
-        const id = String(quiz.id||"").replace(/['"<>]/g,"");
+        const id = String(quiz.id || "").replace(/['"<>]/g, "");
         const isMine = myUid && quiz.authorId === myUid;
-        const qCount = Array.isArray(quiz.questions) ? quiz.questions.length : 0;
+        const qCount = (quiz.questions || []).length;
         return `
-          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.25rem;margin-bottom:0.75rem;transition:all 0.2s;">
-            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem;">
-              <span style="font-size:0.78rem;color:#9ca3af;">🌐 Public ${isMine?"· <span style='color:#93c5fd;'>Yours</span>":""}</span>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.1rem;margin-bottom:.65rem;">
+            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
+              <span style="font-size:.75rem;color:#9ca3af;">🌐 Public${isMine ? " · <span style='color:#93c5fd;'>Yours</span>" : ""}</span>
             </div>
-            <h3 style="margin:0 0 0.4rem;font-weight:800;">${quiz.title||"Untitled"}</h3>
-            ${quiz.description?`<p style="color:#9ca3af;font-size:0.88rem;margin:0 0 0.5rem;">${quiz.description}</p>`:""}
-            <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.75rem;">By ${quiz.author||"Unknown"} · ${qCount} questions</div>
-            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-              <button onclick="window._playPublicQuiz('${id}')" style="background:#3b82f6;border:none;color:white;padding:0.45rem 1.1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">▶ Play</button>
-              ${isMine?`<button onclick="window._deletePublicQuiz('${id}')" style="background:#ef4444;border:none;color:white;padding:0.45rem 0.9rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">🗑 Delete</button>`:""}
+            <h3 style="margin:0 0 .3rem;font-weight:800;font-size:1rem;">${quiz.title || "Untitled"}</h3>
+            ${quiz.description ? `<p style="color:#9ca3af;font-size:.85rem;margin:0 0 .4rem;">${quiz.description}</p>` : ""}
+            <div style="font-size:.75rem;color:#6b7280;margin-bottom:.65rem;">By ${quiz.author || "Unknown"} · ${qCount} questions</div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+              <button onclick="window._playPublicQuiz('${id}')" class="feat-btn feat-btn-blue" style="font-size:.85rem;padding:.42rem 1rem;">▶ Play</button>
+              ${isMine ? `<button onclick="window._deletePublicQuiz('${id}')" class="feat-btn feat-btn-red" style="font-size:.85rem;padding:.42rem .9rem;">🗑 Delete</button>` : ""}
             </div>
           </div>`;
       }).join("");
     });
 
-    window._playPublicQuiz = function(quizId) {
+    window._playPublicQuiz = function (quizId) {
       window.database.ref(`publicQuizzes/${quizId}`).once("value", snap => {
         const quiz = snap.val();
-        if (!quiz || !quiz.questions) { showFeatToast("Quiz not found."); return; }
+        if (!quiz?.questions) { showFeatToast("Quiz not found."); return; }
         window.customQuizzes = window.customQuizzes || [];
-        window.customQuizzes.push(quiz);
-        const idx = window.customQuizzes.length - 1;
+        const existing = window.customQuizzes.findIndex(q => q.id === quizId);
+        let idx;
+        if (existing >= 0) { idx = existing; }
+        else { window.customQuizzes.push(quiz); idx = window.customQuizzes.length - 1; }
         if (window.startCustomQuiz) window.startCustomQuiz(idx);
       });
     };
 
-    window._deletePublicQuiz = async function(quizId) {
+    window._deletePublicQuiz = async function (quizId) {
       if (!confirm("Delete this public quiz?")) return;
       await window.database.ref(`publicQuizzes/${quizId}`).remove();
-      await window.firestore.collection("publicQuizzes").doc(quizId).delete().catch(()=>{});
+      await window.firestore.collection("publicQuizzes").doc(quizId).delete().catch(() => {});
       showFeatToast("Quiz deleted.");
     };
-
-    // Re-wire Save Quiz button
-    const saveBtn = document.getElementById("saveQuizBtn");
-    if (saveBtn && !saveBtn._featWired) {
-      saveBtn._featWired = true;
-      const newBtn = saveBtn.cloneNode(true);
-      saveBtn.parentNode.replaceChild(newBtn, saveBtn);
-      newBtn.addEventListener("click", async () => {
-        const user = window.auth?.currentUser;
-        if (!user) { showFeatToast("Sign in to save a quiz."); return; }
-        const title = (document.getElementById("quizTitleInput")?.value||"").trim();
-        const desc = (document.getElementById("quizDescriptionInput")?.value||"").trim();
-        if (!title) { showFeatToast("Enter a quiz title first."); return; }
-        const visEl = document.querySelector('input[name="quizVisibility"]:checked');
-        const isPublic = visEl ? visEl.value === "public" : true;
-        const questions = [];
-        let valid = true;
-        document.querySelectorAll("#questionsContainer .question-block").forEach(block => {
-          const qText = (block.querySelector(".question-text")?.value||"").trim();
-          const opts = Array.from(block.querySelectorAll(".option-input")).map(i=>(i.value||"").trim());
-          const cidx = block.querySelector(".correct-answer-select")?.value;
-          if (!qText || opts.some(o=>!o) || cidx==="") valid = false;
-          questions.push({ question:qText, options:opts, choices:opts, answer:opts[Number(cidx)], correctIndex:Number(cidx) });
-        });
-        if (!valid || !questions.length) { showFeatToast("Fill in all question fields."); return; }
-        const quizId = "quiz-"+Date.now()+"-"+Math.random().toString(36).slice(2);
-        const quiz = {
-          id:quizId, title, description:desc, questions,
-          author: window.currentPlayer || user.displayName || "User",
-          authorId: user.uid,
-          authorPhoto: user.photoURL || null,
-          visibility: isPublic?"public":"private",
-          public: isPublic, createdAt: Date.now()
-        };
-        try {
-          await window.database.ref(`userQuizzes/${user.uid}/${quizId}`).set(quiz);
-          await window.firestore.collection("users").doc(user.uid).collection("quizzes").doc(quizId).set(quiz);
-          if (isPublic) {
-            await window.database.ref(`publicQuizzes/${quizId}`).set(quiz);
-            await window.firestore.collection("publicQuizzes").doc(quizId).set(quiz);
-          }
-          document.getElementById("createQuizModal").classList.remove("open");
-          document.getElementById("createQuizModal").classList.add("hidden");
-          showFeatToast(isPublic ? "✅ Quiz saved and is PUBLIC for everyone!" : "✅ Quiz saved privately.");
-        } catch(e) {
-          showFeatToast("Error saving: " + e.message);
-        }
-      });
-    }
   }
 
-  /* ── TOAST ──────────────────────────────────────────────────── */
+  /* ── TOP-5 BANNER ────────────────────────────────────────────── */
+  function checkAndShowTop5Banner() {
+    const user = window.auth?.currentUser;
+    if (!user) return;
+    checkIsTop5(user.uid).then(isTop5 => {
+      const existing = document.getElementById("top5HomeBanner");
+      if (!isTop5) { if (existing) existing.remove(); return; }
+      if (existing) return;
+      const banner = document.createElement("div");
+      banner.id = "top5HomeBanner";
+      banner.innerHTML = "🏆 YOU'RE IN THE TOP 5! 🏆";
+      banner.addEventListener("click", () => window._openPlayerProfile(user.uid));
+      document.body.prepend(banner);
+    });
+  }
+
+  /* ── TOAST ───────────────────────────────────────────────────── */
   function showFeatToast(msg) {
     if (window.showToast) { window.showToast(msg); return; }
     const t = document.createElement("div");
-    t.style.cssText = "position:fixed;bottom:20px;right:20px;z-index:99999;background:rgba(17,24,39,0.95);border:1px solid rgba(255,255,255,0.15);color:white;padding:0.8rem 1.3rem;border-radius:14px;font-weight:600;font-size:0.9rem;box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:lgFadeIn 0.3s ease;";
+    t.style.cssText = "position:fixed;bottom:20px;right:20px;z-index:99999;background:rgba(17,24,39,.96);border:1px solid rgba(255,255,255,.15);color:white;padding:.75rem 1.2rem;border-radius:14px;font-weight:600;font-size:.9rem;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:lgIn .3s ease;max-width:320px;";
     t.textContent = msg;
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 3000);
   }
 
-  /* ── INIT ───────────────────────────────────────────────────── */
+  /* ── INIT ────────────────────────────────────────────────────── */
   function init() {
     injectCSS();
 
-    // Show login gate on every page load if not signed in
     window.auth.onAuthStateChanged(user => {
       if (user) {
         hideLoginGate();
         startSessionTracking();
         loadCoins();
         checkAndShowTop5Banner();
-        // Check for pending friend requests
+        // Load team ID
+        window.database.ref(`accounts/${user.uid}/teamId`).once("value", s => { myTeamId = s.val(); });
+        // Notify pending friend requests
         window.database.ref(`accounts/${user.uid}/friendRequests`).once("value", snap => {
           const reqs = snap.val();
-          if (reqs && Object.keys(reqs).length > 0) {
-            showFeatToast(`👋 You have ${Object.keys(reqs).length} friend request(s)!`);
-          }
+          if (reqs) showFeatToast(`👋 You have ${Object.keys(reqs).length} friend request(s)!`);
         });
-        // Check for team invites
+        // Handle team invites
         window.database.ref(`accounts/${user.uid}/teamInvites`).once("value", snap => {
           const invites = snap.val();
-          if (invites && Object.keys(invites).length > 0) {
-            const teamId = Object.keys(invites)[0];
-            const invite = invites[teamId];
-            if (confirm(`⚔️ ${invite.fromName} invited you to join their team! Accept?`)) {
-              window._featJoinTeamById(teamId, user);
-            }
+          if (!invites) return;
+          const teamId = Object.keys(invites)[0];
+          const invite = invites[teamId];
+          if (confirm(`⚔️ ${invite.fromName} invited you to join their team "${teamId}"! Accept?`)) {
+            window._featJoinTeamById(teamId, user);
+          } else {
+            window.database.ref(`accounts/${user.uid}/teamInvites/${teamId}`).remove();
           }
         });
       } else {
         showLoginGate();
+        clearTimeout(_sessionTimer);
+        localStorage.removeItem(SESSION_KEY);
       }
     });
 
-    // Wait for DOM + app to fully boot, then patch
+    // Patch everything after app boots
     const patchAll = () => {
       injectCoinsIntoHeader();
       injectDashboardTeamTab();
@@ -1232,24 +1275,11 @@
     };
 
     if (document.readyState === "complete") {
-      setTimeout(patchAll, 800);
+      setTimeout(patchAll, 900);
     } else {
-      window.addEventListener("load", () => setTimeout(patchAll, 800));
+      window.addEventListener("load", () => setTimeout(patchAll, 900));
     }
   }
 
-  window._featJoinTeamById = async function(teamId, user) {
-    await window.database.ref(`teams/${teamId}/members/${user.uid}`).set({
-      name: window.currentPlayer || user.displayName || "Player",
-      xp: window.xp || 0, joinedAt: Date.now()
-    });
-    await window.database.ref(`teams/${teamId}/memberCount`).transaction(n => (n||0)+1);
-    await window.database.ref(`accounts/${user.uid}/teamId`).set(teamId);
-    await window.database.ref(`accounts/${user.uid}/teamInvites/${teamId}`).remove();
-    myTeamId = teamId;
-    showFeatToast("Joined team!");
-  };
-
   waitForFirebase(init);
-
 })();
