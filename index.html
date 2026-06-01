@@ -6,20 +6,7 @@
   <title>Exam Bank Portal X</title>
   
   <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com">
-    // Global click fix to ensure modals and buttons work
-    document.addEventListener('click', function(e) {
-      // If clicking a close button, find the parent modal and close it
-      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
-        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
-        if (modal) {
-          modal.classList.add('hidden');
-          modal.classList.remove('open', 'flex');
-        }
-      }
-    }, true);
-    
-</script>
+  <script src="https://cdn.tailwindcss.com"></script>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,76 +14,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
   
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
-    // Global click fix to ensure modals and buttons work
-    document.addEventListener('click', function(e) {
-      // If clicking a close button, find the parent modal and close it
-      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
-        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
-        if (modal) {
-          modal.classList.add('hidden');
-          modal.classList.remove('open', 'flex');
-        }
-      }
-    }, true);
-    
-</script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js">
-    // Global click fix to ensure modals and buttons work
-    document.addEventListener('click', function(e) {
-      // If clicking a close button, find the parent modal and close it
-      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
-        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
-        if (modal) {
-          modal.classList.add('hidden');
-          modal.classList.remove('open', 'flex');
-        }
-      }
-    }, true);
-    
-</script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js">
-    // Global click fix to ensure modals and buttons work
-    document.addEventListener('click', function(e) {
-      // If clicking a close button, find the parent modal and close it
-      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
-        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
-        if (modal) {
-          modal.classList.add('hidden');
-          modal.classList.remove('open', 'flex');
-        }
-      }
-    }, true);
-    
-</script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js">
-    // Global click fix to ensure modals and buttons work
-    document.addEventListener('click', function(e) {
-      // If clicking a close button, find the parent modal and close it
-      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
-        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
-        if (modal) {
-          modal.classList.add('hidden');
-          modal.classList.remove('open', 'flex');
-        }
-      }
-    }, true);
-    
-</script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js">
-    // Global click fix to ensure modals and buttons work
-    document.addEventListener('click', function(e) {
-      // If clicking a close button, find the parent modal and close it
-      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
-        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
-        if (modal) {
-          modal.classList.add('hidden');
-          modal.classList.remove('open', 'flex');
-        }
-      }
-    }, true);
-    
-</script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   
   <style>
     :root {
@@ -1427,120 +1349,6 @@
       }
     }
 
-  
-    /* Market & Team Styles */
-    .market-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-    .market-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 1.5rem;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-    .market-item:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--gold);
-    }
-    .market-item .price {
-      color: var(--gold);
-      font-weight: 800;
-      font-size: 1.2rem;
-      margin: 1rem 0;
-    }
-    .buy-btn {
-      width: 100%;
-      background: var(--gold);
-      color: #000;
-      font-weight: 700;
-      padding: 0.75rem;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-    }
-    .team-member-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      margin-bottom: 0.5rem;
-    }
-    .team-badge {
-      font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-    .badge-captain { background: #ef4444; color: white; }
-    .badge-officer { background: #3b82f6; color: white; }
-    .badge-member { background: #6b7280; color: white; }
-
-  
-    /* Market & Team Styles */
-    .market-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-    .market-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 1.5rem;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-    .market-item:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 255, 255, 0.08);
-      border-color: #ffd166;
-    }
-    .market-item .price {
-      color: #ffd166;
-      font-weight: 800;
-      font-size: 1.2rem;
-      margin: 1rem 0;
-    }
-    .buy-btn {
-      width: 100%;
-      background: #ffd166;
-      color: #000;
-      font-weight: 700;
-      padding: 0.75rem;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-    }
-    .team-member-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      margin-bottom: 0.5rem;
-    }
-    .team-badge {
-      font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-    .badge-captain { background: #ef4444; color: white; }
-    .badge-officer { background: #3b82f6; color: white; }
-    .badge-member { background: #6b7280; color: white; }
-
   </style>
 </head>
 <body>
@@ -1717,12 +1525,6 @@
         </button>
         <div class="flex items-center gap-3">
           <button id="headerLeaderboardBtn" class="glass rounded-2xl px-5 py-4 font-bold transition hover: bg-white/10">Leaderboard</button>
-          
-          <div class="glass rounded-2xl px-5 py-4 text-right">
-            <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Gold</p>
-            <div class="flex items-center justify-end gap-2"><svg class="w-6 h-6 inline-block mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><text x="12" y="17" text-anchor="middle" fill="#B8860B" font-size="14" font-weight="bold" font-family="Arial">G</text></svg><div class="flex items-center justify-end gap-1"><span class="gold-coin-logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle; margin-right:4px;"><circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><text x="12" y="17" text-anchor="middle" fill="#B8860B" font-size="12" font-weight="bold" font-family="Arial">G</text></svg></span><p id="headerGoldCount" class="text-2xl font-black text-gold">0</p></div></div>
-          </div>
-
           <div class="glass rounded-2xl px-5 py-4 text-right">
             <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Points</p>
             <p id="headerPointsCount" class="text-2xl font-black text-emerald-300">0</p>
@@ -2054,8 +1856,6 @@ What is 7 x 8?
       <div class="tabs">
         <div class="tab active" data-tab="quizzes">My Quizzes</div>
         <div class="tab" data-tab="public">Public Quizzes</div>
-        <div class="tab" data-tab="teams">Teams</div>
-        <div class="tab" data-tab="market">Market</div>
         <div class="tab" data-tab="stats">Statistics</div>
         <div class="tab" data-tab="settings">Settings</div>
       </div>
@@ -2099,94 +1899,6 @@ What is 7 x 8?
           </div>
         </div>
         
-        
-        <!-- Teams Tab -->
-        <div class="tab-content" id="teamsTab" style="display: none;">
-          <div id="noTeamView">
-            <div class="text-center py-12">
-              <h3 class="text-2xl font-black mb-4">Join a Team</h3>
-              <p class="soft-text mb-8">Compete with friends, earn bonus points, and climb the team leaderboard!</p>
-              <div class="flex flex-wrap justify-center gap-4">
-                <button onclick="openCreateTeamModal()" class="duo-action-button success">Create a Team</button>
-                <button onclick="showTeamLeaderboard()" class="duo-action-button primary">Browse Teams</button>
-              </div>
-            </div>
-          </div>
-          <div id="activeTeamView" style="display:none;">
-            <div class="flex justify-between items-start mb-6">
-              <div>
-                <h2 id="teamNameHeader" class="text-3xl font-black">Team Name</h2>
-                <p id="teamTagHeader" class="text-blue-400 font-bold">[TAG]</p>
-              </div>
-              <div class="text-right">
-                <p class="text-sm soft-text">Team XP</p>
-                <p id="teamTotalXp" class="text-2xl font-black text-emerald-400">0</p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div class="stats-card">
-                <p class="label">Rank</p>
-                <p class="value" id="teamGlobalRank">#--</p>
-              </div>
-              <div class="stats-card">
-                <p class="label">Members</p>
-                <p class="value" id="teamMemberCount">0/50</p>
-              </div>
-              <div class="stats-card">
-                <p class="label">Bonus</p>
-                <p class="value text-gold" id="teamBonusVal">+0%</p>
-              </div>
-            </div>
-            <h3 class="text-xl font-bold mb-4">Roster</h3>
-            <div id="teamRosterList" class="space-y-2"></div>
-            <div class="mt-8 flex gap-3">
-              <button id="leaveTeamBtn" onclick="leaveCurrentTeam()" class="duo-action-button danger">Leave Team</button>
-              <button id="manageTeamBtn" style="display:none;" onclick="openManageTeamModal()" class="duo-action-button warning">Manage Team</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Market Tab -->
-        <div class="tab-content" id="marketTab" style="display: none;">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-black">Portal Market</h2>
-            <div class="glass px-4 py-2 rounded-2xl flex items-center gap-2">
-              <span class="flex items-center"><svg class="w-6 h-6 inline-block mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><text x="12" y="17" text-anchor="middle" fill="#B8860B" font-size="14" font-weight="bold" font-family="Arial">G</text></svg></span>
-              <span id="marketGoldCount" class="font-black text-xl text-gold">0</span>
-            </div>
-          </div>
-          <div class="market-grid">
-            <div class="market-item">
-              <div class="text-4xl mb-3">🔥</div>
-              <h4 class="font-bold">Streak Freeze</h4>
-              <p class="text-xs soft-text">Protects your streak for one day if you miss a quiz.</p>
-              <p class="price">500 Gold</p>
-              <button onclick="buyItem('streak_freeze', 500)" class="buy-btn">Purchase</button>
-            </div>
-            <div class="market-item">
-              <div class="text-4xl mb-3">💎</div>
-              <h4 class="font-bold">Double XP (30m)</h4>
-              <p class="text-xs soft-text">Earn 2x XP from all quizzes for the next 30 minutes.</p>
-              <p class="price">1,000 Gold</p>
-              <button onclick="buyItem('xp_booster', 1000)" class="buy-btn">Purchase</button>
-            </div>
-            <div class="market-item">
-              <div class="text-4xl mb-3">👑</div>
-              <h4 class="font-bold">Gold Name</h4>
-              <p class="text-xs soft-text">Your name will appear in gold on all leaderboards.</p>
-              <p class="price">5,000 Gold</p>
-              <button onclick="buyItem('gold_name', 5000)" class="buy-btn">Purchase</button>
-            </div>
-            <div class="market-item">
-              <div class="text-4xl mb-3">🛡️</div>
-              <h4 class="font-bold">Team Shield</h4>
-              <p class="text-xs soft-text">Protects your team from rank decay for one week.</p>
-              <p class="price">2,500 Gold</p>
-              <button onclick="buyItem('team_shield', 2500)" class="buy-btn">Purchase</button>
-            </div>
-          </div>
-        </div>
-
         <!-- Statistics Tab -->
         <div class="tab-content" id="statsTab" style="display: none;">
           <div class="grid grid-cols-1 md: grid-cols-2 gap-6">
@@ -2249,47 +1961,6 @@ What is 7 x 8?
     </div>
   </div>
 
-  
-  <!-- Create Team Modal -->
-  <div id="createTeamModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Create a Team</h2>
-        <button class="close-modal" onclick="closeModal('createTeamModal')">×</button>
-      </div>
-      <div class="form-group">
-        <label>Team Name</label>
-        <input type="text" id="newTeamName" placeholder="Enter team name (max 20 chars)">
-      </div>
-      <div class="form-group">
-        <label>Team Tag</label>
-        <input type="text" id="newTeamTag" placeholder="3-4 characters (e.g. EPIC)">
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea id="newTeamDesc" rows="3" placeholder="What is your team about?"></textarea>
-      </div>
-      <div class="form-actions">
-        <button class="cancel-btn" onclick="closeModal('createTeamModal')">Cancel</button>
-        <button class="save-btn" onclick="handleCreateTeam()">Create Team (1,000 Gold)</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Manage Team Modal -->
-  <div id="manageTeamModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Manage Team</h2>
-        <button class="close-modal" onclick="closeModal('manageTeamModal')">×</button>
-      </div>
-      <div id="manageTeamRoster" class="space-y-3"></div>
-      <div class="mt-6 pt-6 border-t border-white/10">
-        <button onclick="disbandTeam()" class="w-full duo-action-button danger">Disband Team</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Edit Quiz Modal -->
   <div id="editQuizModal" class="modal">
     <div class="modal-content">
@@ -2324,286 +1995,6 @@ What is 7 x 8?
   </div>
 
   <script>
-
-    // Initialize global arrays to prevent "filter of undefined" errors
-    window.customQuizzes = window.customQuizzes || [];
-    window.userQuizzes = window.userQuizzes || [];
-    window.publicQuizzes = window.publicQuizzes || [];
-    window.userGold = window.userGold || 0;
-    window.userTeamId = window.userTeamId || null;
-    
-    
-    // Team & Gold State
-    let userGold = parseInt(localStorage.getItem('userGold')) || 0;
-    let userTeamId = localStorage.getItem('userTeamId') || null;
-    let myTeamData = null;
-
-    // Add Gold count to header
-    function updateGoldUI() {
-      const headerGold = document.getElementById('headerPointsCount'); // Reusing points count for now or adding new
-      const marketGold = document.getElementById('marketGoldCount');
-      if (marketGold) marketGold.textContent = userGold.toLocaleString();
-      const headerGold = document.getElementById("headerGoldCount");
-      if (headerGold) headerGold.textContent = userGold.toLocaleString();
-      localStorage.setItem('userGold', userGold);
-    }
-
-    // Team Logic
-    async function handleCreateTeam() {
-      if (!currentUid()) return showToast("Sign in to create a team!");
-      if (userGold < 1000) return showToast("You need 1,000 Gold to start a team.");
-      
-      const name = document.getElementById('newTeamName').value.trim();
-      const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
-      const desc = document.getElementById('newTeamDesc').value.trim();
-      
-      if (!name || tag.length < 3 || tag.length > 4) return showToast("Invalid name or tag (3-4 chars).");
-      
-      try {
-        const teamId = 'team-' + Date.now();
-        const teamData = {
-          id: teamId,
-          name,
-          tag,
-          description: desc,
-          captainId: currentUid(),
-          officers: [],
-          members: [currentUid()],
-          totalXp: xp,
-          createdAt: serverTime(),
-          bonusPercent: 5
-        };
-        
-        await firestore.collection('teams').doc(teamId).set(teamData);
-        await firestore.collection('users').doc(currentUid()).update({ teamId: teamId });
-        
-        userGold -= 1000;
-        userTeamId = teamId;
-        localStorage.setItem('userTeamId', teamId);
-        updateGoldUI();
-        closeModal('createTeamModal');
-        showToast("Team created! Welcome, Captain.");
-        loadTeamData();
-      } catch (e) {
-        showToast("Error creating team: " + e.message);
-      }
-    }
-
-    async function loadTeamData() {
-      if (!userTeamId) {
-        document.getElementById('noTeamView').style.display = 'block';
-        document.getElementById('activeTeamView').style.display = 'none';
-        return;
-      }
-      
-      const doc = await firestore.collection('teams').doc(userTeamId).get();
-      if (!doc.exists) {
-        userTeamId = null;
-        localStorage.removeItem('userTeamId');
-        return loadTeamData();
-      }
-      
-      myTeamData = doc.data();
-      document.getElementById('noTeamView').style.display = 'none';
-      document.getElementById('activeTeamView').style.display = 'block';
-      document.getElementById('teamNameHeader').textContent = myTeamData.name;
-      document.getElementById('teamTagHeader').textContent = `[${myTeamData.tag}]`;
-      document.getElementById('teamTotalXp').textContent = myTeamData.totalXp.toLocaleString();
-      document.getElementById('teamMemberCount').textContent = `${myTeamData.members.length}/50`;
-      document.getElementById('teamBonusVal').textContent = `+${myTeamData.bonusPercent}%`;
-      
-      // Manage button visibility
-      const isCaptain = myTeamData.captainId === currentUid();
-      const isOfficer = myTeamData.officers.includes(currentUid());
-      document.getElementById('manageTeamBtn').style.display = (isCaptain || isOfficer) ? 'block' : 'none';
-      
-      renderRoster();
-    }
-
-    async function renderRoster() {
-      const rosterList = document.getElementById('teamRosterList');
-      rosterList.innerHTML = '<div class="spinner mx-auto"></div>';
-      
-      const memberDocs = await Promise.all(myTeamData.members.map(id => firestore.collection('publicProfiles').doc(id).get()));
-      
-      rosterList.innerHTML = memberDocs.map(doc => {
-        if (!doc.exists) return '';
-        const data = doc.data();
-        const role = data.uid === myTeamData.captainId ? 'Captain' : (myTeamData.officers.includes(data.uid) ? 'Officer' : 'Member');
-        const badgeClass = role === 'Captain' ? 'badge-captain' : (role === 'Officer' ? 'badge-officer' : 'badge-member');
-        
-        return `
-          <div class="team-member-row">
-            <div class="flex items-center gap-3">
-              <img src="${data.avatar}" class="w-10 h-10 rounded-full">
-              <div>
-                <p class="font-bold">${data.username}</p>
-                <span class="team-badge ${badgeClass}">${role}</span>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="font-black text-blue-300">${data.xp.toLocaleString()} XP</p>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function buyItem(id, price) {
-      if (userGold < price) return showToast("Not enough Gold!");
-      userGold -= price;
-      updateGoldUI();
-      showToast("Item purchased successfully!");
-      // Logic for specific items would go here
-    }
-
-    function closeModal(id) {
-      const modal = document.getElementById(id);
-      modal.classList.remove('open');
-      modal.classList.add('hidden');
-    }
-    
-    function openCreateTeamModal() {
-      const modal = document.getElementById('createTeamModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('open');
-    }
-
-    
-    // Team & Gold State
-    let userGold = parseInt(localStorage.getItem('userGold')) || 0;
-    let userTeamId = localStorage.getItem('userTeamId') || null;
-    let myTeamData = null;
-
-    // Add Gold count to header
-    function updateGoldUI() {
-      const marketGold = document.getElementById('marketGoldCount');
-      if (marketGold) marketGold.textContent = userGold.toLocaleString();
-      const headerGold = document.getElementById("headerGoldCount");
-      if (headerGold) headerGold.textContent = userGold.toLocaleString();
-      localStorage.setItem('userGold', userGold);
-    }
-
-    // Team Logic
-    async function handleCreateTeam() {
-      if (!currentUid()) return showToast("Sign in to create a team!");
-      if (userGold < 1000) return showToast("You need 1,000 Gold to start a team.");
-      
-      const name = document.getElementById('newTeamName').value.trim();
-      const tag = document.getElementById('newTeamTag').value.trim().toUpperCase();
-      const desc = document.getElementById('newTeamDesc').value.trim();
-      
-      if (!name || tag.length < 3 || tag.length > 4) return showToast("Invalid name or tag (3-4 chars).");
-      
-      try {
-        const teamId = 'team-' + Date.now();
-        const teamData = {
-          id: teamId,
-          name,
-          tag,
-          description: desc,
-          captainId: currentUid(),
-          officers: [],
-          members: [currentUid()],
-          totalXp: xp,
-          createdAt: Date.now(),
-          bonusPercent: 5
-        };
-        
-        await firestore.collection('teams').doc(teamId).set(teamData);
-        await firestore.collection('users').doc(currentUid()).update({ teamId: teamId });
-        
-        userGold -= 1000;
-        userTeamId = teamId;
-        localStorage.setItem('userTeamId', teamId);
-        updateGoldUI();
-        closeModal('createTeamModal');
-        showToast("Team created! Welcome, Captain.");
-        loadTeamData();
-      } catch (e) {
-        showToast("Error creating team: " + e.message);
-      }
-    }
-
-    async function loadTeamData() {
-      if (!userTeamId) {
-        document.getElementById('noTeamView').style.display = 'block';
-        document.getElementById('activeTeamView').style.display = 'none';
-        return;
-      }
-      
-      const doc = await firestore.collection('teams').doc(userTeamId).get();
-      if (!doc.exists) {
-        userTeamId = null;
-        localStorage.removeItem('userTeamId');
-        return loadTeamData();
-      }
-      
-      myTeamData = doc.data();
-      document.getElementById('noTeamView').style.display = 'none';
-      document.getElementById('activeTeamView').style.display = 'block';
-      document.getElementById('teamNameHeader').textContent = myTeamData.name;
-      document.getElementById('teamTagHeader').textContent = `[${myTeamData.tag}]`;
-      document.getElementById('teamTotalXp').textContent = myTeamData.totalXp.toLocaleString();
-      document.getElementById('teamMemberCount').textContent = `${myTeamData.members.length}/50`;
-      document.getElementById('teamBonusVal').textContent = `+${myTeamData.bonusPercent}%`;
-      
-      // Manage button visibility
-      const isCaptain = myTeamData.captainId === currentUid();
-      const isOfficer = myTeamData.officers.includes(currentUid());
-      document.getElementById('manageTeamBtn').style.display = (isCaptain || isOfficer) ? 'block' : 'none';
-      
-      renderRoster();
-    }
-
-    async function renderRoster() {
-      const rosterList = document.getElementById('teamRosterList');
-      rosterList.innerHTML = '<div class="spinner mx-auto"></div>';
-      
-      const memberDocs = await Promise.all(myTeamData.members.map(id => firestore.collection('publicProfiles').doc(id).get()));
-      
-      rosterList.innerHTML = memberDocs.map(doc => {
-        if (!doc.exists) return '';
-        const data = doc.data();
-        const role = data.uid === myTeamData.captainId ? 'Captain' : (myTeamData.officers.includes(data.uid) ? 'Officer' : 'Member');
-        const badgeClass = role === 'Captain' ? 'badge-captain' : (role === 'Officer' ? 'badge-officer' : 'badge-member');
-        
-        return `
-          <div class="team-member-row">
-            <div class="flex items-center gap-3">
-              <img src="${data.avatar}" class="w-10 h-10 rounded-full">
-              <div>
-                <p class="font-bold">${data.username}</p>
-                <span class="team-badge ${badgeClass}">${role}</span>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="font-black text-blue-300">${data.xp.toLocaleString()} XP</p>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function buyItem(id, price) {
-      if (userGold < price) return showToast("Not enough Gold!");
-      userGold -= price;
-      updateGoldUI();
-      showToast("Item purchased successfully!");
-    }
-
-    function closeModal(id) {
-      const modal = document.getElementById(id);
-      modal.classList.remove('open');
-      modal.classList.add('hidden');
-    }
-    
-    function openCreateTeamModal() {
-      const modal = document.getElementById('createTeamModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('open');
-    }
-
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCO_lCaHej5QUNyDpzV84Y2DfIG87zOl-s",    
@@ -3508,22 +2899,7 @@ What is 7 x 8?
       
       // Update stats
       streak++;
-      
-      // Apply Team Bonus
-      let teamBonus = 0;
-      if (userTeamId && myTeamData) {
-        teamBonus = Math.floor(earnedXp * (myTeamData.bonusPercent / 100));
-        earnedXp += teamBonus;
-      }
-      
-      // Apply XP Booster
-      const multiplier = getXpMultiplier();
-      if (multiplier > 1) {
-        earnedXp *= multiplier;
-      }
-      
       xp += earnedXp;
-
       
       // Update best scores
       if (currentQuizUnitKey) {
@@ -3911,44 +3287,58 @@ What is 7 x 8?
       });
     }
 
-    // Google Sign-In
-    function signInWithGoogle() {
+    // Google Sign-In — popup with auto-redirect fallback and friendly error messages
+    async function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(result => {
-          // User signed in successfully
-          const user = result.user;
-          currentPlayer = user.displayName || user.email || "User";
-          currentUserProfile = {
-            uid: user.uid,    
-            displayName: user.displayName,    
-            email: user.email,    
-            photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`
-          };
-          
-          // Save to localStorage
-          localStorage.setItem(storageKeys.currentPlayer, currentPlayer);
-          localStorage.setItem(storageKeys.authUser, JSON.stringify(currentUserProfile));
-          
-          // Update leaderboard with Firebase user
-          if (!leaderboard[currentPlayer]) {
-            leaderboard[currentPlayer] = { points: 0, quizzes: 0 };
-            localStorage.setItem(storageKeys.leaderboard, JSON.stringify(leaderboard));
-          }
-          
-          updateStats();
-          updateUnitProgress(currentUnitKey);
-          
-          // Close auth modal
-          document.getElementById("authModal").classList.add("hidden");
-          document.getElementById("authModal").classList.remove("flex");
-          
-          showToast(`Welcome, ${currentPlayer}!`);
-        })
-        .catch(error => {
-          console.error("Google Sign-In error: ", error);
-          showToast("Sign-in failed. Please try again.");
+      provider.setCustomParameters({ prompt: "select_account" });
+      provider.addScope("profile");
+      provider.addScope("email");
+
+      const btn = document.getElementById("googleSignInBtn");
+      const mainBtn = document.getElementById("googleSignInMainBtn");
+      const loadingHTML = '<span style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:16px;height:16px;border:2px solid rgba(0,0,0,0.18);border-top-color:#555;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;"></div> Signing in...</span>';
+      const originalHTML = btn ? btn.innerHTML : null;
+      const setLoading = (on) => {
+        [btn, mainBtn].forEach(b => {
+          if (!b) return;
+          b.innerHTML = on ? loadingHTML : (originalHTML || "Sign in with Google");
+          b.disabled = on;
         });
+      };
+
+      setLoading(true);
+      try {
+        await auth.signInWithPopup(provider);
+        // Success: onAuthStateChanged / handleCloudAuthUser closes the modal and shows welcome toast
+      } catch (error) {
+        setLoading(false);
+        console.error("Google sign-in error:", error.code, error.message);
+
+        const popupErrors = ["auth/popup-blocked","auth/popup-closed-by-user","auth/cancelled-popup-request"];
+        if (popupErrors.includes(error.code)) {
+          showToast("Popup was blocked — trying full-page redirect to Google...");
+          try {
+            await auth.signInWithRedirect(provider);
+          } catch(redirectErr) {
+            showToast("Redirect sign-in also failed: " + (redirectErr.message || redirectErr.code));
+          }
+          return;
+        }
+
+        const friendlyMsgs = {
+          "auth/network-request-failed":  "No internet. Check your connection and try again.",
+          "auth/user-disabled":           "This account has been disabled.",
+          "auth/operation-not-allowed":   "Google sign-in is not enabled for this app. The developer needs to enable it in Firebase → Authentication.",
+          "auth/unauthorized-domain":     "Sign-in failed: this domain is not authorized. The developer must add it in Firebase → Authentication → Settings → Authorized Domains.",
+          "auth/invalid-api-key":         "App configuration error (bad API key). Contact the developer.",
+          "auth/app-deleted":             "App configuration error. Contact the developer.",
+          "auth/web-storage-unsupported": "Your browser is blocking cookies needed for sign-in. Try Chrome, or allow third-party cookies.",
+          "auth/internal-error":          "Google had an internal error. Please try again in a moment.",
+          "auth/too-many-requests":       "Too many attempts. Wait a moment and try again.",
+        };
+        const msg = friendlyMsgs[error.code] || ("Sign-in failed: " + (error.message || error.code));
+        showToast(msg);
+      }
     }
 
     // Sign out
@@ -4544,22 +3934,9 @@ What is 7 x 8?
         userQuizzesList.innerHTML = `<div class="text-center py-8 soft-text">No quizzes found. Create your first quiz!</div>`;
       }
       
-      // Update public quizzes list
-      const publicQuizzesList = document.getElementById("publicQuizzesList");
-      if (publicQuizzes.length > 0) {
-        publicQuizzesList.innerHTML = publicQuizzes.map(quiz => `
-          <div class="public-quiz-card">
-            <h3>${quiz.title}</h3>
-            <p>${quiz.description || "No description"}</p>
-            <div class="author">By ${quiz.author}</div>
-            <div class="actions">
-              <button class="play-btn" data-quiz-id="${quiz.id}">Play Quiz</button>
-            </div>
-          </div>
-        `).join("");
-      } else {
-        publicQuizzesList.innerHTML = `<div class="text-center py-8 soft-text">No public quizzes available. Create and share your own!</div>`;
-      }
+      // Public quizzes list is rendered by the Global Sync Engine (_renderPublicQuizzesList)
+      // which is driven by live Firestore + RTDB listeners. Just trigger a re-render here.
+      if (typeof _renderPublicQuizzesList === "function") _renderPublicQuizzesList();
     }
 
     // Bind global actions
@@ -4679,18 +4056,14 @@ What is 7 x 8?
         tab.addEventListener("click", () => {
           document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
           tab.classList.add("active");
-          document.querySelectorAll(".tab-content").forEach(c => { c.style.display = "none"; });
+          document.querySelectorAll(".tab-content").forEach(content => { content.style.display = "none"; });
           document.getElementById("quizDetailView").style.display = "none";
-          
           const tabId = tab.getAttribute("data-tab");
-          const targetContent = document.getElementById(`${tabId}Tab`) || document.getElementById(`${tabId}Content`);
-          if (targetContent) targetContent.style.display = "block";
-          
-          // Special tab logic
-          if (tabId === 'teams') loadTeamData();
-          if (tabId === 'market') {
-            updateGoldUI();
-            loadMarketItems();
+          document.getElementById(`${tabId}Tab`).style.display = "block";
+          // When Public tab opened, ensure sync is running and render fresh list
+          if (tabId === "public") {
+            if (typeof _startGlobalPublicSync === "function") _startGlobalPublicSync();
+            if (typeof _renderPublicQuizzesList === "function") _renderPublicQuizzesList();
           }
         });
       });
@@ -5257,7 +4630,7 @@ What is 7 x 8?
         recentActivity.innerHTML = `<div class="empty-state">No recent activity yet. Finish a quiz to build your streak.</div>`;
       }
 
-      const localUserQuizzes = (customQuizzes || []).filter(quiz => quiz.author === currentPlayer || !auth.currentUser);
+      const localUserQuizzes = customQuizzes.filter(quiz => quiz.author === currentPlayer || !auth.currentUser);
       const combinedUserQuizzes = [...userQuizzes, ...localUserQuizzes];
       const userQuizzesList = document.getElementById("userQuizzesList");
       if (combinedUserQuizzes.length > 0) {
@@ -5278,22 +4651,8 @@ What is 7 x 8?
         userQuizzesList.innerHTML = `<div class="empty-state">No quizzes found. Create your first Blooket-style public set!</div>`;
       }
 
-      const allPublicQuizzes = [...(publicQuizzes || []), ...(customQuizzes || [])];
-      const publicQuizzesList = document.getElementById("publicQuizzesList");
-      if (allPublicQuizzes.length > 0) {
-        publicQuizzesList.innerHTML = allPublicQuizzes.map((quiz, index) => `
-          <div class="public-quiz-card duo-result-pop" style="cursor:pointer;" data-quiz-id="${quiz.id || index}">
-            <h3>🌎 ${quiz.title}</h3>
-            <p>${quiz.description || "No description"}</p>
-            <div class="author">By ${quiz.author || "Community"} • ${quiz.questions?.length || 0} questions</div>
-            <div class="actions">
-              <button class="play-btn" data-quiz-id="${quiz.id || index}" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play Set</button>
-            </div>
-          </div>
-        `).join("");
-      } else {
-        publicQuizzesList.innerHTML = `<div class="empty-state">No public quizzes available. Create and share your own!</div>`;
-      }
+      // Public quizzes list rendered by Global Sync Engine
+      if (typeof _renderPublicQuizzesList === "function") _renderPublicQuizzesList();
     }
 
     function showLeaderboard() {
@@ -5359,347 +4718,12 @@ What is 7 x 8?
       }, 30000);
     }
 
-    
-    
-    // ===== GOLD & MARKET FUNCTIONS =====
-    
-    // Sync gold to Firebase
-    async function syncGoldToCloud() {
-      if (!currentUid()) return;
-      try {
-        await firestore.collection('users').doc(currentUid()).update({
-          gold: userGold,
-          lastGoldSync: Date.now()
-        });
-        showToast("Gold synced to cloud!");
-      } catch (e) {
-        console.error("Gold sync error:", e);
-      }
-    }
-    
-    // Load gold from Firebase
-    async function loadGoldFromCloud() {
-      if (!currentUid()) return;
-      try {
-        const doc = await firestore.collection('users').doc(currentUid()).get();
-        if (doc.exists && doc.data().gold) {
-          userGold = doc.data().gold;
-          updateGoldUI();
-        }
-      } catch (e) {
-        console.error("Gold load error:", e);
-      }
-    }
-    
-    // Enhanced buyItem with persistence
-    async function buyItem(id, price) {
-      if (userGold < price) {
-        showToast("Not enough Gold! You need " + (price - userGold) + " more.");
-        return;
-      }
-      
-      userGold -= price;
-      updateGoldUI();
-      
-      // Save purchase to cloud
-      if (currentUid()) {
-        try {
-          await firestore.collection('users').doc(currentUid()).collection('purchases').add({
-            itemId: id,
-            price: price,
-            purchasedAt: Date.now()
-          });
-          
-          await syncGoldToCloud();
-        } catch (e) {
-          console.error("Purchase error:", e);
-        }
-      }
-      
-      // Item-specific logic
-      if (id === 'streak_freeze') {
-        localStorage.setItem('streakFreezeActive', 'true');
-        showToast("🔥 Streak Freeze activated! Your streak is protected for 24 hours.");
-      } else if (id === 'xp_booster') {
-        localStorage.setItem('xpBoosterActive', 'true');
-        localStorage.setItem('xpBoosterEnd', Date.now() + 30 * 60 * 1000);
-        showToast("💎 Double XP active for 30 minutes!");
-      } else if (id === 'gold_name') {
-        localStorage.setItem('goldNameActive', 'true');
-        showToast("👑 Your name is now GOLDEN on leaderboards!");
-      } else if (id === 'team_shield') {
-        if (userTeamId) {
-          await firestore.collection('teams').doc(userTeamId).update({
-            shieldActive: true,
-            shieldEnd: Date.now() + 7 * 24 * 60 * 60 * 1000
-          });
-          showToast("🛡️ Team Shield active for 7 days!");
-        }
-      }
-    }
-    
-    // Check for active boosters
-    function getXpMultiplier() {
-      const boosterEnd = localStorage.getItem('xpBoosterEnd');
-      if (boosterEnd && Date.now() < parseInt(boosterEnd)) {
-        return 2;
-      }
-      return 1;
-    }
-    
-    // Add more market items dynamically
-    function loadMarketItems() {
-      const marketGrid = document.querySelector('.market-grid');
-      if (!marketGrid) return;
-      
-      const items = [
-        { icon: '🔥', name: 'Streak Freeze', desc: 'Protects your streak for one day if you miss a quiz.', price: 500, id: 'streak_freeze' },
-        { icon: '💎', name: 'Double XP (30m)', desc: 'Earn 2x XP from all quizzes for the next 30 minutes.', price: 1000, id: 'xp_booster' },
-        { icon: '👑', name: 'Gold Name', desc: 'Your name will appear in gold on all leaderboards.', price: 5000, id: 'gold_name' },
-        { icon: '🛡️', name: 'Team Shield', desc: 'Protects your team from rank decay for one week.', price: 2500, id: 'team_shield' },
-        { icon: '⭐', name: 'Premium Badge', desc: 'Display a special badge next to your name.', price: 3000, id: 'premium_badge' },
-        { icon: '🎨', name: 'Custom Theme', desc: 'Unlock exclusive theme colors for your profile.', price: 2000, id: 'custom_theme' },
-      ];
-      
-      // Clear existing and rebuild
-      marketGrid.innerHTML = items.map(item => `
-        <div class="market-item">
-          <div class="text-4xl mb-3">${item.icon}</div>
-          <h4 class="font-bold">${item.name}</h4>
-          <p class="text-xs soft-text">${item.desc}</p>
-          <p class="price">${item.price.toLocaleString()} Gold</p>
-          <button onclick="buyItem('${item.id}', ${item.price})" class="buy-btn">Purchase</button>
-        </div>
-      `).join('');
-    }
-
-
-    // ===== TEAM MANAGEMENT FUNCTIONS =====
-    
-    async function showTeamLeaderboard() {
-      const modal = document.getElementById('leaderboardModal');
-      const leaderboardContent = document.getElementById('leaderboardContent');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      leaderboardContent.innerHTML = '<div class="text-center py-8 soft-text">Loading team rankings...</div>';
-      
-      try {
-        const snapshot = await firestore.collection('teams')
-          .orderBy('totalXp', 'desc')
-          .limit(20)
-          .get();
-        
-        const teams = snapshot.docs.map((doc, idx) => {
-          const data = doc.data();
-          return {
-            rank: idx + 1,
-            name: data.name,
-            tag: data.tag,
-            totalXp: data.totalXp,
-            members: data.members.length,
-            bonus: data.bonusPercent
-          };
-        });
-        
-        if (teams.length === 0) {
-          leaderboardContent.innerHTML = '<div class="empty-state">No teams yet. Create one to start competing!</div>';
-          return;
-        }
-        
-        const highestXp = Math.max(1, teams[0].totalXp);
-        leaderboardContent.innerHTML = `<div class="duo-league-board">${teams.map(team => {
-          const fillWidth = Math.min(100, Math.round((team.totalXp / highestXp) * 100));
-          const medal = team.rank === 1 ? '🥇' : team.rank === 2 ? '🥈' : team.rank === 3 ? '🥉' : '';
-          return `
-            <div class="duo-league-row stay-zone">
-              <div class="duo-rank-bubble">${medal} #${team.rank}</div>
-              <div>
-                <div class="flex items-center gap-3">
-                  <strong>${team.name} [${team.tag}]</strong>
-                </div>
-                <div class="duo-xp-meter mt-2"><div class="duo-xp-meter-fill" style="width: ${fillWidth}%;"></div></div>
-                <p class="mt-1 text-xs soft-text">${team.members} members • +${team.bonus}% bonus</p>
-              </div>
-              <strong>${team.totalXp.toLocaleString()} XP</strong>
-            </div>
-          `;
-        }).join('')}</div>`;
-      } catch (e) {
-        leaderboardContent.innerHTML = `<div class="empty-state">Error loading teams: ${e.message}</div>`;
-      }
-    }
-    
-    async function openManageTeamModal() {
-      if (!myTeamData) return;
-      const modal = document.getElementById('manageTeamModal');
-      const rosterDiv = document.getElementById('manageTeamRoster');
-      
-      const isCaptain = myTeamData.captainId === currentUid();
-      
-      const memberDocs = await Promise.all(myTeamData.members.map(id => firestore.collection('publicProfiles').doc(id).get()));
-      
-      rosterDiv.innerHTML = memberDocs.map(doc => {
-        if (!doc.exists) return '';
-        const data = doc.data();
-        const uid = doc.id;
-        const role = uid === myTeamData.captainId ? 'Captain' : (myTeamData.officers.includes(uid) ? 'Officer' : 'Member');
-        const badgeClass = role === 'Captain' ? 'badge-captain' : (role === 'Officer' ? 'badge-officer' : 'badge-member');
-        
-        return `
-          <div class="team-member-row">
-            <div class="flex items-center gap-3">
-              <img src="${data.avatar}" class="w-10 h-10 rounded-full">
-              <div>
-                <p class="font-bold">${data.username}</p>
-                <span class="team-badge ${badgeClass}">${role}</span>
-              </div>
-            </div>
-            <div class="flex gap-2">
-              ${isCaptain && uid !== currentUid() ? `
-                <button onclick="promoteToOfficer('${uid}')" class="text-xs px-2 py-1 rounded bg-blue-600 hover:bg-blue-700">Promote</button>
-                <button onclick="removeFromTeam('${uid}')" class="text-xs px-2 py-1 rounded bg-red-600 hover:bg-red-700">Remove</button>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-      
-      modal.classList.remove('hidden');
-      modal.classList.add('open');
-    }
-    
-    async function promoteToOfficer(uid) {
-      if (!myTeamData || myTeamData.captainId !== currentUid()) return showToast("Only captain can promote!");
-      
-      try {
-        const officers = myTeamData.officers || [];
-        if (!officers.includes(uid)) officers.push(uid);
-        
-        await firestore.collection('teams').doc(userTeamId).update({
-          officers: officers
-        });
-        
-        myTeamData.officers = officers;
-        await openManageTeamModal();
-        showToast("Player promoted to Officer!");
-      } catch (e) {
-        showToast("Error: " + e.message);
-      }
-    }
-    
-    async function removeFromTeam(uid) {
-      if (!myTeamData || myTeamData.captainId !== currentUid()) return showToast("Only captain can remove!");
-      
-      try {
-        const members = myTeamData.members.filter(id => id !== uid);
-        const officers = (myTeamData.officers || []).filter(id => id !== uid);
-        
-        await firestore.collection('teams').doc(userTeamId).update({
-          members: members,
-          officers: officers
-        });
-        
-        // Remove team reference from user
-        await firestore.collection('users').doc(uid).update({
-          teamId: ''
-        });
-        
-        myTeamData.members = members;
-        myTeamData.officers = officers;
-        await openManageTeamModal();
-        showToast("Player removed from team!");
-      } catch (e) {
-        showToast("Error: " + e.message);
-      }
-    }
-    
-    async function leaveCurrentTeam() {
-      if (!userTeamId) return;
-      
-      try {
-        const members = myTeamData.members.filter(id => id !== currentUid());
-        const officers = (myTeamData.officers || []).filter(id => id !== currentUid());
-        
-        // If captain leaves, promote first officer or disband
-        if (myTeamData.captainId === currentUid()) {
-          if (officers.length > 0) {
-            await firestore.collection('teams').doc(userTeamId).update({
-              captainId: officers[0],
-              members: members,
-              officers: officers.slice(1)
-            });
-          } else if (members.length > 0) {
-            await firestore.collection('teams').doc(userTeamId).update({
-              captainId: members[0],
-              members: members
-            });
-          } else {
-            await firestore.collection('teams').doc(userTeamId).delete();
-          }
-        } else {
-          await firestore.collection('teams').doc(userTeamId).update({
-            members: members,
-            officers: officers
-          });
-        }
-        
-        await firestore.collection('users').doc(currentUid()).update({
-          teamId: ''
-        });
-        
-        userTeamId = null;
-        localStorage.removeItem('userTeamId');
-        loadTeamData();
-        showToast("You left the team!");
-      } catch (e) {
-        showToast("Error: " + e.message);
-      }
-    }
-    
-    async function disbandTeam() {
-      if (!myTeamData || myTeamData.captainId !== currentUid()) return showToast("Only captain can disband!");
-      
-      if (!confirm("Are you sure? This will disband the entire team.")) return;
-      
-      try {
-        // Remove team reference from all members
-        await Promise.all(myTeamData.members.map(uid => 
-          firestore.collection('users').doc(uid).update({ teamId: '' })
-        ));
-        
-        // Delete team
-        await firestore.collection('teams').doc(userTeamId).delete();
-        
-        userTeamId = null;
-        localStorage.removeItem('userTeamId');
-        loadTeamData();
-        showToast("Team disbanded!");
-      } catch (e) {
-        showToast("Error: " + e.message);
-      }
-    }
-    
-    
-    });
-
-
     const originalSubmitQuizForExpandedAccounts = typeof submitQuiz === "function" ? submitQuiz : null;
     if (originalSubmitQuizForExpandedAccounts) {
       submitQuiz = function() {
         originalSubmitQuizForExpandedAccounts.apply(this, arguments);
         ensureLeaderboardLeagueData();
         saveExpandedAccountData();
-        
-        // Award gold and update team
-        const earnedGold = Math.floor(xp / 2);
-        userGold += earnedGold;
-        updateGoldUI();
-        
-        if (userTeamId) {
-          firestore.collection('teams').doc(userTeamId).update({
-            totalXp: firebase.firestore.FieldValue.increment(xp)
-          }).catch(e => console.error("Team update error:", e));
-        }
       };
     }
 
@@ -5712,25 +4736,540 @@ What is 7 x 8?
       };
     }
 
-    
-    const originalInit = window.init;
-    window.init = function() {
-      console.log("Portal X: Initializing...");
-      try {
-        if (typeof originalInit === 'function') originalInit.apply(this, arguments);
-      } catch (e) { console.error("Original init error:", e); }
-      
-      try {
-        if (typeof applyWeeklyResetIfNeeded === 'function') applyWeeklyResetIfNeeded();
-        if (typeof ensureLeaderboardLeagueData === 'function') ensureLeaderboardLeagueData();
-        if (typeof saveExpandedAccountData === 'function') saveExpandedAccountData();
-        if (typeof updateDashboard === 'function') updateDashboard();
-        if (typeof loadGoldFromCloud === 'function') loadGoldFromCloud();
-        if (typeof loadTeamData === 'function') loadTeamData();
-        if (typeof loadMarketItems === 'function') loadMarketItems();
-      } catch (e) { console.error("Expansion init error:", e); }
+    const originalInitForDuoExpansion = typeof init === "function" ? init : null;
+    if (originalInitForDuoExpansion) {
+      init = function() {
+        originalInitForDuoExpansion.apply(this, arguments);
+        applyWeeklyResetIfNeeded();
+        ensureLeaderboardLeagueData();
+        saveExpandedAccountData();
+        startLeagueCountdownTicker();
+        updateDashboard();
+      };
+    }
+
+
+    /*************************************************************************
+     * Firebase Cloud Save + Public Sets Layer
+     * -----------------------------------------------------------------------
+     * This layer makes Firebase the source of truth for accounts, account
+     * files, progress, XP, personalization, made-by-you sets, and public sets.
+     * The page may still keep temporary in-memory variables while open, but it
+     * does not rely on localStorage for persistent global saves.
+     *************************************************************************/
+    const CLOUD_COLLECTIONS = {
+      users: "users",
+      publicProfiles: "publicProfiles",
+      publicQuizzes: "publicQuizzes",
+      activity: "activity",
+      accountFiles: "accountFiles"
     };
-    
+
+    let cloudReady = false;
+    let authBootstrapped = false;
+    let activeProfileUnsubscribe = null;
+    let activeQuizUnsubscribe = null;
+    let publicQuizUnsubscribe = null;
+    let leaderboardUnsubscribe = null;
+
+    try {
+      auth.useDeviceLanguage();
+      firestore.disableNetwork().then(() => firestore.enableNetwork()).catch(() => {});
+      firestore.enablePersistence({ synchronizeTabs: true }).catch(error => {
+        console.info("Firestore offline persistence unavailable; using online Firebase sync:", error.code || error.message);
+        if (error && error.code === "failed-precondition") {
+          firestore.clearPersistence?.().catch(() => {});
+        }
+      });
+      Object.keys(localStorage || {}).forEach(key => {
+        if (key.startsWith("examBank") || key === "customQuizzes") localStorage.removeItem(key);
+      });
+
+      // Legacy UI code still calls localStorage in a few places. Block this app's
+      // keys so nothing important is saved locally; Firebase is the global store.
+      const rawLocalStorage = {
+        getItem: localStorage.getItem.bind(localStorage),
+        setItem: localStorage.setItem.bind(localStorage),
+        removeItem: localStorage.removeItem.bind(localStorage)
+      };
+      const isExamBankLocalKey = key => String(key || "").startsWith("examBank") || String(key || "") === "customQuizzes";
+      localStorage.getItem = function(key) {
+        return isExamBankLocalKey(key) ? null : rawLocalStorage.getItem(key);
+      };
+      localStorage.setItem = function(key, value) {
+        if (isExamBankLocalKey(key)) return undefined;
+        return rawLocalStorage.setItem(key, value);
+      };
+      localStorage.removeItem = function(key) {
+        if (isExamBankLocalKey(key)) return undefined;
+        return rawLocalStorage.removeItem(key);
+      };
+    } catch (error) {
+      console.info("Local cleanup / persistence setup skipped:", error.message);
+    }
+
+    function serverTime() {
+      return firebase.firestore.FieldValue.serverTimestamp();
+    }
+
+    function currentUid() {
+      return auth.currentUser ? auth.currentUser.uid : null;
+    }
+
+    function safeArray(value) {
+      return Array.isArray(value) ? value : [];
+    }
+
+    function safeObject(value) {
+      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    }
+
+    function buildDefaultProfile(user) {
+      const name = user?.displayName || user?.email || "Guest";
+      return {
+        uid: user?.uid || null,
+        username: name,
+        displayName: name,
+        email: user?.email || null,
+        avatar: user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
+        photoURL: user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
+        xp: 0,
+        weeklyXp: 0,
+        streak: 0,
+        league: getLeague(0).name,
+        settings: {
+          theme: "aurora",
+          accent: "ice",
+          surface: "soft",
+          sectionOrder: [...defaultSectionOrder],
+          sound: true,
+          animations: true
+        },
+        progress: {
+          history: [],
+          bestScores: {},
+          completedSets: [],
+          lastCompletedAt: null
+        },
+        accountFiles: [],
+        public: true,
+        madeBy: "you",
+        app: "Exam Bank Platform",
+        updatedAt: serverTime(),
+        createdAt: serverTime()
+      };
+    }
+
+    function applyCloudProfile(data = {}) {
+      const settings = safeObject(data.settings);
+      const progress = safeObject(data.progress);
+      currentPlayer = data.username || data.displayName || currentPlayer || "User";
+      currentUserProfile = {
+        uid: data.uid || currentUid(),
+        displayName: data.displayName || currentPlayer,
+        email: data.email || auth.currentUser?.email || null,
+        photoURL: data.photoURL || data.avatar || auth.currentUser?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
+        league: data.league || getLeague(Number(data.xp || 0)).name
+      };
+      xp = Number(data.xp || 0);
+      streak = Number(data.streak || 0);
+      history = safeArray(progress.history || data.history);
+      bestScores = safeObject(progress.bestScores || data.bestScores);
+      currentTheme = settings.theme || currentTheme || "aurora";
+      currentAccent = settings.accent || currentAccent || "ice";
+      currentSurface = settings.surface || currentSurface || "soft";
+      sectionOrder = safeArray(settings.sectionOrder).length ? settings.sectionOrder : [...defaultSectionOrder];
+      applyTheme(currentTheme);
+      applyAccent(currentAccent);
+      applySurface(currentSurface);
+      applySectionOrder();
+      updateStats();
+      updateUnitProgress(currentUnitKey);
+      updateDashboard();
+    }
+
+    async function upsertCloudAccount(user) {
+      if (!user) return null;
+      const uid = user.uid;
+      const base = buildDefaultProfile(user);
+      const realtimeRef = database.ref(`accounts/${uid}`);
+      let existing = {};
+
+      try {
+        await firestore.enableNetwork().catch(() => {});
+        const ref = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid);
+        const snap = await ref.get({ source: "server" }).catch(async serverError => {
+          console.warn("Server profile read failed, trying cache/realtime fallback:", serverError);
+          return ref.get().catch(() => null);
+        });
+        existing = snap && snap.exists ? (snap.data() || {}) : {};
+        const merged = {
+          ...base,
+          ...existing,
+          uid,
+          email: user.email || existing.email || null,
+          username: existing.username || user.displayName || user.email || "User",
+          displayName: existing.displayName || user.displayName || user.email || "User",
+          photoURL: existing.photoURL || user.photoURL || base.photoURL,
+          avatar: existing.avatar || user.photoURL || base.avatar,
+          settings: { ...base.settings, ...safeObject(existing.settings) },
+          progress: { ...base.progress, ...safeObject(existing.progress) },
+          public: true,
+          madeBy: "you",
+          updatedAt: serverTime()
+        };
+        await Promise.all([
+          ref.set(merged, { merge: true }),
+          firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(uid).set({
+            uid,
+            username: merged.username,
+            displayName: merged.displayName,
+            avatar: merged.avatar,
+            xp: Number(merged.xp || 0),
+            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
+            quizzes: safeArray(merged.progress?.history).length,
+            league: merged.league || getLeague(Number(merged.xp || 0)).name,
+            public: true,
+            madeBy: "you",
+            createdAt: existing.createdAt || serverTime(),
+            updatedAt: serverTime()
+          }, { merge: true }),
+          realtimeRef.update({ ...merged, updatedAt: Date.now(), createdAt: existing.createdAt || Date.now() }),
+          database.ref(`leaderboard/${uid}`).update({
+            uid,
+            name: merged.username,
+            points: Number(merged.xp || 0),
+            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
+            quizzes: safeArray(merged.progress?.history).length,
+            league: merged.league || getLeague(Number(merged.xp || 0)).name,
+            avatar: merged.avatar,
+            public: true,
+            updatedAt: Date.now()
+          })
+        ]);
+        return merged;
+      } catch (firestoreError) {
+        console.warn("Firestore account setup failed; using Realtime Database fallback:", firestoreError);
+        const realtimeSnap = await realtimeRef.once("value").catch(() => null);
+        existing = realtimeSnap && realtimeSnap.exists() ? safeObject(realtimeSnap.val()) : {};
+        const merged = {
+          ...base,
+          ...existing,
+          uid,
+          email: user.email || existing.email || null,
+          username: existing.username || user.displayName || user.email || "User",
+          displayName: existing.displayName || user.displayName || user.email || "User",
+          photoURL: existing.photoURL || user.photoURL || base.photoURL,
+          avatar: existing.avatar || user.photoURL || base.avatar,
+          settings: { ...base.settings, ...safeObject(existing.settings) },
+          progress: { ...base.progress, ...safeObject(existing.progress) },
+          public: true,
+          madeBy: "you",
+          updatedAt: Date.now(),
+          createdAt: existing.createdAt || Date.now()
+        };
+        await Promise.all([
+          realtimeRef.update(merged),
+          database.ref(`leaderboard/${uid}`).update({
+            uid,
+            name: merged.username,
+            points: Number(merged.xp || 0),
+            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
+            quizzes: safeArray(merged.progress?.history).length,
+            league: merged.league || getLeague(Number(merged.xp || 0)).name,
+            avatar: merged.avatar,
+            public: true,
+            updatedAt: Date.now()
+          })
+        ]);
+        showToast("Signed in. Firestore was offline, so Realtime Database sync is active.");
+        return merged;
+      }
+    }
+
+    function cloudAccountPayload(extra = {}) {
+      const leagueName = getLeague(xp).name;
+      return {
+        uid: currentUid(),
+        username: currentPlayer,
+        displayName: currentUserProfile?.displayName || currentPlayer,
+        email: currentUserProfile?.email || auth.currentUser?.email || null,
+        avatar: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
+        photoURL: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
+        xp,
+        weeklyXp: xp,
+        streak,
+        league: leagueName,
+        settings: {
+          theme: currentTheme,
+          accent: currentAccent,
+          surface: currentSurface,
+          sectionOrder,
+          sound: true,
+          animations: true
+        },
+        progress: {
+          history: history.slice(0, 100),
+          bestScores,
+          completedSets: history.map(item => item.unit || item.title || "Completed Quiz").slice(0, 100),
+          lastCompletedAt: history[0]?.isoTime || history[0]?.time || null
+        },
+        accountFiles: safeArray(extra.accountFiles),
+        public: true,
+        madeBy: "you",
+        app: "Exam Bank Platform",
+        updatedAt: serverTime(),
+        ...extra
+      };
+    }
+
+    async function pushCloudState(extra = {}) {
+      const uid = currentUid();
+      if (!uid) {
+        showToast("Sign in with Google to save globally to Firebase.");
+        return;
+      }
+      const payload = cloudAccountPayload(extra);
+      const publicProfile = {
+        uid,
+        username: payload.username,
+        displayName: payload.displayName,
+        avatar: payload.avatar,
+        xp: payload.xp,
+        weeklyXp: payload.weeklyXp,
+        streak: payload.streak,
+        league: payload.league,
+        public: true,
+        madeBy: "you",
+        updatedAt: serverTime()
+      };
+      try {
+        await Promise.all([
+          firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).set(payload, { merge: true }),
+          firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(uid).set(publicProfile, { merge: true }),
+          database.ref(`accounts/${uid}`).update({
+            username: payload.username,
+            avatar: payload.avatar,
+            xp: payload.xp,
+            weeklyXp: payload.weeklyXp,
+            streak: payload.streak,
+            league: payload.league,
+            settings: payload.settings,
+            completedSets: payload.progress.completedSets,
+            public: true,
+            madeBy: "you",
+            updatedAt: Date.now()
+          }),
+          database.ref(`leaderboard/${uid}`).update({
+            uid,
+            name: payload.username,
+            points: payload.xp,
+            weeklyXp: payload.weeklyXp,
+            quizzes: history.length,
+            league: payload.league,
+            avatar: payload.avatar,
+            public: true,
+            updatedAt: Date.now()
+          })
+        ]);
+      } catch (error) {
+        console.error("Cloud save failed:", error);
+        showToast(`Firebase save failed: ${error.message}`);
+      }
+    }
+
+    function attachCloudListeners(uid) {
+      if (activeProfileUnsubscribe) activeProfileUnsubscribe();
+      if (activeQuizUnsubscribe) activeQuizUnsubscribe();
+      if (publicQuizUnsubscribe) publicQuizUnsubscribe();
+      if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+
+      activeProfileUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).onSnapshot(snapshot => {
+        if (snapshot.exists) applyCloudProfile(snapshot.data());
+      }, error => console.error("Profile listener error:", error));
+
+      activeQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).collection("quizzes")
+        .orderBy("createdAt", "desc")
+        .onSnapshot(snapshot => {
+          userQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
+          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => q.authorId !== uid)];
+          updateDashboard();
+        }, error => {
+          console.error("User quiz listener error:", error);
+          database.ref(`userQuizzes/${uid}`).on("value", snapshot => {
+            const data = snapshot.val() || {};
+            userQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
+            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => q.authorId !== uid)];
+            updateDashboard();
+          });
+        });
+
+      publicQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes)
+        .orderBy("createdAt", "desc")
+        .onSnapshot(snapshot => {
+          publicQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
+          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
+          updateDashboard();
+        }, error => {
+          console.error("Public quiz listener error:", error);
+          database.ref("publicQuizzes").on("value", snapshot => {
+            const data = snapshot.val() || {};
+            publicQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
+            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
+            updateDashboard();
+          });
+        });
+
+      leaderboardUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicProfiles)
+        .orderBy("xp", "desc")
+        .limit(100)
+        .onSnapshot(snapshot => {
+          leaderboard = {};
+          snapshot.docs.forEach(doc => {
+            const row = doc.data();
+            leaderboard[row.username || row.displayName || doc.id] = {
+              uid: doc.id,
+              name: row.username || row.displayName || "Player",
+              points: Number(row.xp || 0),
+              weeklyXp: Number(row.weeklyXp || row.xp || 0),
+              quizzes: Number(row.quizzes || 0),
+              league: row.league || getLeague(Number(row.xp || 0)).name,
+              avatar: row.avatar,
+              public: true
+            };
+          });
+          updateDashboard();
+        }, error => {
+          console.error("Leaderboard listener error:", error);
+          database.ref("leaderboard").on("value", snapshot => {
+            const rows = snapshot.val() || {};
+            leaderboard = {};
+            Object.entries(rows).forEach(([uidKey, row]) => {
+              const name = row.name || row.username || row.displayName || uidKey;
+              leaderboard[name] = {
+                uid: row.uid || uidKey,
+                name,
+                points: Number(row.points || row.xp || 0),
+                weeklyXp: Number(row.weeklyXp || row.points || row.xp || 0),
+                quizzes: Number(row.quizzes || 0),
+                league: row.league || getLeague(Number(row.points || row.xp || 0)).name,
+                avatar: row.avatar,
+                public: true
+              };
+            });
+            updateDashboard();
+          });
+        });
+    }
+
+    function detachCloudListeners() {
+      [activeProfileUnsubscribe, activeQuizUnsubscribe, publicQuizUnsubscribe, leaderboardUnsubscribe].forEach(unsub => {
+        if (typeof unsub === "function") unsub();
+      });
+      activeProfileUnsubscribe = activeQuizUnsubscribe = publicQuizUnsubscribe = leaderboardUnsubscribe = null;
+    }
+
+    function attachPublicListeners() {
+      if (publicQuizUnsubscribe) return;
+      publicQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes)
+        .orderBy("createdAt", "desc")
+        .onSnapshot(snapshot => {
+          publicQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
+          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
+          updateDashboard();
+        }, error => {
+          console.error("Public quiz listener error:", error);
+          database.ref("publicQuizzes").on("value", snapshot => {
+            const data = snapshot.val() || {};
+            publicQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
+            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
+            updateDashboard();
+          });
+        });
+
+      if (!leaderboardUnsubscribe) {
+        leaderboardUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicProfiles)
+          .orderBy("xp", "desc")
+          .limit(100)
+          .onSnapshot(snapshot => {
+            leaderboard = {};
+            snapshot.docs.forEach(doc => {
+              const row = doc.data();
+              leaderboard[row.username || row.displayName || doc.id] = {
+                uid: doc.id,
+                name: row.username || row.displayName || "Player",
+                points: Number(row.xp || 0),
+                weeklyXp: Number(row.weeklyXp || row.xp || 0),
+                quizzes: Number(row.quizzes || 0),
+                league: row.league || getLeague(Number(row.xp || 0)).name,
+                avatar: row.avatar,
+                public: true
+              };
+            });
+            updateDashboard();
+          }, error => {
+            console.error("Leaderboard listener error:", error);
+            database.ref("leaderboard").on("value", snapshot => {
+              const rows = snapshot.val() || {};
+              leaderboard = {};
+              Object.entries(rows).forEach(([uidKey, row]) => {
+                const name = row.name || row.username || row.displayName || uidKey;
+                leaderboard[name] = {
+                  uid: row.uid || uidKey,
+                  name,
+                  points: Number(row.points || row.xp || 0),
+                  weeklyXp: Number(row.weeklyXp || row.points || row.xp || 0),
+                  quizzes: Number(row.quizzes || 0),
+                  league: row.league || getLeague(Number(row.points || row.xp || 0)).name,
+                  avatar: row.avatar,
+                  public: true
+                };
+              });
+              updateDashboard();
+            });
+          });
+      }
+    }
+
+    async function handleCloudAuthUser(user) {
+      if (!user) {
+        detachCloudListeners();
+        cloudReady = false;
+        currentPlayer = "Guest";
+        currentUserProfile = null;
+        xp = 0;
+        streak = 0;
+        history = [];
+        bestScores = {};
+        userQuizzes = [];
+        customQuizzes = publicQuizzes.slice();
+        updateStats();
+        updateUnitProgress(currentUnitKey);
+        updateDashboard();
+        attachPublicListeners();
+        return;
+      }
+
+      try {
+        showToast("Loading your Firebase account...");
+        const profile = await upsertCloudAccount(user);
+        applyCloudProfile(profile);
+        attachCloudListeners(user.uid);
+        await pushCloudState({ lastLoginAt: serverTime() });
+        cloudReady = true;
+        const authModal = document.getElementById("authModal");
+        if (authModal) {
+          authModal.classList.add("hidden");
+          authModal.classList.remove("flex");
+        }
+        showToast(`Welcome, ${currentPlayer}! Firebase cloud saves are on.`);
+      } catch (error) {
+        console.error("Cloud auth setup failed:", error);
+        showToast(`Firebase account setup failed: ${error.message}`);
+      }
+    }
+
+    // signInWithGoogle is defined earlier (single authoritative version)
 
     async function signInWithEmail() {
       const email = document.getElementById("authEmailInput").value.trim();
@@ -5908,22 +5447,7 @@ What is 7 x 8?
       const accuracy = Math.round((score / currentQuizQuestions.length) * 100);
       const earnedXp = score * 10;
       streak += 1;
-      
-      // Apply Team Bonus
-      let teamBonus = 0;
-      if (userTeamId && myTeamData) {
-        teamBonus = Math.floor(earnedXp * (myTeamData.bonusPercent / 100));
-        earnedXp += teamBonus;
-      }
-      
-      // Apply XP Booster
-      const multiplier = getXpMultiplier();
-      if (multiplier > 1) {
-        earnedXp *= multiplier;
-      }
-      
       xp += earnedXp;
-
       if (currentQuizUnitKey && (!bestScores[currentQuizUnitKey] || accuracy > bestScores[currentQuizUnitKey])) {
         bestScores[currentQuizUnitKey] = accuracy;
       }
@@ -5948,32 +5472,6 @@ What is 7 x 8?
 
       updateStats();
       updateUnitProgress(currentQuizUnitKey);
-      
-      const earnedGold = Math.floor(earnedXp / 2);
-      userGold += earnedGold;
-      updateGoldUI();
-      showToast(`+${earnedGold} Gold earned!`);
-      
-      // Update team XP if in a team
-      if (userTeamId) {
-        firestore.collection('teams').doc(userTeamId).update({
-          totalXp: firebase.firestore.FieldValue.increment(earnedXp)
-        });
-      }
-
-      
-      const earnedGold = Math.floor(earnedXp / 2);
-      userGold += earnedGold;
-      updateGoldUI();
-      showToast(`+${earnedGold} Gold earned!`);
-      
-      // Update team XP if in a team
-      if (userTeamId) {
-        firestore.collection('teams').doc(userTeamId).update({
-          totalXp: firebase.firestore.FieldValue.increment(earnedXp)
-        });
-      }
-
       showResults({ score: `${score}/${currentQuizQuestions.length}`, accuracy, xpEarned: earnedXp, time: seconds });
       showToast(`Quiz completed! Score: ${accuracy}% | XP: ${earnedXp}. Saving to Firebase...`);
 
@@ -5986,7 +5484,7 @@ What is 7 x 8?
               username: currentPlayer,
               createdAt: serverTime()
             }),
-            pushCloudState({ lastQuizAt: serverTime(), gold: userGold })
+            pushCloudState({ lastQuizAt: serverTime() })
           ]);
           showToast("Progress, XP, streak, and leaderboard saved globally.");
         } catch (error) {
@@ -6060,8 +5558,17 @@ What is 7 x 8?
       attachPublicListeners();
       if (!authBootstrapped) {
         authBootstrapped = true;
-        auth.getRedirectResult().catch(error => {
-          if (error && error.code) showToast(`Google redirect sign-in failed: ${error.message}`);
+        auth.getRedirectResult().then(result => {
+          if (result && result.user) console.log("Redirect sign-in OK:", result.user.email);
+        }).catch(error => {
+          if (!error || !error.code) return;
+          const rMsgs = {
+            "auth/unauthorized-domain":    "Sign-in blocked: this domain isn't authorized in Firebase. The developer must add it under Authentication → Authorized Domains.",
+            "auth/operation-not-allowed":  "Google sign-in isn't enabled. Enable it in Firebase → Authentication → Sign-in Methods.",
+            "auth/network-request-failed": "Network error during sign-in. Check your internet connection.",
+            "auth/web-storage-unsupported":"Browser is blocking cookies needed for sign-in. Try Chrome or allow third-party cookies.",
+          };
+          showToast(rMsgs[error.code] || ("Google sign-in failed: " + (error.message || error.code)));
         });
         auth.onAuthStateChanged(handleCloudAuthUser);
       }
@@ -6069,19 +5576,401 @@ What is 7 x 8?
 
 
     document.addEventListener("DOMContentLoaded", init);
-  
-    // Global click fix to ensure modals and buttons work
-    document.addEventListener('click', function(e) {
-      // If clicking a close button, find the parent modal and close it
-      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
-        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
-        if (modal) {
-          modal.classList.add('hidden');
-          modal.classList.remove('open', 'flex');
+
+    /* ================================================================
+       GLOBAL SYNC ENGINE — Public Quizzes + Leaderboard
+       All public quizzes sync in real-time across every user globally.
+       Primary source: Firestore (with RTDB as hot fallback).
+       Leaderboard uses live RTDB .on() for instant cross-user updates.
+    ================================================================ */
+
+    // ── STATE ──────────────────────────────────────────────────────────
+    var _globalPublicQuizMap = {};          // id → quiz (merged from both DBs)
+    var _globalPublicRTDBUnsub = null;      // RTDB listener off-handle
+    var _globalPublicFSUnsub = null;        // Firestore listener unsubscribe
+    var _globalLeaderboardRTDBRef = null;   // RTDB leaderboard ref
+    var _publicSearchQuery = "";
+
+    // ── HELPERS ────────────────────────────────────────────────────────
+    function _escHtml(str) {
+      return String(str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function _safeQuizId(id) {
+      return String(id || "").replace(/['"<>]/g, "");
+    }
+    function _mergePublicQuiz(id, data) {
+      if (!data || !data.questions || !data.questions.length) return;
+      _globalPublicQuizMap[id] = { ...(_globalPublicQuizMap[id] || {}), ...data, id: id };
+    }
+    function _removePublicQuiz(id) {
+      delete _globalPublicQuizMap[id];
+    }
+
+    // ── RENDER PUBLIC QUIZZES LIST ──────────────────────────────────────
+    function _renderPublicQuizzesList() {
+      var list = document.getElementById("publicQuizzesList");
+      if (!list) return;
+      var quizzes = Object.values(_globalPublicQuizMap);
+      // Sort newest first
+      quizzes.sort(function(a, b) {
+        return (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0);
+      });
+      // Apply search filter
+      var q = _publicSearchQuery.trim().toLowerCase();
+      if (q) {
+        quizzes = quizzes.filter(function(quiz) {
+          return (quiz.title || "").toLowerCase().includes(q) ||
+                 (quiz.description || "").toLowerCase().includes(q) ||
+                 (quiz.author || "").toLowerCase().includes(q);
+        });
+      }
+      if (quizzes.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:2.5rem;color:#aaa;font-size:1rem;">' +
+          (q ? '🔍 No quizzes match "' + _escHtml(q) + '"' : '🌐 No public quizzes yet — be the first to create one!') +
+          '</div>';
+        return;
+      }
+      var myUid = auth.currentUser ? auth.currentUser.uid : null;
+      list.innerHTML = quizzes.map(function(quiz) {
+        var id = _safeQuizId(quiz.id);
+        var isMine = myUid && quiz.authorId === myUid;
+        var qCount = Array.isArray(quiz.questions) ? quiz.questions.length : 0;
+        var playCount = Number(quiz.playCount || 0);
+        var authorAvatar = quiz.authorPhoto
+          ? 'src="' + _escHtml(quiz.authorPhoto) + '"'
+          : 'src="https://ui-avatars.com/api/?name=' + encodeURIComponent(quiz.author || "?") + '&background=111827&color=fff"';
+        return '<div class="dashboard-card" style="display:flex;flex-direction:column;gap:0.6rem;position:relative;">' +
+          (isMine ? '<span style="position:absolute;top:1rem;right:1rem;font-size:0.7rem;background:rgba(96,165,250,0.2);color:#93c5fd;padding:2px 8px;border-radius:999px;font-weight:700;">YOURS</span>' : '') +
+          '<div style="display:flex;align-items:center;gap:0.6rem;">' +
+            '<img ' + authorAvatar + ' style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;">' +
+            '<span style="font-size:0.82rem;color:#9ca3af;">' + _escHtml(quiz.author || "Unknown") + '</span>' +
+          '</div>' +
+          '<h3 style="margin:0;font-size:1.05rem;font-weight:800;line-height:1.3;">🌐 ' + _escHtml(quiz.title || "Untitled Quiz") + '</h3>' +
+          (quiz.description ? '<p style="margin:0;color:#9ca3af;font-size:0.85rem;line-height:1.4;">' + _escHtml(quiz.description) + '</p>' : '') +
+          '<div style="display:flex;gap:1rem;font-size:0.78rem;color:#6b7280;">' +
+            '<span>📝 ' + qCount + ' question' + (qCount !== 1 ? 's' : '') + '</span>' +
+            (playCount > 0 ? '<span>▶ ' + playCount + ' play' + (playCount !== 1 ? 's' : '') + '</span>' : '') +
+          '</div>' +
+          '<div class="dashboard-actions" style="margin-top:0.25rem;flex-wrap:wrap;gap:0.5rem;">' +
+            '<button class="play-btn" data-quiz-id="' + id + '" data-action="launch-custom-quiz" style="background:#3b82f6;color:white;border:none;padding:0.45rem 1.1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">▶ Play</button>' +
+            (isMine
+              ? '<button class="edit-btn" data-quiz-id="' + id + '" style="background:#6366f1;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">✏ Edit</button>' +
+                '<button class="delete-btn" data-quiz-id="' + id + '" style="background:#ef4444;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">🗑 Delete</button>'
+              : '') +
+            '<button class="share-btn" data-quiz-id="' + id + '" style="background:#10b981;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">🔗 Share</button>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
+
+    // ── ATTACH GLOBAL PUBLIC QUIZ LISTENERS ────────────────────────────
+    function _startGlobalPublicSync() {
+      // 1. Firestore real-time listener (authoritative)
+      if (!_globalPublicFSUnsub) {
+        try {
+          _globalPublicFSUnsub = firestore.collection("publicQuizzes")
+            .orderBy("createdAt", "desc")
+            .onSnapshot(function(snapshot) {
+              snapshot.docChanges().forEach(function(change) {
+                var id = change.doc.id;
+                var data = change.doc.data();
+                if (change.type === "removed") {
+                  _removePublicQuiz(id);
+                } else {
+                  _mergePublicQuiz(id, { id: id, ...data });
+                }
+              });
+              // Keep shared publicQuizzes array in sync for rest of app
+              publicQuizzes = Object.values(_globalPublicQuizMap);
+              _renderPublicQuizzesList();
+              updateDashboard();
+            }, function(err) {
+              console.warn("Firestore public quiz listener error, RTDB covers:", err.message || err);
+            });
+        } catch(e) {
+          console.warn("Firestore public quiz setup failed:", e.message || e);
         }
       }
-    }, true);
-    
-</script>
+
+      // 2. RTDB real-time listener (hot fallback + cross-user instant writes)
+      if (!_globalPublicRTDBUnsub) {
+        var rtdbRef = database.ref("publicQuizzes");
+        _globalPublicRTDBUnsub = rtdbRef;
+
+        rtdbRef.on("child_added", function(snap) {
+          var id = snap.key;
+          var data = snap.val();
+          if (data && data.questions && data.questions.length) {
+            _mergePublicQuiz(id, { id: id, ...data });
+            publicQuizzes = Object.values(_globalPublicQuizMap);
+            _renderPublicQuizzesList();
+          }
+        });
+
+        rtdbRef.on("child_changed", function(snap) {
+          var id = snap.key;
+          var data = snap.val();
+          if (data && data.questions && data.questions.length) {
+            _mergePublicQuiz(id, { id: id, ...data });
+          } else {
+            _removePublicQuiz(id);
+          }
+          publicQuizzes = Object.values(_globalPublicQuizMap);
+          _renderPublicQuizzesList();
+        });
+
+        rtdbRef.on("child_removed", function(snap) {
+          _removePublicQuiz(snap.key);
+          publicQuizzes = Object.values(_globalPublicQuizMap);
+          _renderPublicQuizzesList();
+          updateDashboard();
+        });
+      }
+    }
+
+    function _stopGlobalPublicSync() {
+      if (_globalPublicFSUnsub) { try { _globalPublicFSUnsub(); } catch(e){} _globalPublicFSUnsub = null; }
+      if (_globalPublicRTDBUnsub) { try { _globalPublicRTDBUnsub.off(); } catch(e){} _globalPublicRTDBUnsub = null; }
+    }
+
+    // ── PLAY PUBLIC QUIZ (globally available) ──────────────────────────
+    window.playPublicQuiz = function(quizId) {
+      // First check in-memory map (instant)
+      var quiz = _globalPublicQuizMap[quizId];
+      if (quiz && quiz.questions && quiz.questions.length) {
+        _launchPublicQuiz(quiz);
+        return;
+      }
+      // Fallback: fetch from RTDB then Firestore
+      database.ref("publicQuizzes/" + quizId).once("value").then(function(snap) {
+        var q = snap.val();
+        if (q && q.questions && q.questions.length) {
+          _mergePublicQuiz(quizId, { ...q, id: quizId });
+          _launchPublicQuiz(q);
+        } else {
+          return firestore.collection("publicQuizzes").doc(quizId).get().then(function(doc) {
+            if (doc.exists) {
+              var fq = { id: doc.id, ...doc.data() };
+              _mergePublicQuiz(quizId, fq);
+              _launchPublicQuiz(fq);
+            } else {
+              showToast("Quiz not found or was deleted.");
+            }
+          });
+        }
+      }).catch(function(err) { showToast("Could not load quiz: " + (err.message || err)); });
+
+      // Increment play count (fire-and-forget)
+      try {
+        database.ref("publicQuizzes/" + quizId + "/playCount").transaction(function(v) { return (v || 0) + 1; });
+        firestore.collection("publicQuizzes").doc(quizId).update({ playCount: firebase.firestore.FieldValue.increment(1) }).catch(function(){});
+      } catch(e) {}
+    };
+
+    function _launchPublicQuiz(quiz) {
+      // Upsert into customQuizzes without duplicates
+      var idx = customQuizzes.findIndex(function(q) { return q.id === quiz.id; });
+      if (idx >= 0) {
+        customQuizzes[idx] = quiz;
+      } else {
+        customQuizzes.push(quiz);
+        idx = customQuizzes.length - 1;
+      }
+      startCustomQuiz(idx);
+      var dash = document.getElementById("dashboardModal");
+      if (dash) dash.classList.remove("open");
+    }
+
+    // ── PUBLIC QUIZ SEARCH ─────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", function() {
+      var searchEl = document.getElementById("publicQuizSearch");
+      if (searchEl) {
+        searchEl.addEventListener("input", function() {
+          _publicSearchQuery = this.value;
+          _renderPublicQuizzesList();
+        });
+      }
+
+      // Wire up "Play" buttons inside publicQuizzesList via delegation
+      var pubList = document.getElementById("publicQuizzesList");
+      if (pubList) {
+        pubList.addEventListener("click", function(e) {
+          var playBtn = e.target.closest(".play-btn[data-action='launch-custom-quiz']");
+          if (playBtn) {
+            var qid = playBtn.dataset.quizId;
+            if (qid) playPublicQuiz(qid);
+          }
+        });
+      }
+    });
+
+    // ── LEADERBOARD: live real-time sync ───────────────────────────────
+    showLeaderboard = function() {
+      var modal = document.getElementById("leaderboardModal");
+      var leaderboardContent = document.getElementById("leaderboardContent");
+      var userRankEl = document.getElementById("userRank");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      if (leaderboardContent) leaderboardContent.innerHTML =
+        '<div style="text-align:center;padding:2rem;color:#aaa;display:flex;align-items:center;justify-content:center;gap:0.75rem;">' +
+        '<div class="spinner"></div> Loading live leaderboard...</div>';
+
+      // Remove any previous listener
+      if (_globalLeaderboardRTDBRef) {
+        try { _globalLeaderboardRTDBRef.off("value"); } catch(e){}
+      }
+      _globalLeaderboardRTDBRef = database.ref("leaderboard");
+
+      _globalLeaderboardRTDBRef.on("value", function(snapshot) {
+        var rows = snapshot.val() || {};
+        var entries = [];
+        Object.keys(rows).forEach(function(uid) {
+          var d = rows[uid];
+          var name = d.name || d.username || d.displayName || "Player";
+          var pts = Number(d.points || d.weeklyXp || d.xp || 0);
+          entries.push({
+            uid: uid, name: name, points: pts,
+            quizzes: Number(d.quizzes || 0),
+            avatar: d.avatar || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff"),
+            league: d.league || "Bronze"
+          });
+        });
+        entries.sort(function(a, b) { return b.points - a.points; });
+        var top20 = entries.slice(0, 20);
+        var myUid = auth.currentUser ? auth.currentUser.uid : null;
+        var myIdx = entries.findIndex(function(e) {
+          return myUid ? e.uid === myUid : e.name === currentPlayer;
+        });
+        var myEntry = myIdx >= 0 ? entries[myIdx] : null;
+
+        if (userRankEl) {
+          var rankLabel = myIdx >= 0 ? "#" + (myIdx + 1) : "-";
+          var leagueForMe = myEntry ? myEntry.league : getLeague(xp).name;
+          userRankEl.innerHTML =
+            '<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#374151,#1f2937);display:flex;align-items:center;justify-content:center;margin-right:1rem;font-size:0.9rem;font-weight:900;">' + rankLabel + '</div>' +
+            '<div style="flex:1;display:flex;justify-content:space-between;align-items:center;">' +
+              '<div>' +
+                '<div style="font-weight:800;">' + _escHtml((myEntry ? myEntry.name : currentPlayer) || "You") + '</div>' +
+                '<div style="font-size:0.78rem;color:#9ca3af;margin-top:2px;">' + leagueForMe + ' League</div>' +
+              '</div>' +
+              '<div style="font-weight:900;font-size:1.1rem;color:#34d399;">' + (myEntry ? myEntry.points : xp) + ' XP</div>' +
+            '</div>';
+        }
+
+        if (!leaderboardContent) return;
+        if (top20.length === 0) {
+          leaderboardContent.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;">No players yet. Complete a quiz to appear! 🏆</div>';
+          return;
+        }
+        var highest = Math.max(1, top20[0].points);
+        var medals = ["🥇","🥈","🥉"];
+        var html = '<div style="display:flex;flex-direction:column;gap:0.55rem;">';
+        top20.forEach(function(entry, i) {
+          var isMe = myUid ? entry.uid === myUid : entry.name === currentPlayer;
+          var fill = Math.min(100, Math.round((entry.points / highest) * 100));
+          var border = isMe ? "2px solid rgba(52,211,153,0.7)" : "2px solid rgba(255,255,255,0.08)";
+          var bg = isMe ? "rgba(52,211,153,0.08)" : "rgba(255,255,255,0.04)";
+          var rank = i < 3 ? medals[i] : "#" + (i + 1);
+          html += '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.8rem;border-radius:14px;border:' + border + ';background:' + bg + ';transition:background 0.2s;">' +
+            '<div style="width:36px;text-align:center;font-weight:900;font-size:1rem;">' + rank + '</div>' +
+            '<img src="' + _escHtml(entry.avatar) + '" style="width:36px;height:36px;border-radius:10px;object-fit:cover;flex-shrink:0;" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(entry.name) + '&background=111827&color=fff\'">' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _escHtml(entry.name) + (isMe ? " ⭐" : "") + '</div>' +
+              '<div style="height:5px;border-radius:99px;background:rgba(0,0,0,0.35);margin-top:4px;">' +
+                '<div style="height:100%;width:' + fill + '%;border-radius:99px;background:linear-gradient(90deg,#34d399,#60a5fa);transition:width 0.4s ease;"></div>' +
+              '</div>' +
+              '<div style="font-size:0.7rem;color:#6b7280;margin-top:2px;">' + entry.quizzes + ' quiz' + (entry.quizzes !== 1 ? 'zes' : '') + ' · ' + _escHtml(entry.league) + '</div>' +
+            '</div>' +
+            '<strong style="font-size:1rem;white-space:nowrap;">' + entry.points + ' XP</strong>' +
+          '</div>';
+        });
+        html += '</div>';
+        leaderboardContent.innerHTML = html;
+      });
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Close leaderboard modal — stop live listener
+      var closeBtn = document.getElementById("closeLeaderboardModal");
+      if (closeBtn) {
+        var cloneClose = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(cloneClose, closeBtn);
+        cloneClose.addEventListener("click", function() {
+          if (_globalLeaderboardRTDBRef) {
+            try { _globalLeaderboardRTDBRef.off("value"); } catch(e){}
+            _globalLeaderboardRTDBRef = null;
+          }
+          var modal = document.getElementById("leaderboardModal");
+          if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+        });
+      }
+
+      // Wire leaderboard open buttons
+      ["openLeaderboardBtn","headerLeaderboardBtn"].forEach(function(id) {
+        var btn = document.getElementById(id);
+        if (!btn) return;
+        var clone = btn.cloneNode(true);
+        btn.parentNode.replaceChild(clone, btn);
+        clone.addEventListener("click", showLeaderboard);
+      });
+    });
+
+    // ── XP WRITE TO LEADERBOARD after every quiz ───────────────────────
+    (function() {
+      var _origSubmit = submitQuiz;
+      submitQuiz = function() {
+        var result = _origSubmit.apply(this, arguments);
+        // Push updated XP to both RTDB leaderboard + Firestore publicProfiles
+        setTimeout(function() {
+          var user = auth.currentUser;
+          if (!user) return;
+          var name   = user.displayName || user.email || "Player";
+          var avatar = user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=111827&color=fff");
+          var leagueVal = (typeof getLeague === "function" ? getLeague(xp).name : "Bronze");
+          var payload = {
+            uid: user.uid, name: name, points: xp, weeklyXp: xp,
+            quizzes: history.length, league: leagueVal,
+            avatar: avatar, public: true, updatedAt: Date.now()
+          };
+          database.ref("leaderboard/" + user.uid).set(payload)
+            .catch(function(e){ console.error("RTDB leaderboard write failed:", e); });
+          firestore.collection("publicProfiles").doc(user.uid).set({
+            uid: user.uid, username: name, displayName: name, avatar: avatar,
+            xp: xp, weeklyXp: xp, quizzes: history.length,
+            league: leagueVal, public: true, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true }).catch(function(e){ console.error("Firestore profile write failed:", e); });
+        }, 300);
+        return result;
+      };
+    })();
+
+    // ── SAVE QUIZ (replaces saveBtn click) ─────────────────────────────
+    document.addEventListener("DOMContentLoaded", function() {
+      var saveBtn = document.getElementById("saveQuizBtn");
+      if (saveBtn) {
+        var newBtn = saveBtn.cloneNode(true);
+        saveBtn.parentNode.replaceChild(newBtn, saveBtn);
+        newBtn.addEventListener("click", function() {
+          // Delegate to the main saveCustomQuiz which already dual-writes
+          // to Firestore + RTDB and then our listeners auto-update the UI
+          if (typeof saveCustomQuiz === "function") {
+            saveCustomQuiz();
+          }
+        });
+      }
+    });
+
+    // ── BOOT: start global sync immediately ────────────────────────────
+    document.addEventListener("DOMContentLoaded", function() {
+      _startGlobalPublicSync();
+    });
+
+    // Expose for manual refresh (e.g. after tab switch)
+    window.refreshPublicQuizzes = function() {
+      _renderPublicQuizzesList();
+    };
+
+  </script>
 </body>
 </html>
