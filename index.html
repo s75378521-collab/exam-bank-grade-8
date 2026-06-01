@@ -1349,29 +1349,6 @@
       }
     }
 
-  
-    /* Gold & Market */
-    .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
-    .market-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; padding: 1.5rem; text-align: center; transition: all 0.3s ease; }
-    .market-item:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); }
-    .market-item .price { font-weight: 800; color: #ffd166; margin: 1rem 0; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; gap: 4px; }
-    .buy-btn { width: 100%; padding: 0.75rem; background: #3b82f6; color: white; border-radius: 0.75rem; font-weight: 700; transition: all 0.2s ease; }
-    .buy-btn:hover { background: #2563eb; }
-    
-    .gold-coin {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 22px; height: 22px; background: linear-gradient(135deg, #ffd700, #ffae00);
-      border: 2px solid #b8860b; border-radius: 50%; color: #b8860b;
-      font-size: 12px; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    /* Full-screen Quiz Overlay Fix */
-    #quizOverlay { z-index: 2000 !important; background: #08111f !important; }
-    #dashboardModal { z-index: 1000 !important; }
-    
-    /* Tabs */
-    .tab.active { background: rgba(96, 165, 250, 0.2); border-color: #60a5fa; color: #60a5fa; }
-    
   </style>
 </head>
 <body>
@@ -1548,17 +1525,6 @@
         </button>
         <div class="flex items-center gap-3">
           <button id="headerLeaderboardBtn" class="glass rounded-2xl px-5 py-4 font-bold transition hover: bg-white/10">Leaderboard</button>
-          
-          <div class="glass rounded-2xl px-5 py-4 text-right flex items-center gap-3">
-            <div class="flex flex-col items-end">
-              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Gold Balance</p>
-              <div class="flex items-center gap-2">
-                <span class="gold-coin">G</span>
-                <p id="headerGoldCount" class="text-2xl font-black text-gold">0</p>
-              </div>
-            </div>
-          </div>
-    
           <div class="glass rounded-2xl px-5 py-4 text-right">
             <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Points</p>
             <p id="headerPointsCount" class="text-2xl font-black text-emerald-300">0</p>
@@ -1873,16 +1839,7 @@ What is 7 x 8?
         <button class="close-modal" id="closeDashboardModal">×</button>
       </div>
       
-      
-        <div class="tabs flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
-          <button class="tab active whitespace-nowrap px-5 py-2.5 rounded-xl font-bold glass transition text-sm" data-tab="user">My Quizzes</button>
-          <button class="tab whitespace-nowrap px-5 py-2.5 rounded-xl font-bold glass transition text-sm" data-tab="public">Community</button>
-          <button class="tab whitespace-nowrap px-5 py-2.5 rounded-xl font-bold glass transition text-sm" data-tab="teams">Teams</button>
-          <button class="tab whitespace-nowrap px-5 py-2.5 rounded-xl font-bold glass transition text-sm" data-tab="market">Market</button>
-          <button class="tab whitespace-nowrap px-5 py-2.5 rounded-xl font-bold glass transition text-sm" data-tab="stats">Stats</button>
-        </div>
-    
-        <div class="user-profile">
+      <div class="user-profile">
         <img id="dashboardProfileImage" src="https://ui-avatars.com/api/?name=Guest&background=111827&color=fff" alt="Profile">
         <div class="user-info">
           <h3 id="dashboardUserName">Guest</h3>
@@ -1943,38 +1900,6 @@ What is 7 x 8?
         </div>
         
         <!-- Statistics Tab -->
-        
-        <!-- Teams Tab -->
-        <div class="tab-content" id="teamsTab" style="display: none;">
-          <div id="noTeamView" class="glass rounded-3xl p-8 text-center">
-            <h3 class="text-2xl font-black mb-2">Join a Team</h3>
-            <p class="soft-text mb-8">Team up to earn bonus XP and climb the global ranks!</p>
-            <div class="flex flex-wrap justify-center gap-4">
-              <button onclick="showCreateTeamModal()" class="bg-emerald-500 hover:bg-emerald-400 px-8 py-3 rounded-2xl font-black transition">Create Team (1,000 G)</button>
-              <button onclick="showBrowseTeams()" class="bg-blue-500 hover:bg-blue-400 px-8 py-3 rounded-2xl font-black transition">Find a Team</button>
-            </div>
-          </div>
-          <div id="activeTeamView" style="display:none;" class="space-y-6">
-             <div class="glass rounded-3xl p-6 flex justify-between items-center">
-                <div>
-                  <h2 id="teamNameHeader" class="text-3xl font-black text-white">---</h2>
-                  <p id="teamTagHeader" class="text-blue-400 font-bold tracking-widest uppercase">---</p>
-                </div>
-                <div class="text-right">
-                  <p class="text-xs soft-text uppercase font-bold">Total Team XP</p>
-                  <p id="teamTotalXp" class="text-3xl font-black text-emerald-400">0</p>
-                </div>
-             </div>
-             <div id="teamRosterList" class="grid gap-3"></div>
-             <button onclick="leaveTeam()" class="w-full py-4 rounded-2xl bg-white/5 hover:bg-red-500/20 text-red-400 font-bold transition">Leave Team</button>
-          </div>
-        </div>
-
-        <!-- Market Tab -->
-        <div class="tab-content" id="marketTab" style="display: none;">
-          <div class="market-grid" id="marketGrid"></div>
-        </div>
-    
         <div class="tab-content" id="statsTab" style="display: none;">
           <div class="grid grid-cols-1 md: grid-cols-2 gap-6">
             <div class="stats-card">
@@ -2547,7 +2472,7 @@ What is 7 x 8?
               <span class="rounded-full bg-white/6 px-4 py-2 text-sm font-semibold text-slate-200">${quiz.questions.length} Questions</span>
               <div class="flex gap-2">
                 <button data-action="preview-custom-quiz" data-quiz-index="${index}" class="rounded-2xl bg-white/10 px-4 py-3 font-bold transition hover: bg-white/15">Preview</button>
-                <button onclick="event.stopPropagation(); document.getElementById('dashboardModal').classList.add('hidden'); launchCustomQuiz(this.dataset.quizIndex);" data-quiz-index="${index}" class="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-400 px-4 py-3 font-black text-slate-950 transition hover: scale-[1.03]">Start Quiz</button>
+                <button data-action="launch-custom-quiz" data-quiz-index="${index}" class="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-400 px-4 py-3 font-black text-slate-950 transition hover: scale-[1.03]">Start Quiz</button>
               </div>
             </div>
           </article>
@@ -4032,7 +3957,7 @@ What is 7 x 8?
             <p>${quiz.description || "No description"}</p>
             <p class="text-sm text-gray-400">${quiz.questions.length} questions</p>
             <div class="dashboard-actions">
-              <button onclick="event.stopPropagation(); openEditQuizModal(this.dataset.quizId);" data-quiz-id="${quiz.id}">Edit</button>
+              <button class="edit-btn" data-quiz-id="${quiz.id}">Edit</button>
               <button class="share-btn" data-quiz-id="${quiz.id}">Share</button>
               <button class="delete-btn" data-quiz-id="${quiz.id}">Delete</button>
             </div>
@@ -4237,7 +4162,7 @@ What is 7 x 8?
           <p>${quiz.description || "No description"}</p>
           <p class="text-sm text-gray-400">${quiz.questions?.length || 0} questions • ${quiz.visibility === "private" ? "🔒 Private" : "🌐 Public"}</p>
           <div class="dashboard-actions" style="margin-top:1rem;">
-            <button onclick="event.stopPropagation(); openEditQuizModal(this.dataset.quizId);" id="detailEditBtn">Edit</button>
+            <button class="edit-btn" id="detailEditBtn">Edit</button>
             <button class="share-btn" id="detailShareBtn">Share</button>
             <button class="delete-btn" id="detailDeleteBtn">Delete</button>
             <button class="duo-action-button primary" id="detailPlayBtn">Play</button>
@@ -4748,10 +4673,10 @@ What is 7 x 8?
             <p>${quiz.description || "No description"}</p>
             <p class="text-sm text-gray-400">${quiz.questions.length} questions • ${quiz.visibility === "private" ? "🔒 Private" : "🌐 Public"}</p>
             <div class="dashboard-actions">
-              <button onclick="event.stopPropagation(); openEditQuizModal(this.dataset.quizId);" data-quiz-id="${quiz.id || index}">Edit</button>
+              <button class="edit-btn" data-quiz-id="${quiz.id || index}">Edit</button>
               <button class="share-btn" data-quiz-id="${quiz.id || index}">Share</button>
               <button class="delete-btn" data-quiz-id="${quiz.id || index}">Delete</button>
-              <button class="duo-action-button primary" onclick="event.stopPropagation(); document.getElementById('dashboardModal').classList.add('hidden'); launchCustomQuiz(this.dataset.quizIndex);" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play</button>
+              <button class="duo-action-button primary" data-action="launch-custom-quiz" data-quiz-index="${customQuizzes.indexOf(quiz) >= 0 ? customQuizzes.indexOf(quiz) : index}">Play</button>
             </div>
           </div>
         `).join("");
@@ -5683,187 +5608,7 @@ What is 7 x 8?
     };
 
 
-    
-    
-    function launchCustomQuiz(index) {
-      console.log("Launching custom quiz at index:", index);
-      if (typeof startCustomQuiz === 'function') {
-        startCustomQuiz(index);
-      } else {
-        showToast("Error: startCustomQuiz not found");
-      }
-    }
-
-    
-    async function showCreateTeamModal() {
-      if (userGold < 1000) return showToast("You need 1,000 Gold to create a team!");
-      const name = prompt("Enter Team Name:");
-      if (!name) return;
-      const tag = prompt("Enter Team Tag (3-4 chars):");
-      if (!tag || tag.length < 3 || tag.length > 4) return showToast("Invalid Tag!");
-      
-      try {
-        const teamRef = firestore.collection('teams').doc();
-        await teamRef.set({
-          name: name,
-          tag: tag.toUpperCase(),
-          captainId: auth.currentUser.uid,
-          members: [auth.currentUser.uid],
-          totalXp: xp,
-          createdAt: serverTime()
-        });
-        await firestore.collection('users').doc(auth.currentUser.uid).update({ 
-          teamId: teamRef.id,
-          gold: userGold - 1000
-        });
-        userGold -= 1000;
-        updateGoldUI();
-        showToast("Team Created!");
-        loadTeamData();
-      } catch (e) { showToast("Error creating team: " + e.message); }
-    }
-    
-    async function leaveTeam() {
-      if (!confirm("Are you sure you want to leave your team?")) return;
-      try {
-        const teamRef = firestore.collection('teams').doc(userTeamId);
-        const team = (await teamRef.get()).data();
-        const newMembers = team.members.filter(m => m !== auth.currentUser.uid);
-        
-        if (newMembers.length === 0) {
-          await teamRef.delete();
-        } else {
-          await teamRef.update({ members: newMembers });
-        }
-        
-        await firestore.collection('users').doc(auth.currentUser.uid).update({ teamId: null });
-        userTeamId = null;
-        loadTeamData();
-        showToast("Left team.");
-      } catch (e) { showToast("Error leaving team."); }
-    }
-
-    // --- EXPANSION SYSTEM: GOLD & TEAMS ---
-    let userGold = 0;
-    let userTeamId = null;
-
-    function updateGoldUI() {
-      document.querySelectorAll('#headerGoldCount, #marketGoldCount').forEach(el => {
-        if (el) el.textContent = (userGold || 0).toLocaleString();
-      });
-    }
-
-    async function syncGoldToCloud() {
-      if (!auth.currentUser) return;
-      try {
-        await firestore.collection('users').doc(auth.currentUser.uid).set({ gold: userGold }, { merge: true });
-      } catch (e) { console.error("Gold sync error:", e); }
-    }
-
-    function loadMarketItems() {
-      const grid = document.getElementById('marketGrid');
-      if (!grid) return;
-      const items = [
-        { id: 'freeze', name: 'Streak Freeze', icon: '❄️', price: 500, desc: 'Keep your streak if you miss a day.' },
-        { id: 'booster', name: '2x XP Booster', icon: '⚡', price: 1500, desc: 'Double XP for your next 3 quizzes.' },
-        { id: 'crown', name: 'Golden Crown', icon: '👑', price: 5000, desc: 'A permanent badge on your profile.' }
-      ];
-      grid.innerHTML = items.map(item => `
-        <div class="market-item">
-          <div class="text-5xl mb-4">${item.icon}</div>
-          <h4 class="text-xl font-black mb-1">${item.name}</h4>
-          <p class="text-sm soft-text mb-4">${item.desc}</p>
-          <div class="price"><span class="gold-coin">G</span>${item.price}</div>
-          <button onclick="buyItem('${item.id}', ${item.price})" class="buy-btn">Purchase</button>
-        </div>
-      `).join('');
-    }
-
-    async function buyItem(id, price) {
-      if (userGold < price) return showToast("Not enough Gold!");
-      userGold -= price;
-      updateGoldUI();
-      await syncGoldToCloud();
-      showToast(`Successfully purchased ${id}!`);
-    }
-
-    async function loadTeamData() {
-      if (!auth.currentUser) return;
-      const userDoc = await firestore.collection('users').doc(auth.currentUser.uid).get();
-      userTeamId = userDoc.exists ? userDoc.data().teamId : null;
-      
-      const noView = document.getElementById('noTeamView');
-      const activeView = document.getElementById('activeTeamView');
-      
-      if (!userTeamId) {
-        noView.style.display = 'block';
-        activeView.style.display = 'none';
-        return;
-      }
-
-      const teamDoc = await firestore.collection('teams').doc(userTeamId).get();
-      if (teamDoc.exists) {
-        const team = teamDoc.data();
-        noView.style.display = 'none';
-        activeView.style.display = 'block';
-        document.getElementById('teamNameHeader').textContent = team.name;
-        document.getElementById('teamTagHeader').textContent = `[${team.tag}]`;
-        document.getElementById('teamTotalXp').textContent = (team.totalXp || 0).toLocaleString();
-        
-        const roster = document.getElementById('teamRosterList');
-        roster.innerHTML = '<div class="text-center py-4">Loading members...</div>';
-        
-        const members = await Promise.all((team.members || []).map(uid => 
-          firestore.collection('publicProfiles').doc(uid).get()
-        ));
-        
-        roster.innerHTML = members.map(doc => {
-          if (!doc.exists) return '';
-          const p = doc.data();
-          return `
-            <div class="glass p-4 rounded-2xl flex justify-between items-center">
-              <div class="flex items-center gap-3">
-                <img src="${p.avatar}" class="w-10 h-10 rounded-full border-2 border-white/10">
-                <span class="font-bold">${p.username}</span>
-              </div>
-              <span class="font-black text-emerald-400">${(p.xp || 0).toLocaleString()} XP</span>
-            </div>
-          `;
-        }).join('');
-      }
-    }
-
-    // Master Init for Expansion
-    function initExpansion() {
-      // Tab switching
-      document.querySelectorAll('.tab').forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-          const tid = btn.getAttribute('data-tab');
-          const target = document.getElementById(tid + 'Tab') || document.getElementById(tid + 'Content');
-          if (target) target.style.display = 'block';
-          if (tid === 'market') loadMarketItems();
-          if (tid === 'teams') loadTeamData();
-        };
-      });
-
-      // Award gold on quiz finish
-      const oldShowResults = window.showResults;
-      window.showResults = function(res) {
-        const xpEarned = parseInt(res.xpEarned) || 0;
-        const goldGained = Math.floor(xpEarned / 2);
-        userGold += goldGained;
-        updateGoldUI();
-        syncGoldToCloud();
-        if (oldShowResults) oldShowResults(res);
-      };
-      
-      loadGoldFromCloud();
-    }
-    
-    document.addEventListener("DOMContentLoaded", () => { init(); initExpansion(); });
+    document.addEventListener("DOMContentLoaded", init);
 
     /* ================================================================
        GLOBAL SYNC ENGINE — Public Quizzes + Leaderboard
@@ -5940,9 +5685,9 @@ What is 7 x 8?
             (playCount > 0 ? '<span>▶ ' + playCount + ' play' + (playCount !== 1 ? 's' : '') + '</span>' : '') +
           '</div>' +
           '<div class="dashboard-actions" style="margin-top:0.25rem;flex-wrap:wrap;gap:0.5rem;">' +
-            '<button class="play-btn" data-quiz-id="' + id + '" onclick="event.stopPropagation(); document.getElementById('dashboardModal').classList.add('hidden'); launchCustomQuiz(this.dataset.quizIndex);" style="background:#3b82f6;color:white;border:none;padding:0.45rem 1.1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">▶ Play</button>' +
+            '<button class="play-btn" data-quiz-id="' + id + '" data-action="launch-custom-quiz" style="background:#3b82f6;color:white;border:none;padding:0.45rem 1.1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">▶ Play</button>' +
             (isMine
-              ? '<button onclick="event.stopPropagation(); openEditQuizModal(this.dataset.quizId);" data-quiz-id="' + id + '" style="background:#6366f1;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">✏ Edit</button>' +
+              ? '<button class="edit-btn" data-quiz-id="' + id + '" style="background:#6366f1;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">✏ Edit</button>' +
                 '<button class="delete-btn" data-quiz-id="' + id + '" style="background:#ef4444;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">🗑 Delete</button>'
               : '') +
             '<button class="share-btn" data-quiz-id="' + id + '" style="background:#10b981;color:white;border:none;padding:0.45rem 1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;">🔗 Share</button>' +
