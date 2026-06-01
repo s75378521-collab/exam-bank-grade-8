@@ -6,7 +6,20 @@
   <title>Exam Bank Portal X</title>
   
   <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com">
+    // Global click fix to ensure modals and buttons work
+    document.addEventListener('click', function(e) {
+      // If clicking a close button, find the parent modal and close it
+      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
+        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('open', 'flex');
+        }
+      }
+    }, true);
+    
+</script>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,11 +27,76 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
   
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
+    // Global click fix to ensure modals and buttons work
+    document.addEventListener('click', function(e) {
+      // If clicking a close button, find the parent modal and close it
+      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
+        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('open', 'flex');
+        }
+      }
+    }, true);
+    
+</script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js">
+    // Global click fix to ensure modals and buttons work
+    document.addEventListener('click', function(e) {
+      // If clicking a close button, find the parent modal and close it
+      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
+        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('open', 'flex');
+        }
+      }
+    }, true);
+    
+</script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js">
+    // Global click fix to ensure modals and buttons work
+    document.addEventListener('click', function(e) {
+      // If clicking a close button, find the parent modal and close it
+      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
+        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('open', 'flex');
+        }
+      }
+    }, true);
+    
+</script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js">
+    // Global click fix to ensure modals and buttons work
+    document.addEventListener('click', function(e) {
+      // If clicking a close button, find the parent modal and close it
+      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
+        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('open', 'flex');
+        }
+      }
+    }, true);
+    
+</script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js">
+    // Global click fix to ensure modals and buttons work
+    document.addEventListener('click', function(e) {
+      // If clicking a close button, find the parent modal and close it
+      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
+        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('open', 'flex');
+        }
+      }
+    }, true);
+    
+</script>
   
   <style>
     :root {
@@ -1642,7 +1720,7 @@
           
           <div class="glass rounded-2xl px-5 py-4 text-right">
             <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">Gold</p>
-            <div class="flex items-center justify-end gap-2"><svg class="w-6 h-6 inline-block mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><text x="12" y="17" text-anchor="middle" fill="#B8860B" font-size="14" font-weight="bold" font-family="Arial">G</text></svg><p id="headerGoldCount" class="text-2xl font-black text-gold">0</p></div>
+            <div class="flex items-center justify-end gap-2"><svg class="w-6 h-6 inline-block mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><text x="12" y="17" text-anchor="middle" fill="#B8860B" font-size="14" font-weight="bold" font-family="Arial">G</text></svg><div class="flex items-center justify-end gap-1"><span class="gold-coin-logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle; margin-right:4px;"><circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><text x="12" y="17" text-anchor="middle" fill="#B8860B" font-size="12" font-weight="bold" font-family="Arial">G</text></svg></span><p id="headerGoldCount" class="text-2xl font-black text-gold">0</p></div></div>
           </div>
 
           <div class="glass rounded-2xl px-5 py-4 text-right">
@@ -2246,6 +2324,14 @@ What is 7 x 8?
   </div>
 
   <script>
+
+    // Initialize global arrays to prevent "filter of undefined" errors
+    window.customQuizzes = window.customQuizzes || [];
+    window.userQuizzes = window.userQuizzes || [];
+    window.publicQuizzes = window.publicQuizzes || [];
+    window.userGold = window.userGold || 0;
+    window.userTeamId = window.userTeamId || null;
+    
     
     // Team & Gold State
     let userGold = parseInt(localStorage.getItem('userGold')) || 0;
@@ -5626,559 +5712,25 @@ What is 7 x 8?
       };
     }
 
-    const originalInitForDuoExpansion = typeof init === "function" ? init : null;
-    if (originalInitForDuoExpansion) {
-      init = function() {
-        originalInitForDuoExpansion.apply(this, arguments);
-        applyWeeklyResetIfNeeded();
-        ensureLeaderboardLeagueData();
-        saveExpandedAccountData();
-        startLeagueCountdownTicker();
-        updateDashboard();
-        loadGoldFromCloud();
-        loadTeamData();
-        loadMarketItems();
-      };
-    }
-
-
-    /*************************************************************************
-     * Firebase Cloud Save + Public Sets Layer
-     * -----------------------------------------------------------------------
-     * This layer makes Firebase the source of truth for accounts, account
-     * files, progress, XP, personalization, made-by-you sets, and public sets.
-     * The page may still keep temporary in-memory variables while open, but it
-     * does not rely on localStorage for persistent global saves.
-     *************************************************************************/
-    const CLOUD_COLLECTIONS = {
-      users: "users",
-      publicProfiles: "publicProfiles",
-      publicQuizzes: "publicQuizzes",
-      activity: "activity",
-      accountFiles: "accountFiles"
+    
+    const originalInit = window.init;
+    window.init = function() {
+      console.log("Portal X: Initializing...");
+      try {
+        if (typeof originalInit === 'function') originalInit.apply(this, arguments);
+      } catch (e) { console.error("Original init error:", e); }
+      
+      try {
+        if (typeof applyWeeklyResetIfNeeded === 'function') applyWeeklyResetIfNeeded();
+        if (typeof ensureLeaderboardLeagueData === 'function') ensureLeaderboardLeagueData();
+        if (typeof saveExpandedAccountData === 'function') saveExpandedAccountData();
+        if (typeof updateDashboard === 'function') updateDashboard();
+        if (typeof loadGoldFromCloud === 'function') loadGoldFromCloud();
+        if (typeof loadTeamData === 'function') loadTeamData();
+        if (typeof loadMarketItems === 'function') loadMarketItems();
+      } catch (e) { console.error("Expansion init error:", e); }
     };
-
-    let cloudReady = false;
-    let authBootstrapped = false;
-    let activeProfileUnsubscribe = null;
-    let activeQuizUnsubscribe = null;
-    let publicQuizUnsubscribe = null;
-    let leaderboardUnsubscribe = null;
-
-    try {
-      auth.useDeviceLanguage();
-      firestore.disableNetwork().then(() => firestore.enableNetwork()).catch(() => {});
-      firestore.enablePersistence({ synchronizeTabs: true }).catch(error => {
-        console.info("Firestore offline persistence unavailable; using online Firebase sync:", error.code || error.message);
-        if (error && error.code === "failed-precondition") {
-          firestore.clearPersistence?.().catch(() => {});
-        }
-      });
-      Object.keys(localStorage || {}).forEach(key => {
-        if (key.startsWith("examBank") || key === "customQuizzes") localStorage.removeItem(key);
-      });
-
-      // Legacy UI code still calls localStorage in a few places. Block this app's
-      // keys so nothing important is saved locally; Firebase is the global store.
-      const rawLocalStorage = {
-        getItem: localStorage.getItem.bind(localStorage),
-        setItem: localStorage.setItem.bind(localStorage),
-        removeItem: localStorage.removeItem.bind(localStorage)
-      };
-      const isExamBankLocalKey = key => String(key || "").startsWith("examBank") || String(key || "") === "customQuizzes";
-      localStorage.getItem = function(key) {
-        return isExamBankLocalKey(key) ? null : rawLocalStorage.getItem(key);
-      };
-      localStorage.setItem = function(key, value) {
-        if (isExamBankLocalKey(key)) return undefined;
-        return rawLocalStorage.setItem(key, value);
-      };
-      localStorage.removeItem = function(key) {
-        if (isExamBankLocalKey(key)) return undefined;
-        return rawLocalStorage.removeItem(key);
-      };
-    } catch (error) {
-      console.info("Local cleanup / persistence setup skipped:", error.message);
-    }
-
-    function serverTime() {
-      return firebase.firestore.FieldValue.serverTimestamp();
-    }
-
-    function currentUid() {
-      return auth.currentUser ? auth.currentUser.uid : null;
-    }
-
-    function safeArray(value) {
-      return Array.isArray(value) ? value : [];
-    }
-
-    function safeObject(value) {
-      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
-    }
-
-    function buildDefaultProfile(user) {
-      const name = user?.displayName || user?.email || "Guest";
-      return {
-        uid: user?.uid || null,
-        username: name,
-        displayName: name,
-        email: user?.email || null,
-        avatar: user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
-        photoURL: user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`,
-        xp: 0,
-        weeklyXp: 0,
-        streak: 0,
-        league: getLeague(0).name,
-        settings: {
-          theme: "aurora",
-          accent: "ice",
-          surface: "soft",
-          sectionOrder: [...defaultSectionOrder],
-          sound: true,
-          animations: true
-        },
-        progress: {
-          history: [],
-          bestScores: {},
-          completedSets: [],
-          lastCompletedAt: null
-        },
-        accountFiles: [],
-        public: true,
-        madeBy: "you",
-        app: "Exam Bank Platform",
-        updatedAt: serverTime(),
-        createdAt: serverTime()
-      };
-    }
-
-    function applyCloudProfile(data = {}) {
-      const settings = safeObject(data.settings);
-      const progress = safeObject(data.progress);
-      currentPlayer = data.username || data.displayName || currentPlayer || "User";
-      currentUserProfile = {
-        uid: data.uid || currentUid(),
-        displayName: data.displayName || currentPlayer,
-        email: data.email || auth.currentUser?.email || null,
-        photoURL: data.photoURL || data.avatar || auth.currentUser?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
-        league: data.league || getLeague(Number(data.xp || 0)).name
-      };
-      xp = Number(data.xp || 0);
-      streak = Number(data.streak || 0);
-      history = safeArray(progress.history || data.history);
-      bestScores = safeObject(progress.bestScores || data.bestScores);
-      currentTheme = settings.theme || currentTheme || "aurora";
-      currentAccent = settings.accent || currentAccent || "ice";
-      currentSurface = settings.surface || currentSurface || "soft";
-      sectionOrder = safeArray(settings.sectionOrder).length ? settings.sectionOrder : [...defaultSectionOrder];
-      applyTheme(currentTheme);
-      applyAccent(currentAccent);
-      applySurface(currentSurface);
-      applySectionOrder();
-      updateStats();
-      updateUnitProgress(currentUnitKey);
-      updateDashboard();
-    }
-
-    async function upsertCloudAccount(user) {
-      if (!user) return null;
-      const uid = user.uid;
-      const base = buildDefaultProfile(user);
-      const realtimeRef = database.ref(`accounts/${uid}`);
-      let existing = {};
-
-      try {
-        await firestore.enableNetwork().catch(() => {});
-        const ref = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid);
-        const snap = await ref.get({ source: "server" }).catch(async serverError => {
-          console.warn("Server profile read failed, trying cache/realtime fallback:", serverError);
-          return ref.get().catch(() => null);
-        });
-        existing = snap && snap.exists ? (snap.data() || {}) : {};
-        const merged = {
-          ...base,
-          ...existing,
-          uid,
-          email: user.email || existing.email || null,
-          username: existing.username || user.displayName || user.email || "User",
-          displayName: existing.displayName || user.displayName || user.email || "User",
-          photoURL: existing.photoURL || user.photoURL || base.photoURL,
-          avatar: existing.avatar || user.photoURL || base.avatar,
-          settings: { ...base.settings, ...safeObject(existing.settings) },
-          progress: { ...base.progress, ...safeObject(existing.progress) },
-          public: true,
-          madeBy: "you",
-          updatedAt: serverTime()
-        };
-        await Promise.all([
-          ref.set(merged, { merge: true }),
-          firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(uid).set({
-            uid,
-            username: merged.username,
-            displayName: merged.displayName,
-            avatar: merged.avatar,
-            xp: Number(merged.xp || 0),
-            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
-            quizzes: safeArray(merged.progress?.history).length,
-            league: merged.league || getLeague(Number(merged.xp || 0)).name,
-            public: true,
-            madeBy: "you",
-            createdAt: existing.createdAt || serverTime(),
-            updatedAt: serverTime()
-          }, { merge: true }),
-          realtimeRef.update({ ...merged, updatedAt: Date.now(), createdAt: existing.createdAt || Date.now() }),
-          database.ref(`leaderboard/${uid}`).update({
-            uid,
-            name: merged.username,
-            points: Number(merged.xp || 0),
-            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
-            quizzes: safeArray(merged.progress?.history).length,
-            league: merged.league || getLeague(Number(merged.xp || 0)).name,
-            avatar: merged.avatar,
-            public: true,
-            updatedAt: Date.now()
-          })
-        ]);
-        return merged;
-      } catch (firestoreError) {
-        console.warn("Firestore account setup failed; using Realtime Database fallback:", firestoreError);
-        const realtimeSnap = await realtimeRef.once("value").catch(() => null);
-        existing = realtimeSnap && realtimeSnap.exists() ? safeObject(realtimeSnap.val()) : {};
-        const merged = {
-          ...base,
-          ...existing,
-          uid,
-          email: user.email || existing.email || null,
-          username: existing.username || user.displayName || user.email || "User",
-          displayName: existing.displayName || user.displayName || user.email || "User",
-          photoURL: existing.photoURL || user.photoURL || base.photoURL,
-          avatar: existing.avatar || user.photoURL || base.avatar,
-          settings: { ...base.settings, ...safeObject(existing.settings) },
-          progress: { ...base.progress, ...safeObject(existing.progress) },
-          public: true,
-          madeBy: "you",
-          updatedAt: Date.now(),
-          createdAt: existing.createdAt || Date.now()
-        };
-        await Promise.all([
-          realtimeRef.update(merged),
-          database.ref(`leaderboard/${uid}`).update({
-            uid,
-            name: merged.username,
-            points: Number(merged.xp || 0),
-            weeklyXp: Number(merged.weeklyXp || merged.xp || 0),
-            quizzes: safeArray(merged.progress?.history).length,
-            league: merged.league || getLeague(Number(merged.xp || 0)).name,
-            avatar: merged.avatar,
-            public: true,
-            updatedAt: Date.now()
-          })
-        ]);
-        showToast("Signed in. Firestore was offline, so Realtime Database sync is active.");
-        return merged;
-      }
-    }
-
-    function cloudAccountPayload(extra = {}) {
-      const leagueName = getLeague(xp).name;
-      return {
-        uid: currentUid(),
-        username: currentPlayer,
-        displayName: currentUserProfile?.displayName || currentPlayer,
-        email: currentUserProfile?.email || auth.currentUser?.email || null,
-        avatar: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
-        photoURL: currentUserProfile?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentPlayer)}&background=111827&color=fff`,
-        xp,
-        weeklyXp: xp,
-        streak,
-        league: leagueName,
-        settings: {
-          theme: currentTheme,
-          accent: currentAccent,
-          surface: currentSurface,
-          sectionOrder,
-          sound: true,
-          animations: true
-        },
-        progress: {
-          history: history.slice(0, 100),
-          bestScores,
-          completedSets: history.map(item => item.unit || item.title || "Completed Quiz").slice(0, 100),
-          lastCompletedAt: history[0]?.isoTime || history[0]?.time || null
-        },
-        accountFiles: safeArray(extra.accountFiles),
-        public: true,
-        madeBy: "you",
-        app: "Exam Bank Platform",
-        updatedAt: serverTime(),
-        ...extra
-      };
-    }
-
-    async function pushCloudState(extra = {}) {
-      const uid = currentUid();
-      if (!uid) {
-        showToast("Sign in with Google to save globally to Firebase.");
-        return;
-      }
-      const payload = cloudAccountPayload(extra);
-      const publicProfile = {
-        uid,
-        username: payload.username,
-        displayName: payload.displayName,
-        avatar: payload.avatar,
-        xp: payload.xp,
-        weeklyXp: payload.weeklyXp,
-        streak: payload.streak,
-        league: payload.league,
-        public: true,
-        madeBy: "you",
-        updatedAt: serverTime()
-      };
-      try {
-        await Promise.all([
-          firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).set(payload, { merge: true }),
-          firestore.collection(CLOUD_COLLECTIONS.publicProfiles).doc(uid).set(publicProfile, { merge: true }),
-          database.ref(`accounts/${uid}`).update({
-            username: payload.username,
-            avatar: payload.avatar,
-            xp: payload.xp,
-            weeklyXp: payload.weeklyXp,
-            streak: payload.streak,
-            league: payload.league,
-            settings: payload.settings,
-            completedSets: payload.progress.completedSets,
-            public: true,
-            madeBy: "you",
-            updatedAt: Date.now()
-          }),
-          database.ref(`leaderboard/${uid}`).update({
-            uid,
-            name: payload.username,
-            points: payload.xp,
-            weeklyXp: payload.weeklyXp,
-            quizzes: history.length,
-            league: payload.league,
-            avatar: payload.avatar,
-            public: true,
-            updatedAt: Date.now()
-          })
-        ]);
-      } catch (error) {
-        console.error("Cloud save failed:", error);
-        showToast(`Firebase save failed: ${error.message}`);
-      }
-    }
-
-    function attachCloudListeners(uid) {
-      if (activeProfileUnsubscribe) activeProfileUnsubscribe();
-      if (activeQuizUnsubscribe) activeQuizUnsubscribe();
-      if (publicQuizUnsubscribe) publicQuizUnsubscribe();
-      if (leaderboardUnsubscribe) leaderboardUnsubscribe();
-
-      activeProfileUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).onSnapshot(snapshot => {
-        if (snapshot.exists) applyCloudProfile(snapshot.data());
-      }, error => console.error("Profile listener error:", error));
-
-      activeQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.users).doc(uid).collection("quizzes")
-        .orderBy("createdAt", "desc")
-        .onSnapshot(snapshot => {
-          userQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
-          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => q.authorId !== uid)];
-          updateDashboard();
-        }, error => {
-          console.error("User quiz listener error:", error);
-          database.ref(`userQuizzes/${uid}`).on("value", snapshot => {
-            const data = snapshot.val() || {};
-            userQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
-            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => q.authorId !== uid)];
-            updateDashboard();
-          });
-        });
-
-      publicQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes)
-        .orderBy("createdAt", "desc")
-        .onSnapshot(snapshot => {
-          publicQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
-          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
-          updateDashboard();
-        }, error => {
-          console.error("Public quiz listener error:", error);
-          database.ref("publicQuizzes").on("value", snapshot => {
-            const data = snapshot.val() || {};
-            publicQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
-            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
-            updateDashboard();
-          });
-        });
-
-      leaderboardUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicProfiles)
-        .orderBy("xp", "desc")
-        .limit(100)
-        .onSnapshot(snapshot => {
-          leaderboard = {};
-          snapshot.docs.forEach(doc => {
-            const row = doc.data();
-            leaderboard[row.username || row.displayName || doc.id] = {
-              uid: doc.id,
-              name: row.username || row.displayName || "Player",
-              points: Number(row.xp || 0),
-              weeklyXp: Number(row.weeklyXp || row.xp || 0),
-              quizzes: Number(row.quizzes || 0),
-              league: row.league || getLeague(Number(row.xp || 0)).name,
-              avatar: row.avatar,
-              public: true
-            };
-          });
-          updateDashboard();
-        }, error => {
-          console.error("Leaderboard listener error:", error);
-          database.ref("leaderboard").on("value", snapshot => {
-            const rows = snapshot.val() || {};
-            leaderboard = {};
-            Object.entries(rows).forEach(([uidKey, row]) => {
-              const name = row.name || row.username || row.displayName || uidKey;
-              leaderboard[name] = {
-                uid: row.uid || uidKey,
-                name,
-                points: Number(row.points || row.xp || 0),
-                weeklyXp: Number(row.weeklyXp || row.points || row.xp || 0),
-                quizzes: Number(row.quizzes || 0),
-                league: row.league || getLeague(Number(row.points || row.xp || 0)).name,
-                avatar: row.avatar,
-                public: true
-              };
-            });
-            updateDashboard();
-          });
-        });
-    }
-
-    function detachCloudListeners() {
-      [activeProfileUnsubscribe, activeQuizUnsubscribe, publicQuizUnsubscribe, leaderboardUnsubscribe].forEach(unsub => {
-        if (typeof unsub === "function") unsub();
-      });
-      activeProfileUnsubscribe = activeQuizUnsubscribe = publicQuizUnsubscribe = leaderboardUnsubscribe = null;
-    }
-
-    function attachPublicListeners() {
-      if (publicQuizUnsubscribe) return;
-      publicQuizUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicQuizzes)
-        .orderBy("createdAt", "desc")
-        .onSnapshot(snapshot => {
-          publicQuizzes = snapshot.docs.map(doc => ({ id: doc.id, firestoreId: doc.id, ...doc.data() }));
-          customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
-          updateDashboard();
-        }, error => {
-          console.error("Public quiz listener error:", error);
-          database.ref("publicQuizzes").on("value", snapshot => {
-            const data = snapshot.val() || {};
-            publicQuizzes = Object.entries(data).map(([id, quiz]) => ({ id, ...quiz }));
-            customQuizzes = [...userQuizzes, ...publicQuizzes.filter(q => !userQuizzes.some(uq => uq.id === q.id))];
-            updateDashboard();
-          });
-        });
-
-      if (!leaderboardUnsubscribe) {
-        leaderboardUnsubscribe = firestore.collection(CLOUD_COLLECTIONS.publicProfiles)
-          .orderBy("xp", "desc")
-          .limit(100)
-          .onSnapshot(snapshot => {
-            leaderboard = {};
-            snapshot.docs.forEach(doc => {
-              const row = doc.data();
-              leaderboard[row.username || row.displayName || doc.id] = {
-                uid: doc.id,
-                name: row.username || row.displayName || "Player",
-                points: Number(row.xp || 0),
-                weeklyXp: Number(row.weeklyXp || row.xp || 0),
-                quizzes: Number(row.quizzes || 0),
-                league: row.league || getLeague(Number(row.xp || 0)).name,
-                avatar: row.avatar,
-                public: true
-              };
-            });
-            updateDashboard();
-          }, error => {
-            console.error("Leaderboard listener error:", error);
-            database.ref("leaderboard").on("value", snapshot => {
-              const rows = snapshot.val() || {};
-              leaderboard = {};
-              Object.entries(rows).forEach(([uidKey, row]) => {
-                const name = row.name || row.username || row.displayName || uidKey;
-                leaderboard[name] = {
-                  uid: row.uid || uidKey,
-                  name,
-                  points: Number(row.points || row.xp || 0),
-                  weeklyXp: Number(row.weeklyXp || row.points || row.xp || 0),
-                  quizzes: Number(row.quizzes || 0),
-                  league: row.league || getLeague(Number(row.points || row.xp || 0)).name,
-                  avatar: row.avatar,
-                  public: true
-                };
-              });
-              updateDashboard();
-            });
-          });
-      }
-    }
-
-    async function handleCloudAuthUser(user) {
-      if (!user) {
-        detachCloudListeners();
-        cloudReady = false;
-        currentPlayer = "Guest";
-        currentUserProfile = null;
-        xp = 0;
-        streak = 0;
-        history = [];
-        bestScores = {};
-        userQuizzes = [];
-        customQuizzes = publicQuizzes.slice();
-        updateStats();
-        updateUnitProgress(currentUnitKey);
-        updateDashboard();
-        attachPublicListeners();
-        return;
-      }
-
-      try {
-        showToast("Loading your Firebase account...");
-        const profile = await upsertCloudAccount(user);
-        applyCloudProfile(profile);
-        attachCloudListeners(user.uid);
-        await pushCloudState({ lastLoginAt: serverTime() });
-        cloudReady = true;
-        const authModal = document.getElementById("authModal");
-        if (authModal) {
-          authModal.classList.add("hidden");
-          authModal.classList.remove("flex");
-        }
-        showToast(`Welcome, ${currentPlayer}! Firebase cloud saves are on.`);
-      } catch (error) {
-        console.error("Cloud auth setup failed:", error);
-        showToast(`Firebase account setup failed: ${error.message}`);
-      }
-    }
-
-    async function signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: "select_account" });
-      provider.addScope("profile");
-      provider.addScope("email");
-      try {
-        await auth.signInWithPopup(provider);
-      } catch (error) {
-        console.error("Google popup sign-in error:", error);
-        if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
-          showToast("Popup blocked/closed. Trying Google redirect sign-in...");
-          await auth.signInWithRedirect(provider);
-        } else {
-          showToast(`Google sign-in failed: ${error.message}`);
-        }
-      }
-    }
+    
 
     async function signInWithEmail() {
       const email = document.getElementById("authEmailInput").value.trim();
@@ -6517,6 +6069,19 @@ What is 7 x 8?
 
 
     document.addEventListener("DOMContentLoaded", init);
-  </script>
+  
+    // Global click fix to ensure modals and buttons work
+    document.addEventListener('click', function(e) {
+      // If clicking a close button, find the parent modal and close it
+      if (e.target.closest('.close-modal') || e.target.closest('.cancel-btn')) {
+        const modal = e.target.closest('.modal') || e.target.closest('.modal-overlay');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('open', 'flex');
+        }
+      }
+    }, true);
+    
+</script>
 </body>
 </html>
